@@ -22,3 +22,14 @@ This project records its technical decisions with cortex (MCP server
 
 More: https://github.com/lucasreali/cortex-cli#how-it-works
 <!-- cortex:end -->
+
+## Committing
+
+Commit as soon as a task from `todo.md` is finished, not in a batch at the
+end of the session — one commit per task, or per phase when its tasks land
+together.
+
+- `./gradlew build` must be green before committing. Never commit a red suite.
+- Tick the task `[X]` in `todo.md` in the same commit as the code.
+- Include the `.cortex/decisions/` files written for that work; they are
+  committed with the code they explain.
