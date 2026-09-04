@@ -26,7 +26,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 1.6 Modelo de ficha (mecanismo B) — só a estrutura
 
 **Fase 2 — Núcleo: cadastros**
-- [ ] 2.1 Acesso
+- [X] 2.1 Acesso
 - [ ] 2.2 Cliente
 - [ ] 2.3 Profissional e disponibilidade
 - [ ] 2.4 Catálogo de serviços
@@ -234,7 +234,7 @@ Criar em `configuration/template`: `RecordTemplate`, `TemplateSection`, `Templat
 
 Objetivo: as entidades que todo o resto referencia.
 
-### [ ] 2.1 · Acesso
+### [X] 2.1 · Acesso
 
 Criar em `core/access`: `AppUser`, `AccessService`, repositório e configuração de segurança em `internal`.
 

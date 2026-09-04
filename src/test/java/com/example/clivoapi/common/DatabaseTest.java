@@ -35,6 +35,7 @@ public abstract class DatabaseTest {
         jdbcTemplate.update("DELETE FROM record_template");
         jdbcTemplate.update("DELETE FROM tenant_module");
         jdbcTemplate.update("DELETE FROM tenant_parameter");
+        jdbcTemplate.update("DELETE FROM app_user");
         jdbcTemplate.update("DELETE FROM tenant WHERE code LIKE 'TEST-%'");
     }
 
