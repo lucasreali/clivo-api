@@ -29,7 +29,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 2.1 Acesso
 - [X] 2.2 Cliente
 - [X] 2.3 Profissional e disponibilidade
-- [ ] 2.4 Catálogo de serviços
+- [X] 2.4 Catálogo de serviços
 
 **Fase 3 — Agenda e a corrente**
 - [ ] 3.1 Bloqueio de agenda
@@ -264,7 +264,7 @@ Métodos: `worksAt(DayOfWeek, LocalTime)`, `deactivate()`.
 
 **Pronto quando:** é possível definir a agenda semanal de um profissional e consultar se ele atende num horário.
 
-### [ ] 2.4 · Catálogo de serviços
+### [X] 2.4 · Catálogo de serviços
 
 Criar em `core/catalog`: `Service` (tabela `service`), `CatalogService`, repositório e controller.
 
