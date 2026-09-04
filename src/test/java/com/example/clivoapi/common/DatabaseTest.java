@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,8 +28,34 @@ public abstract class DatabaseTest {
 
     @AfterEach
     void discardTestData() {
+        tenantContext.clear();
         jdbcTemplate.update("DELETE FROM sample_entity");
+        jdbcTemplate.update("DELETE FROM template_field");
+        jdbcTemplate.update("DELETE FROM template_section");
+        jdbcTemplate.update("DELETE FROM record_template");
+        jdbcTemplate.update("DELETE FROM tenant_module");
+        jdbcTemplate.update("DELETE FROM tenant_parameter");
         jdbcTemplate.update("DELETE FROM tenant WHERE code LIKE 'TEST-%'");
+    }
+
+    protected void bindTenant(Tenant tenant) {
+        tenantContext.bind(tenant.id());
+    }
+
+    protected void inTenant(Tenant tenant, Runnable work) {
+        valueInTenant(tenant, () -> {
+            work.run();
+            return null;
+        });
+    }
+
+    protected <T> T valueInTenant(Tenant tenant, Supplier<T> work) {
+        tenantContext.bind(tenant.id());
+        try {
+            return work.get();
+        } finally {
+            tenantContext.clear();
+        }
     }
 
     protected Tenant createTenant(String code) {

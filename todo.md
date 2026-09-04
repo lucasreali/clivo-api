@@ -18,12 +18,12 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 0.6 Módulos do Spring Modulith
 
 **Fase 1 — Configuração**
-- [ ] 1.1 Ativação de módulos (mecanismo A)
-- [ ] 1.2 Porta de consulta de módulo ativo
-- [ ] 1.3 Guarda de rota por módulo
-- [ ] 1.4 Recurso de capacidades
-- [ ] 1.5 Parâmetros da clínica (mecanismo C)
-- [ ] 1.6 Modelo de ficha (mecanismo B) — só a estrutura
+- [X] 1.1 Ativação de módulos (mecanismo A)
+- [X] 1.2 Porta de consulta de módulo ativo
+- [X] 1.3 Guarda de rota por módulo
+- [X] 1.4 Recurso de capacidades
+- [X] 1.5 Parâmetros da clínica (mecanismo C)
+- [X] 1.6 Modelo de ficha (mecanismo B) — só a estrutura
 
 **Fase 2 — Núcleo: cadastros**
 - [ ] 2.1 Acesso
@@ -164,7 +164,7 @@ Criar `ModularityTest` chamando `ApplicationModules.of(...).verify()` e gerando 
 
 Objetivo: o sistema já sabe o que cada clínica contratou e como ela está configurada. Vem antes do domínio porque quase tudo depende disso.
 
-### [ ] 1.1 · Ativação de módulos (mecanismo A)
+### [X] 1.1 · Ativação de módulos (mecanismo A)
 
 **Objetivo:** ligar e desligar funcionalidade por clínica, validando dependências.
 
@@ -176,7 +176,7 @@ Módulos do catálogo: `dependent`, `sessionpackage`, `inventory`, `batch` (exig
 
 **Pronto quando:** existe endpoint para ativar e desativar, e tentar ativar `batch` sem `inventory` retorna 422.
 
-### [ ] 1.2 · Porta de consulta de módulo ativo
+### [X] 1.2 · Porta de consulta de módulo ativo
 
 **Objetivo:** qualquer parte do sistema pergunta "este módulo está ativo?" sem depender do pacote de configuração.
 
@@ -184,7 +184,7 @@ Criar `ModuleActivationState` em `common/extension` com um método que responde 
 
 **Pronto quando:** um serviço qualquer consegue perguntar sem importar `configuration`.
 
-### [ ] 1.3 · Guarda de rota por módulo
+### [X] 1.3 · Guarda de rota por módulo
 
 **Objetivo:** cumprir a regra de "sem vestígio" nos endpoints.
 
@@ -194,7 +194,7 @@ Criar a anotação `@RequiresModule` em `common/extension` e um interceptor que 
 
 **Pronto quando:** um controller anotado responde 404 numa clínica sem o módulo e 200 numa clínica com ele.
 
-### [ ] 1.4 · Recurso de capacidades
+### [X] 1.4 · Recurso de capacidades
 
 **Objetivo:** o cliente da API descobre o que aquela clínica tem, sem adivinhar.
 
@@ -204,7 +204,7 @@ Criar um endpoint que devolve a lista de módulos ativos e os parâmetros vigent
 
 **Pronto quando:** duas clínicas com configurações diferentes recebem respostas diferentes.
 
-### [ ] 1.5 · Parâmetros da clínica (mecanismo C)
+### [X] 1.5 · Parâmetros da clínica (mecanismo C)
 
 **Objetivo:** ajustar o valor de uma regra sem tocar em código.
 
@@ -216,7 +216,7 @@ Catálogo mínimo: `role_model` (SEGREGATED ou SINGLE), `reschedule_window_hours
 
 **Pronto quando:** gravar 200 em `reminder_lead_hours` retorna 422 informando os limites, e o valor anterior permanece.
 
-### [ ] 1.6 · Modelo de ficha (mecanismo B) — só a estrutura
+### [X] 1.6 · Modelo de ficha (mecanismo B) — só a estrutura
 
 **Objetivo:** guardar a definição da ficha clínica como dado.
 
