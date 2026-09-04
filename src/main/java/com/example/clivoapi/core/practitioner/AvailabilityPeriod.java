@@ -12,6 +12,10 @@ public record AvailabilityPeriod(Weekday weekday, TimeRange hours) {
         return weekday.equals(day) && hours.covers(time);
     }
 
+    public boolean embraces(Weekday day, TimeRange other) {
+        return weekday.equals(day) && hours.embraces(other);
+    }
+
     @Override
     public String toString() {
         return "%s %s".formatted(weekday, hours);

@@ -80,6 +80,10 @@ public class Customer extends TenantScopedEntity {
         return id;
     }
 
+    public String name() {
+        return name;
+    }
+
     public boolean isActive() {
         return status == CustomerStatus.ACTIVE;
     }

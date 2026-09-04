@@ -52,6 +52,11 @@ public class CustomerService {
         return customerOf(id).snapshot();
     }
 
+    @Transactional(readOnly = true)
+    public Customer reference(Long id) {
+        return customerOf(id);
+    }
+
     private List<Customer> matching(String name) {
         return Optional.ofNullable(name)
                 .filter(term -> !term.isBlank())

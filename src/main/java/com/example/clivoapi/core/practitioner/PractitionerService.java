@@ -55,6 +55,11 @@ public class PractitionerService {
         return practitionerOf(id).snapshot();
     }
 
+    @Transactional(readOnly = true)
+    public Practitioner reference(Long id) {
+        return practitionerOf(id);
+    }
+
     private Practitioner practitionerOf(Long id) {
         return practitioners.findById(id).orElseThrow(() -> new ResourceNotFoundException("Practitioner", id));
     }

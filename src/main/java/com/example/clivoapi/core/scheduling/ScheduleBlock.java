@@ -1,0 +1,68 @@
+package com.example.clivoapi.core.scheduling;
+
+import com.example.clivoapi.common.tenant.TenantScopedEntity;
+import com.example.clivoapi.common.time.TimeWindow;
+import com.example.clivoapi.core.practitioner.Practitioner;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "schedule_block")
+public class ScheduleBlock extends TenantScopedEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "practitioner_id")
+    private Practitioner practitioner;
+
+    @Embedded
+    private TimeWindow period;
+
+    @Column(nullable = false)
+    private String reason;
+
+    protected ScheduleBlock() {
+    }
+
+    public ScheduleBlock(Practitioner practitioner, TimeWindow period, BlockReason reason) {
+        this.practitioner = practitioner;
+        this.period = period;
+        this.reason = reason.asText();
+    }
+
+    public Long id() {
+        return id;
+    }
+
+    public boolean isClinicWide() {
+        return practitioner == null;
+    }
+
+    public boolean covers(LocalDateTime moment) {
+        return period.covers(moment);
+    }
+
+    public boolean appliesTo(Practitioner other) {
+        return isClinicWide() || practitioner.id().equals(other.id());
+    }
+
+    public ScheduleBlockSnapshot snapshot() {
+        return new ScheduleBlockSnapshot(id, practitionerId(), period, reason);
+    }
+
+    private Long practitionerId() {
+        return isClinicWide() ? null : practitioner.id();
+    }
+}

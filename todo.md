@@ -32,11 +32,11 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 2.4 Catálogo de serviços
 
 **Fase 3 — Agenda e a corrente**
-- [ ] 3.1 Bloqueio de agenda
-- [ ] 3.2 Agendamento
-- [ ] 3.3 **Chain** — validação de agendamento
-- [ ] 3.4 **Chain** — validação de ativação de módulo
-- [ ] 3.5 Painel do dia
+- [X] 3.1 Bloqueio de agenda
+- [X] 3.2 Agendamento
+- [X] 3.3 **Chain** — validação de agendamento
+- [X] 3.4 **Chain** — validação de ativação de módulo
+- [X] 3.5 Painel do dia
 
 **Fase 4 — Atendimento e ficha**
 - [ ] 4.1 Atendimento
@@ -280,7 +280,7 @@ Método: `endTimeFrom(LocalDateTime)`.
 
 Objetivo: o coração do sistema. É aqui que entra o primeiro padrão.
 
-### [ ] 3.1 · Bloqueio de agenda
+### [X] 3.1 · Bloqueio de agenda
 
 Criar em `core/scheduling`: `ScheduleBlock`, repositório e endpoints.
 
@@ -290,7 +290,7 @@ Métodos: `covers(LocalDateTime)`, `appliesTo(Practitioner)`.
 
 **Pronto quando:** é possível registrar um bloqueio com motivo e consultá-lo por período.
 
-### [ ] 3.2 · Agendamento
+### [X] 3.2 · Agendamento
 
 Criar em `core/scheduling`: `Appointment`, `AppointmentStatus`, `SchedulingService`, repositório e controller.
 
@@ -300,7 +300,7 @@ Métodos: `overlaps(Appointment)`, `canBeRescheduled(int windowHours)`, `cancel(
 
 **Pronto quando:** criar, reagendar e cancelar funcionam.
 
-### [ ] 3.3 · Chain of Responsibility — validação de agendamento
+### [X] 3.3 · Chain of Responsibility — validação de agendamento
 
 **Objetivo do padrão:** acrescentar uma regra de validação nova deve exigir **criar uma classe e nada mais**. Nenhum arquivo existente pode ser editado.
 
@@ -312,7 +312,7 @@ Criar em `patterns/chain`: a interface `AppointmentValidator` com um método que
 
 **Pronto quando:** as quatro recusas retornam mensagens distintas, e existe um teste que acrescenta um elo novo definido dentro do próprio teste e prova que ele entra na corrente sem alterar classe de produção.
 
-### [ ] 3.4 · Chain — validação de ativação de módulo
+### [X] 3.4 · Chain — validação de ativação de módulo
 
 Criar em `patterns/chain`: `ModuleActivationValidator` com os elos `ModuleDependencyValidator` e `ExistingDataValidator`.
 
@@ -320,7 +320,7 @@ Criar em `patterns/chain`: `ModuleActivationValidator` com os elos `ModuleDepend
 
 **Pronto quando:** ativar `batch` sem `inventory` e desativar `inventory` com `batch` ativo são ambos recusados pela corrente.
 
-### [ ] 3.5 · Painel do dia
+### [X] 3.5 · Painel do dia
 
 Criar em `core/scheduling`: endpoint que lista os agendamentos do dia com situação, e registro de chegada e de falta.
 

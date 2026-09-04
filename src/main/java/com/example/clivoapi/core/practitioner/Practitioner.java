@@ -1,6 +1,7 @@
 package com.example.clivoapi.core.practitioner;
 
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
+import com.example.clivoapi.common.time.TimeWindow;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,8 +54,22 @@ public class Practitioner extends TenantScopedEntity {
         return status == PractitionerStatus.ACTIVE;
     }
 
+    public String name() {
+        return name;
+    }
+
     public boolean worksAt(DayOfWeek day, LocalTime time) {
         return isActive() && schedule().covers(Weekday.of(day), time);
+    }
+
+    public boolean worksThroughout(TimeWindow window) {
+        return isActive()
+                && window.withinOneDay()
+                && schedule().embraces(Weekday.of(window.dayOfWeek()), hoursOf(window));
+    }
+
+    private static TimeRange hoursOf(TimeWindow window) {
+        return new TimeRange(window.startTime(), window.endTime());
     }
 
     public void describeAs(PractitionerDetails details) {

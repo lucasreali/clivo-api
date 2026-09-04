@@ -1,0 +1,64 @@
+package com.example.clivoapi.core.scheduling.internal;
+
+import com.example.clivoapi.core.scheduling.SchedulingService;
+import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/appointments")
+class AppointmentController {
+
+    private final SchedulingService scheduling;
+
+    AppointmentController(SchedulingService scheduling) {
+        this.scheduling = scheduling;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    AppointmentView schedule(@Valid @RequestBody AppointmentRequest request) {
+        return AppointmentView.of(scheduling.schedule(request.toBooking()));
+    }
+
+    @GetMapping
+    List<AppointmentView> dayPanel(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+        return scheduling.dayPanel(day).stream().map(AppointmentView::of).toList();
+    }
+
+    @GetMapping("/{id}")
+    AppointmentView findOne(@PathVariable Long id) {
+        return AppointmentView.of(scheduling.findOne(id));
+    }
+
+    @PutMapping("/{id}/schedule")
+    AppointmentView reschedule(@PathVariable Long id, @Valid @RequestBody RescheduleRequest request) {
+        return AppointmentView.of(scheduling.reschedule(id, request.start()));
+    }
+
+    @PostMapping("/{id}/cancellation")
+    AppointmentView cancel(@PathVariable Long id, @RequestBody ReasonRequest request) {
+        return AppointmentView.of(scheduling.cancel(id, request.toReason()));
+    }
+
+    @PostMapping("/{id}/arrival")
+    AppointmentView checkIn(@PathVariable Long id) {
+        return AppointmentView.of(scheduling.checkIn(id));
+    }
+
+    @PostMapping("/{id}/absence")
+    AppointmentView markNoShow(@PathVariable Long id, @RequestBody ReasonRequest request) {
+        return AppointmentView.of(scheduling.markNoShow(id, request.toReason()));
+    }
+}

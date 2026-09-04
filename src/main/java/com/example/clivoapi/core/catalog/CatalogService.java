@@ -44,6 +44,11 @@ public class CatalogService {
         return serviceOf(id).snapshot();
     }
 
+    @Transactional(readOnly = true)
+    public Service reference(Long id) {
+        return serviceOf(id);
+    }
+
     private void requireNameFree(ServiceDetails details, Long owner) {
         services.findByNameIgnoreCase(details.name())
                 .filter(existing -> !existing.id().equals(owner))

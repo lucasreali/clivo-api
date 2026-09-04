@@ -22,6 +22,10 @@ public record TimeRange(
         return start.isBefore(other.end) && other.start.isBefore(end);
     }
 
+    public boolean embraces(TimeRange other) {
+        return !other.start.isBefore(start) && !other.end.isAfter(end);
+    }
+
     private static void requireOrdered(LocalTime start, LocalTime end) {
         if (start != null && end != null && start.isBefore(end)) {
             return;

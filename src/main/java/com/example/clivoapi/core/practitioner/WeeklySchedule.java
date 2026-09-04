@@ -24,6 +24,10 @@ public record WeeklySchedule(List<AvailabilityPeriod> periods) {
         return periods.stream().anyMatch(period -> period.covers(day, time));
     }
 
+    public boolean embraces(Weekday day, TimeRange hours) {
+        return periods.stream().anyMatch(period -> period.embraces(day, hours));
+    }
+
     private static void requireNoOverlap(List<AvailabilityPeriod> periods) {
         periods.stream()
                 .filter(period -> collidesWithin(period, periods))
