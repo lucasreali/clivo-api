@@ -1,6 +1,7 @@
 package com.example.clivoapi.core.access.internal;
 
 import com.example.clivoapi.core.access.PasswordHashing;
+import com.example.clivoapi.core.access.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,8 @@ class SecurityConfiguration {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(HttpMethod.POST, SessionController.PATH).permitAll()
                         .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers(HttpMethod.POST, AppUserController.PATH)
+                        .hasAnyRole(Role.MANAGER.name(), Role.PLATFORM_ADMIN.name())
                         .anyRequest().authenticated())
                 .exceptionHandling(handling ->
                         handling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

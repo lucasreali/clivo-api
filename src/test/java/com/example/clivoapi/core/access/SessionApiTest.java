@@ -30,8 +30,8 @@ class SessionApiTest extends DatabaseTest {
     void theSessionOfTheSignedInUserResolvesTheClinicOfEveryRequest() throws Exception {
         Tenant north = createTenant("TEST-NORTH");
         Tenant south = createTenant("TEST-SOUTH");
-        register(north, "ana@north.test");
-        register(south, "bruno@south.test");
+        register(north, "ana@north.test", Role.RECEPTION);
+        register(south, "bruno@south.test", Role.RECEPTION);
 
         MockHttpSession session = signIn("TEST-NORTH", "ana@north.test", north);
 
@@ -48,10 +48,31 @@ class SessionApiTest extends DatabaseTest {
 
     @Test
     void aWrongPasswordIsUnauthorized() throws Exception {
-        register(createTenant("TEST-NORTH"), "ana@north.test");
+        register(createTenant("TEST-NORTH"), "ana@north.test", Role.RECEPTION);
 
         mockMvc.perform(signInOf("TEST-NORTH", "ana@north.test", "wrong-guess"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void onlyAManagerProvisionsUsers() throws Exception {
+        Tenant north = createTenant("TEST-NORTH");
+        register(north, "ana@north.test", Role.RECEPTION);
+        register(north, "carla@north.test", Role.MANAGER);
+
+        mockMvc.perform(newUserOf("dora@north.test").session(signIn("TEST-NORTH", "ana@north.test", north)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(newUserOf("dora@north.test").session(signIn("TEST-NORTH", "carla@north.test", north)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value("dora@north.test"));
+    }
+
+    private MockHttpServletRequestBuilder newUserOf(String email) {
+        return post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Dora\",\"email\":\"%s\",\"password\":\"%s\",\"role\":\"ASSISTANT\"}"
+                        .formatted(email, PASSWORD));
     }
 
     private MockHttpSession signIn(String clinic, String email, Tenant expected) throws Exception {
@@ -69,7 +90,7 @@ class SessionApiTest extends DatabaseTest {
                 .content("{\"clinic\":\"%s\",\"email\":\"%s\",\"password\":\"%s\"}".formatted(clinic, email, password));
     }
 
-    private void register(Tenant clinic, String email) {
-        access.registerIn(clinic, new UserRegistration("Ana", new EmailAddress(email), new RawPassword(PASSWORD), Role.RECEPTION));
+    private void register(Tenant clinic, String email, Role role) {
+        access.registerIn(clinic, new UserRegistration("Ana", new EmailAddress(email), new RawPassword(PASSWORD), role));
     }
 }

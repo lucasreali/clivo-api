@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(AppUserController.PATH)
 class AppUserController {
+
+    static final String PATH = "/api/users";
 
     private final AccessService access;
 
