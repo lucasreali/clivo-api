@@ -28,7 +28,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 **Fase 2 — Núcleo: cadastros**
 - [X] 2.1 Acesso
 - [X] 2.2 Cliente
-- [ ] 2.3 Profissional e disponibilidade
+- [X] 2.3 Profissional e disponibilidade
 - [ ] 2.4 Catálogo de serviços
 
 **Fase 3 — Agenda e a corrente**
@@ -254,7 +254,7 @@ Métodos: `deactivate(reason)`, `hasValidConsent()`.
 
 **Pronto quando:** cadastrar, buscar, alterar e inativar funcionam, e tentar inativar sem motivo retorna 422.
 
-### [ ] 2.3 · Profissional e disponibilidade
+### [X] 2.3 · Profissional e disponibilidade
 
 Criar em `core/practitioner`: `Practitioner`, `AvailabilitySlot`, serviço, repositórios e controller.
 
