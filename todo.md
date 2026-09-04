@@ -12,10 +12,10 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 **Fase 0 — Fundação**
 - [X] 0.1 Configurar o build
 - [X] 0.2 Aplicar o schema físico
-- [ ] 0.3 Contexto de inquilino
-- [ ] 0.4 Auditoria
-- [ ] 0.5 Tratamento de erro
-- [ ] 0.6 Módulos do Spring Modulith
+- [X] 0.3 Contexto de inquilino
+- [X] 0.4 Auditoria
+- [X] 0.5 Tratamento de erro
+- [X] 0.6 Módulos do Spring Modulith
 
 **Fase 1 — Configuração**
 - [ ] 1.1 Ativação de módulos (mecanismo A)
@@ -120,7 +120,7 @@ Colar o SQL físico do projeto em `src/main/resources/db/migration/V1__schema.sq
 
 **Pronto quando:** a aplicação sobe contra um Postgres local e o Flyway registra a migração.
 
-### [ ] 0.3 · Contexto de inquilino
+### [X] 0.3 · Contexto de inquilino
 
 **Objetivo:** toda consulta filtra por clínica sem ninguém escrever `where tenant_id = ?`.
 
@@ -130,7 +130,7 @@ Criar em `common/tenant`: `Tenant` (entidade, tabela `tenant`), `TenantContext` 
 
 **Pronto quando:** existe um teste que grava duas entidades em inquilinos diferentes e comprova que a consulta de um não alcança a do outro.
 
-### [ ] 0.4 · Auditoria
+### [X] 0.4 · Auditoria
 
 **Objetivo:** toda entidade registra quem criou e quem alterou, sem repetir código.
 
@@ -140,7 +140,7 @@ Criar em `common/audit`: `AuditableEntity` como `@MappedSuperclass` com `created
 
 **Pronto quando:** uma entidade qualquer que estenda `AuditableEntity` grava os quatro campos sozinha.
 
-### [ ] 0.5 · Tratamento de erro
+### [X] 0.5 · Tratamento de erro
 
 **Objetivo:** erro de negócio vira resposta HTTP coerente, em um lugar só.
 
@@ -148,7 +148,7 @@ Criar em `common/exception`: `BusinessException`, `ResourceNotFoundException`, `
 
 **Pronto quando:** lançar `BusinessException` em qualquer serviço produz 422 com corpo padronizado, e `ResourceNotFoundException` produz 404.
 
-### [ ] 0.6 · Módulos do Spring Modulith
+### [X] 0.6 · Módulos do Spring Modulith
 
 **Objetivo:** as fronteiras entre pacotes viram regra verificável.
 

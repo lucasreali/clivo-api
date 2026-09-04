@@ -1,0 +1,4 @@
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/fixture
+    out-of-order: true
