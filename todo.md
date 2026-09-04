@@ -27,7 +27,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 
 **Fase 2 — Núcleo: cadastros**
 - [X] 2.1 Acesso
-- [ ] 2.2 Cliente
+- [X] 2.2 Cliente
 - [ ] 2.3 Profissional e disponibilidade
 - [ ] 2.4 Catálogo de serviços
 
@@ -244,7 +244,7 @@ Métodos de negócio: `isActive()`, `hasRole(Role)`.
 
 **Pronto quando:** login funciona e a sessão resolve o inquilino do filtro da Fase 0.3.
 
-### [ ] 2.2 · Cliente
+### [X] 2.2 · Cliente
 
 Criar em `core/customer`: `Customer`, `ConsentRecord`, serviço, repositório e controller.
 
