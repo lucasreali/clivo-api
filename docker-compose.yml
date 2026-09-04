@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: clivo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-clivo}
+      POSTGRES_USER: ${POSTGRES_USER:-clivo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-clivo}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-clivo} -d ${POSTGRES_DB:-clivo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+    container_name: clivo-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-docker}
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-clivo}
+      DATASOURCE_USERNAME: ${POSTGRES_USER:-clivo}
+      DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-clivo}
+    ports:
+      - "${API_PORT:-8080}:8080"
+
+volumes:
+  postgres-data:

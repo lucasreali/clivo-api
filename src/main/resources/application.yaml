@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: clivo-api
+  profiles:
+    default: dev
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/clivo}
+    username: ${DATASOURCE_USERNAME:clivo}
+    password: ${DATASOURCE_PASSWORD:clivo}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/clivo_test}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://postgres:5432/clivo}
