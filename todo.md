@@ -61,7 +61,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.9 Comissionamento
 
 **Fase 7 — Verificação**
-- [ ] 7.1 Prova de reuso (`ReuseTest`)
+- [X] 7.1 Prova de reuso (`ReuseTest`)
 - [ ] 7.2 Testes de arquitetura
 - [ ] 7.3 Cenários
 
@@ -69,7 +69,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [ ] 3 padrões codificados: Chain, Abstract Factory, Strategy
 - [ ] 2 exemplos de cada, todos funcionais e ligados ao núcleo
 - [ ] 14 classes de domínio com métodos de negócio
-- [ ] `ReuseTest` verde nos 3 métodos
+- [X] `ReuseTest` verde nos 3 métodos
 - [ ] `ModularityTest` e `ArchitectureTest` verdes
 
 ---
@@ -470,7 +470,7 @@ Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPol
 
 # FASE 7 — Verificação
 
-### [ ] 7.1 · Prova de reuso
+### [X] 7.1 · Prova de reuso
 
 Criar `ReuseTest` em `src/test/java/com/example/clivoapi/patterns/`, com um método por padrão:
 
