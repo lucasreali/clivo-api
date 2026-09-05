@@ -71,7 +71,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
     void aFieldTypeDeclaredOutsideTheProductionCodeIsRendered() {
         Long id = openWithMood();
 
-        SheetField mood = onlyFieldOf(encounters.findOne(id));
+        SheetField mood = onlyFieldOf(reopen(id));
 
         assertThat(mood.code()).isEqualTo("mood");
         assertThat(mood.fieldType()).isEqualTo(EMOJI_SCALE);
@@ -82,7 +82,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
         Long id = openWithMood();
         encounters.fill(id, RecordValues.of(Map.of("mood", "furious")));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field mood (mood) expects one of [bad, fine, great]");
     }
@@ -92,7 +92,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
         Long id = openWithMood();
         encounters.fill(id, RecordValues.of(Map.of("mood", "great")));
 
-        assertThat(encounters.complete(id).isCompleted()).isTrue();
+        assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
     }
 
     @Test
@@ -104,7 +104,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
 
         encounters.fill(id, RecordValues.of(Map.of("mood", "fine", "notes", "Tudo certo")));
 
-        assertThat(encounters.complete(id).isCompleted()).isTrue();
+        assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
     }
 
     private Long openWithMood() {

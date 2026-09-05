@@ -40,16 +40,16 @@ public class EncounterService {
         return snapshotOf(encounters.save(encounter));
     }
 
-    public EncounterSnapshot complete(Long id) {
+    public EncounterSnapshot complete(Long id, Role viewer) {
         Encounter encounter = encounterOf(id);
         records.validate(encounter.filling());
         encounter.complete();
-        return snapshotOf(encounters.save(encounter));
+        return visibleTo(encounters.save(encounter), viewer);
     }
 
     @Transactional(readOnly = true)
-    public EncounterSnapshot findOne(Long id) {
-        return snapshotOf(encounterOf(id));
+    public EncounterSnapshot findOne(Long id, Role viewer) {
+        return visibleTo(encounterOf(id), viewer);
     }
 
     @Transactional(readOnly = true)
@@ -59,6 +59,13 @@ public class EncounterService {
             return history.stream().map(this::snapshotOf).toList();
         }
         return history.stream().map(Encounter::summary).toList();
+    }
+
+    private EncounterSnapshot visibleTo(Encounter encounter, Role viewer) {
+        if (roleAccess.allowsClinicalRecord(viewer)) {
+            return snapshotOf(encounter);
+        }
+        return encounter.summary();
     }
 
     private EncounterSnapshot snapshotOf(Encounter encounter) {

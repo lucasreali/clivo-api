@@ -57,7 +57,7 @@ class SpecialComponentTest extends EncounterFixture {
         Long id = openWith(odontogram());
         encounters.fill(id, RecordValues.of(Map.of("chart", Map.of("99", "carie"))));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field chart (Dental chart) does not know the region 99");
     }
@@ -68,7 +68,7 @@ class SpecialComponentTest extends EncounterFixture {
         Long id = openWith(odontogram());
         encounters.fill(id, RecordValues.of(Map.of("chart", Map.of("26", "carie"))));
 
-        assertThat(encounters.complete(id).isCompleted()).isTrue();
+        assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
     }
 
     @Test
@@ -118,7 +118,7 @@ class SpecialComponentTest extends EncounterFixture {
     }
 
     private List<SheetField> onlySectionOf(Long encounterId) {
-        EncounterSnapshot encounter = encounters.findOne(encounterId);
+        EncounterSnapshot encounter = reopen(encounterId);
         return encounter.sheet().sections().getFirst().fields();
     }
 }

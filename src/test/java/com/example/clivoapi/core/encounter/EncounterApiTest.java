@@ -31,10 +31,12 @@ class EncounterApiTest extends EncounterFixture {
     void twoClinicsGetDifferentSheetsFromTheSameEndpoint() throws Exception {
         openClinic("TEST-API-VET");
         Tenant vet = clinic();
+        parameters.change(ROLE_MODEL, ParameterValue.of("SINGLE"));
         Long vetEncounter = openWith("species", "SHORT_TEXT");
 
         openClinic("TEST-API-DENTAL");
         Tenant dental = clinic();
+        parameters.change(ROLE_MODEL, ParameterValue.of("SINGLE"));
         Long dentalEncounter = openWith("tooth", "INTEGER");
 
         bindTenant(vet);

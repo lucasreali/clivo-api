@@ -64,6 +64,24 @@ class CustomerHistoryTest extends EncounterFixture {
         assertThat(onlyEntrySeenBy(Role.RECEPTION).clinicalRecord()).isPresent();
     }
 
+    @Test
+    void readingOneEncounterByIdObeysTheSameScopeAsTheHistory() {
+        Long id = completedEncounterSaying("Dor no dente 26");
+
+        assertThat(encounters.findOne(id, Role.RECEPTION).clinicalRecord()).isEmpty();
+        assertThat(encounters.findOne(id, Role.PRACTITIONER).clinicalRecord()).isPresent();
+    }
+
+    @Test
+    void completingAnEncounterAnswersReceptionWithoutTheClinicalContent() {
+        Long id = encounters
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .id();
+        encounters.fill(id, RecordValues.of(Map.of("complaint", "Dor no dente 26")));
+
+        assertThat(encounters.complete(id, Role.RECEPTION).clinicalRecord()).isEmpty();
+    }
+
     private EncounterSnapshot onlyEntrySeenBy(Role viewer) {
         List<EncounterSnapshot> history = encounters.historyOf(customerId(), viewer);
         return history.getFirst();
@@ -74,6 +92,6 @@ class CustomerHistoryTest extends EncounterFixture {
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", complaint)));
-        return encounters.complete(id).id();
+        return completeAsPractitioner(id).id();
     }
 }

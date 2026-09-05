@@ -52,7 +52,7 @@ class EncounterServiceTest extends EncounterFixture {
 
         encounters.fill(draft.id(), RecordValues.of(Map.of("complaint", "Dor no dente 26")));
 
-        assertThat(fieldValuesOf(encounters.findOne(draft.id())))
+        assertThat(fieldValuesOf(reopen(draft.id())))
                 .containsEntry("complaint", "Dor no dente 26");
     }
 
@@ -60,7 +60,7 @@ class EncounterServiceTest extends EncounterFixture {
     void completingAnEncounterStampsItsCompletion() {
         EncounterSnapshot draft = openWalkIn();
 
-        EncounterSnapshot completed = encounters.complete(draft.id());
+        EncounterSnapshot completed = completeAsPractitioner(draft.id());
 
         assertThat(completed.isCompleted()).isTrue();
         assertThat(completed.completedAt()).isNotNull();
@@ -69,7 +69,7 @@ class EncounterServiceTest extends EncounterFixture {
     @Test
     void aCompletedEncounterCannotBeFilledInAgain() {
         EncounterSnapshot draft = openWalkIn();
-        encounters.complete(draft.id());
+        completeAsPractitioner(draft.id());
 
         assertThatThrownBy(() -> encounters.fill(draft.id(), RecordValues.of(Map.of("complaint", "Tarde demais"))))
                 .isInstanceOf(BusinessException.class)
@@ -80,12 +80,12 @@ class EncounterServiceTest extends EncounterFixture {
     void aCompletedEncounterKeepsTheTemplateVersionItWasFilledWith() {
         EncounterSnapshot draft = openWalkIn();
         encounters.fill(draft.id(), RecordValues.of(Map.of("complaint", "Dor no dente 26")));
-        encounters.complete(draft.id());
+        completeAsPractitioner(draft.id());
 
         Long secondVersionId = templates.redefine(templateId, complaintWith("history", "LONG_TEXT")).id();
         templates.publish(secondVersionId);
 
-        RecordSheet reopened = encounters.findOne(draft.id()).sheet();
+        RecordSheet reopened = reopen(draft.id()).sheet();
 
         assertThat(reopened.templateId()).isEqualTo(templateId);
         assertThat(reopened.templateVersion()).isEqualTo(1);
@@ -98,7 +98,7 @@ class EncounterServiceTest extends EncounterFixture {
         EncounterSnapshot draft = openWalkIn();
         Tenant other = createTenant("TEST-ENCOUNTER-OTHER");
 
-        assertThatThrownBy(() -> valueInTenant(other, () -> encounters.findOne(draft.id())))
+        assertThatThrownBy(() -> valueInTenant(other, () -> reopen(draft.id())))
                 .hasMessageContaining("Encounter");
     }
 

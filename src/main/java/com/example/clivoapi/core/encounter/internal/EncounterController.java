@@ -35,8 +35,8 @@ class EncounterController {
     }
 
     @GetMapping("/{id}")
-    EncounterView findOne(@PathVariable Long id) {
-        return EncounterView.of(encounters.findOne(id));
+    EncounterView findOne(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
+        return EncounterView.of(encounters.findOne(id, roleOf(viewer)));
     }
 
     @GetMapping
@@ -53,8 +53,8 @@ class EncounterController {
     }
 
     @PostMapping("/{id}/completion")
-    EncounterView complete(@PathVariable Long id) {
-        return EncounterView.of(encounters.complete(id));
+    EncounterView complete(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
+        return EncounterView.of(encounters.complete(id, roleOf(viewer)));
     }
 
     private Role roleOf(AuthenticatedUser viewer) {

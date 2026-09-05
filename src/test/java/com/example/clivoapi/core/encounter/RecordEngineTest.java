@@ -40,7 +40,7 @@ class RecordEngineTest extends EncounterFixture {
     void aRequiredFieldLeftEmptyRefusesTheCompletion() {
         Long id = openWith(fullTemplate());
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field weight (Weight) is required");
     }
@@ -50,7 +50,7 @@ class RecordEngineTest extends EncounterFixture {
         Long id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 900, "species", "Cao")));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field weight (Weight) accepts no value above 300");
     }
@@ -60,7 +60,7 @@ class RecordEngineTest extends EncounterFixture {
         Long id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Dragao")));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field species (Species) accepts only one of [Cao, Gato]");
     }
@@ -70,7 +70,7 @@ class RecordEngineTest extends EncounterFixture {
         Long id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "notes", "x".repeat(41))));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field notes (Notes) accepts at most 40 characters");
     }
@@ -80,7 +80,7 @@ class RecordEngineTest extends EncounterFixture {
         Long id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "31/12/2026")));
 
-        assertThatThrownBy(() -> encounters.complete(id))
+        assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field seenOn (Seen on) expects a date written as yyyy-MM-dd");
     }
@@ -90,7 +90,7 @@ class RecordEngineTest extends EncounterFixture {
         Long id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "2026-12-31")));
 
-        assertThat(encounters.complete(id).isCompleted()).isTrue();
+        assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
     }
 
     @Test

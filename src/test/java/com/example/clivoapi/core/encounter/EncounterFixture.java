@@ -7,6 +7,7 @@ import com.example.clivoapi.configuration.template.FieldContent;
 import com.example.clivoapi.configuration.template.RecordTemplateService;
 import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateContent;
+import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.catalog.CatalogService;
 import com.example.clivoapi.core.catalog.ServiceDetails;
 import com.example.clivoapi.core.catalog.ServiceDuration;
@@ -70,6 +71,14 @@ abstract class EncounterFixture extends DatabaseTest {
 
     protected Tenant clinic() {
         return clinic;
+    }
+
+    protected EncounterSnapshot reopen(Long encounterId) {
+        return encounters.findOne(encounterId, Role.PRACTITIONER);
+    }
+
+    protected EncounterSnapshot completeAsPractitioner(Long encounterId) {
+        return encounters.complete(encounterId, Role.PRACTITIONER);
     }
 
     protected Long customerId() {
