@@ -62,7 +62,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 
 **Fase 7 — Verificação**
 - [X] 7.1 Prova de reuso (`ReuseTest`)
-- [ ] 7.2 Testes de arquitetura
+- [X] 7.2 Testes de arquitetura
 - [ ] 7.3 Cenários
 
 **Entrega da atividade de padrões**
@@ -70,7 +70,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [ ] 2 exemplos de cada, todos funcionais e ligados ao núcleo
 - [ ] 14 classes de domínio com métodos de negócio
 - [X] `ReuseTest` verde nos 3 métodos
-- [ ] `ModularityTest` e `ArchitectureTest` verdes
+- [X] `ModularityTest` e `ArchitectureTest` verdes
 
 ---
 
@@ -480,7 +480,7 @@ Criar `ReuseTest` em `src/test/java/com/example/clivoapi/patterns/`, com um mét
 
 **Nenhum desses testes pode exigir alteração em classe de produção.** É este arquivo que demonstra o reuso; ele vale mais que qualquer diagrama.
 
-### [ ] 7.2 · Testes de arquitetura
+### [X] 7.2 · Testes de arquitetura
 
 `ModularityTest` com `verify()` e `Documenter`. `ArchitectureTest` com ArchUnit provando que `..core..` não acessa `..modules..`.
 
