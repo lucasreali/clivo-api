@@ -41,7 +41,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 **Fase 4 — Atendimento e ficha**
 - [X] 4.1 Atendimento
 - [X] 4.2 **Abstract Factory** — montagem da ficha
-- [ ] 4.3 Componentes especiais
+- [X] 4.3 Componentes especiais
 - [ ] 4.4 Histórico do cliente
 
 **Fase 5 — Financeiro**
@@ -354,7 +354,7 @@ Criar em `patterns/factory`: interface `Field`, `FieldDefinition` (montada a par
 
 **Pronto quando:** duas clínicas com modelos diferentes produzem fichas diferentes pelo mesmo endpoint, e existe teste que acrescenta um tipo de campo dentro do próprio teste e vê a ficha renderizá-lo.
 
-### [ ] 4.3 · Componentes especiais
+### [X] 4.3 · Componentes especiais
 
 Criar em `patterns/factory`: `SpecialComponentFactory` produzindo `Odontogram` e `BodyMap`.
 

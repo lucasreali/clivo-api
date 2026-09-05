@@ -66,13 +66,12 @@ public final class FieldDefinition {
     }
 
     public SheetField renderedWith(RecordValues values) {
+        return renderedAs(fieldType(), values, options());
+    }
+
+    public SheetField renderedAs(String rendering, RecordValues values, List<String> options) {
         return new SheetField(
-                code(),
-                content.label(),
-                fieldType(),
-                content.required(),
-                options(),
-                valueIn(values).orElse(null));
+                code(), content.label(), rendering, content.required(), options, valueIn(values).orElse(null));
     }
 
     public BusinessException refusal(String problem) {

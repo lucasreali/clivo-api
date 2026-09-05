@@ -80,7 +80,16 @@ class ModuleActivationServiceTest extends DatabaseTest {
 
         List<ModuleStatus> catalog = valueInTenant(clinic, modules::statusOfAll);
 
-        assertThat(catalog).hasSize(7).noneMatch(ModuleStatus::active);
+        assertThat(catalog).noneMatch(ModuleStatus::active);
+        assertThat(catalog.stream().map(ModuleStatus::code).map(ModuleCode::value).toList())
+                .contains(
+                        "dependent",
+                        "sessionpackage",
+                        "inventory",
+                        "batch",
+                        "insurance",
+                        "notification",
+                        "commission");
         assertThat(catalog)
                 .filteredOn(status -> status.code().equals(BATCH))
                 .singleElement()
