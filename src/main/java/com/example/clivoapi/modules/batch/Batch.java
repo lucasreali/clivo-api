@@ -1,6 +1,7 @@
 package com.example.clivoapi.modules.batch;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.extension.BatchCandidate;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.modules.inventory.Product;
 import com.example.clivoapi.modules.inventory.Quantity;
@@ -97,6 +98,10 @@ public class Batch extends TenantScopedEntity {
             throw new BusinessException("batch %s was already discarded".formatted(code));
         }
         status = BatchStatus.DISCARDED;
+    }
+
+    public BatchCandidate asCandidate() {
+        return new BatchCandidate(id, code.asText(), expiresOn, isExpired(LocalDate.now()));
     }
 
     public BatchSnapshot snapshot() {

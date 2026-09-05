@@ -53,7 +53,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.1 Dependentes
 - [X] 6.2 Estoque
 - [X] 6.3 Lote e validade *(exige 6.2)*
-- [ ] 6.4 **Strategy** — política de lote vencido
+- [X] 6.4 **Strategy** — política de lote vencido
 - [ ] 6.5 **Strategy** — política de acesso por perfil
 - [ ] 6.6 Pacotes de sessões
 - [ ] 6.7 Convênios
@@ -424,7 +424,7 @@ Implementar `StockDispenser` em `common/extension` para o atendimento acionar a 
 
 **Como:** exige o módulo de estoque ativo. Lote vencido aparece para conferência de descarte mas não é selecionável quando o bloqueio está ligado.
 
-### [ ] 6.4 · Strategy — política de lote vencido
+### [X] 6.4 · Strategy — política de lote vencido
 
 **Objetivo do padrão:** uma política nova deve exigir **criar uma classe e nada mais**.
 

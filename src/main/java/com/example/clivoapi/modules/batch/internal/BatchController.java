@@ -3,7 +3,9 @@ package com.example.clivoapi.modules.batch.internal;
 import com.example.clivoapi.common.extension.RequiresModule;
 import com.example.clivoapi.modules.batch.BatchService;
 import com.example.clivoapi.modules.batch.BatchSnapshot;
+import com.example.clivoapi.modules.inventory.Quantity;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,11 @@ class BatchController {
     @GetMapping("/api/products/{productId}/batches")
     List<BatchView> of(@PathVariable Long productId) {
         return viewsOf(batches.of(productId));
+    }
+
+    @GetMapping("/api/products/{productId}/batches/selection")
+    BatchChoiceView selectFor(@PathVariable Long productId, @RequestParam BigDecimal quantity) {
+        return BatchChoiceView.of(batches.selectFor(productId, new Quantity(quantity)));
     }
 
     @GetMapping("/api/batches/expiring")

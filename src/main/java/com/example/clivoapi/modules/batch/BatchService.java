@@ -2,16 +2,21 @@ package com.example.clivoapi.modules.batch;
 
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
+import com.example.clivoapi.common.extension.BatchCandidates;
+import com.example.clivoapi.common.extension.BatchChoice;
 import com.example.clivoapi.common.extension.ClinicParameters;
+import com.example.clivoapi.common.extension.ExpiredBatchPolicy;
 import com.example.clivoapi.common.extension.ParameterCode;
 import com.example.clivoapi.modules.batch.internal.BatchRepository;
 import com.example.clivoapi.modules.inventory.InventoryService;
 import com.example.clivoapi.modules.inventory.MovementReason;
 import com.example.clivoapi.modules.inventory.Product;
+import com.example.clivoapi.modules.inventory.Quantity;
 import com.example.clivoapi.modules.inventory.StockEntry;
 import com.example.clivoapi.modules.inventory.StockMovementType;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +26,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class BatchService {
 
     private static final ParameterCode EXPIRY_ALERT_DAYS = new ParameterCode("expiry_alert_days");
+    private static final ParameterCode BLOCK_EXPIRED_BATCH = new ParameterCode("block_expired_batch");
 
     private final BatchRepository batches;
     private final InventoryService inventory;
     private final ClinicParameters parameters;
+    private final Map<String, ExpiredBatchPolicy> policies;
 
-    BatchService(BatchRepository batches, InventoryService inventory, ClinicParameters parameters) {
+    BatchService(
+            BatchRepository batches,
+            InventoryService inventory,
+            ClinicParameters parameters,
+            Map<String, ExpiredBatchPolicy> policies) {
         this.batches = batches;
         this.inventory = inventory;
         this.parameters = parameters;
+        this.policies = Map.copyOf(policies);
+    }
+
+    @Transactional(readOnly = true)
+    public BatchChoice selectFor(Long productId, Quantity quantity) {
+        Product product = batchControlled(productId);
+        return currentPolicy().chooseFrom(candidatesOf(product, quantity));
     }
 
     public BatchSnapshot receive(Long productId, BatchDetails details) {
@@ -72,6 +90,22 @@ public class BatchService {
     @Transactional(readOnly = true)
     public List<Batch> usableFor(Long productId) {
         return batches.findByProductIdAndStatusOrderByExpiresOnAsc(productId, BatchStatus.AVAILABLE);
+    }
+
+    private ExpiredBatchPolicy currentPolicy() {
+        String key = parameters.valueOf(BLOCK_EXPIRED_BATCH).asText();
+        return Optional.ofNullable(policies.get(key))
+                .orElseThrow(() -> new BusinessException(
+                        "no expired batch policy is registered for block_expired_batch %s".formatted(key)));
+    }
+
+    private BatchCandidates candidatesOf(Product product, Quantity quantity) {
+        return new BatchCandidates(
+                product.name(),
+                usableFor(product.id()).stream()
+                        .filter(batch -> batch.hasAvailable(quantity))
+                        .map(Batch::asCandidate)
+                        .toList());
     }
 
     private int alertWindow(Integer days) {
