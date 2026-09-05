@@ -2,7 +2,8 @@
     "common",
     "configuration",
     "patterns",
-    "core :: customer"
+    "core :: customer",
+    "core :: encounter"
 })
 package com.example.clivoapi.modules;
 

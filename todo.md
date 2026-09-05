@@ -51,7 +51,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 
 **Fase 6 — Módulos**
 - [X] 6.1 Dependentes
-- [ ] 6.2 Estoque
+- [X] 6.2 Estoque
 - [ ] 6.3 Lote e validade *(exige 6.2)*
 - [ ] 6.4 **Strategy** — política de lote vencido
 - [ ] 6.5 **Strategy** — política de acesso por perfil
@@ -412,7 +412,7 @@ Cada módulo é uma fatia independente. Faça um de cada vez. Todos seguem a mes
 
 `Dependent` com `ageInYears()`. Atributos específicos do tipo em JSON, para servir a animal sob tutor, menor sob responsável e assistido sob cuidador sem fechar a estrutura.
 
-### [ ] 6.2 · Estoque
+### [X] 6.2 · Estoque
 
 `Product` com `isBelowMinimum()` e `decreaseStock(quantity)`. Movimentação de entrada, saída e ajuste, sempre com autoria.
 

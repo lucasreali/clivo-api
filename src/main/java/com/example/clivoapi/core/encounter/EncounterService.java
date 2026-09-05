@@ -4,9 +4,11 @@ import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.EncounterCompletionListener;
 import com.example.clivoapi.common.extension.RecordAssembly;
 import com.example.clivoapi.common.extension.RecordValues;
+import com.example.clivoapi.common.extension.StockDispenser;
 import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.access.RoleAccess;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,18 +22,25 @@ public class EncounterService {
     private final RecordAssembly records;
     private final RoleAccess roleAccess;
     private final EncounterCompletion completion;
+    private final EncounterSupplies supplies;
 
     EncounterService(
             EncounterRepository encounters,
             EncounterAssembler assembler,
             RecordAssembly records,
             RoleAccess roleAccess,
-            List<EncounterCompletionListener> listeners) {
+            List<EncounterCompletionListener> listeners,
+            List<StockDispenser> dispensers) {
         this.encounters = encounters;
         this.assembler = assembler;
         this.records = records;
         this.roleAccess = roleAccess;
         this.completion = new EncounterCompletion(listeners);
+        this.supplies = new EncounterSupplies(dispensers);
+    }
+
+    public void useSupplies(Long id, Long productId, BigDecimal quantity) {
+        supplies.dispense(encounterOf(id).consume(productId, quantity));
     }
 
     public EncounterSnapshot open(EncounterOpening opening) {

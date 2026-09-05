@@ -1,0 +1,2 @@
+ALTER TABLE product
+    ADD COLUMN on_hand NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (on_hand >= 0);

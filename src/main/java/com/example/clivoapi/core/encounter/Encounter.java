@@ -5,6 +5,7 @@ import com.example.clivoapi.common.extension.CompletedEncounter;
 import com.example.clivoapi.common.extension.RecordFilling;
 import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
+import com.example.clivoapi.common.extension.SuppliesUsed;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.core.catalog.Service;
 import com.example.clivoapi.core.customer.Customer;
@@ -21,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -112,6 +114,11 @@ public class Encounter extends TenantScopedEntity {
 
     public boolean isCompleted() {
         return status == EncounterStatus.COMPLETED;
+    }
+
+    public SuppliesUsed consume(Long productId, BigDecimal quantity) {
+        requireOpen("supplied");
+        return new SuppliesUsed(id, productId, quantity);
     }
 
     public CompletedEncounter completion() {
