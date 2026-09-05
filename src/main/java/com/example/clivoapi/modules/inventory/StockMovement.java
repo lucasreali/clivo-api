@@ -27,6 +27,9 @@ public class StockMovement extends TenantScopedEntity {
     @JoinColumn(name = "product_id", nullable = false, updatable = false)
     private Product product;
 
+    @Column(name = "batch_id", updatable = false)
+    private Long batchId;
+
     @Column(name = "encounter_id", updatable = false)
     private Long encounterId;
 
@@ -69,6 +72,12 @@ public class StockMovement extends TenantScopedEntity {
 
     public static StockMovement dispensedIn(Product product, Long encounterId, Quantity quantity, Long recordedBy) {
         return new StockMovement(product, encounterId, quantity, recordedBy);
+    }
+
+    public static StockMovement discarded(Product product, Long batchId, StockEntry entry, Long recordedBy) {
+        StockMovement movement = new StockMovement(product, entry, recordedBy);
+        movement.batchId = batchId;
+        return movement;
     }
 
     public Long id() {

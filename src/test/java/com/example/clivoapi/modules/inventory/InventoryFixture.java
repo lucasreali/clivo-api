@@ -35,7 +35,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-abstract class InventoryFixture extends DatabaseTest {
+public abstract class InventoryFixture extends DatabaseTest {
 
     protected static final ModuleCode INVENTORY = new ModuleCode("inventory");
 
@@ -65,8 +65,16 @@ abstract class InventoryFixture extends DatabaseTest {
 
     protected Tenant openClinicWithInventory(String code) {
         Tenant clinic = openClinic(code);
-        modules.activate(INVENTORY);
+        activate(INVENTORY);
         return clinic;
+    }
+
+    protected void activate(ModuleCode module) {
+        modules.activate(module);
+    }
+
+    protected Long registerProduct(ProductDetails details) {
+        return inventory.register(details).id();
     }
 
     protected Tenant openClinic(String code) {

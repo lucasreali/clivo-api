@@ -47,6 +47,13 @@ public class InventoryService {
         return product.snapshot();
     }
 
+    public ProductSnapshot discardFromBatch(Long productId, Long batchId, StockEntry entry) {
+        Product product = productOf(productId);
+        entry.applyTo(product);
+        movements.save(StockMovement.discarded(products.save(product), batchId, entry, author()));
+        return product.snapshot();
+    }
+
     public void dispense(SuppliesUsed supplies) {
         Product product = productOf(supplies.productId());
         Quantity quantity = new Quantity(supplies.quantity());
