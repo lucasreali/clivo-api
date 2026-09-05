@@ -118,7 +118,7 @@ class EncounterApiTest extends EncounterFixture {
     private Long openWith(String fieldCode, String fieldType) {
         Long templateId = publishTemplate("Consultation", complaintWith(fieldCode, fieldType));
         return encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
     }
 }

@@ -94,7 +94,7 @@ class SpecialComponentTest extends EncounterFixture {
     private Long openWith(TemplateContent content) {
         Long templateId = publishTemplate("Dental chart", content);
         return encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
     }
 

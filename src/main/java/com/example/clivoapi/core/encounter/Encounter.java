@@ -5,11 +5,10 @@ import com.example.clivoapi.common.extension.RecordFilling;
 import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
+import com.example.clivoapi.core.catalog.Service;
 import com.example.clivoapi.core.customer.Customer;
 import com.example.clivoapi.core.practitioner.Practitioner;
 import com.example.clivoapi.core.scheduling.Appointment;
-import com.example.clivoapi.core.scheduling.AppointmentParticipants;
-import com.example.clivoapi.core.scheduling.AppointmentSnapshot;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,6 +46,10 @@ public class Encounter extends TenantScopedEntity {
     @JoinColumn(name = "practitioner_id", nullable = false)
     private Practitioner practitioner;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "service_id", nullable = false)
+    private Service service;
+
     @Column(name = "record_template_id", nullable = false, updatable = false)
     private Long recordTemplateId;
 
@@ -67,17 +70,23 @@ public class Encounter extends TenantScopedEntity {
     protected Encounter() {
     }
 
-    public Encounter(Customer customer, Practitioner practitioner, Long recordTemplateId) {
+    public Encounter(Customer customer, Practitioner practitioner, Service service, Long recordTemplateId) {
         this.customer = customer;
         this.practitioner = practitioner;
+        this.service = service;
         this.recordTemplateId = recordTemplateId;
         this.fieldValues = Map.of();
         this.startedAt = Instant.now();
         this.status = EncounterStatus.DRAFT;
     }
 
-    public Encounter(Appointment appointment, Customer customer, Practitioner practitioner, Long recordTemplateId) {
-        this(customer, practitioner, recordTemplateId);
+    public Encounter(
+            Appointment appointment,
+            Customer customer,
+            Practitioner practitioner,
+            Service service,
+            Long recordTemplateId) {
+        this(customer, practitioner, service, recordTemplateId);
         this.appointment = appointment;
     }
 
@@ -119,20 +128,12 @@ public class Encounter extends TenantScopedEntity {
                 customer.name(),
                 practitioner.id(),
                 practitioner.name(),
-                booking().map(AppointmentParticipants::serviceId).orElse(null),
-                booking().map(AppointmentParticipants::serviceName).orElse(null));
+                service.id(),
+                service.name());
     }
 
     private Optional<Long> appointmentId() {
-        return booked().map(Appointment::id);
-    }
-
-    private Optional<AppointmentParticipants> booking() {
-        return booked().map(Appointment::snapshot).map(AppointmentSnapshot::participants);
-    }
-
-    private Optional<Appointment> booked() {
-        return Optional.ofNullable(appointment);
+        return Optional.ofNullable(appointment).map(Appointment::id);
     }
 
     private void requireOpen(String operation) {

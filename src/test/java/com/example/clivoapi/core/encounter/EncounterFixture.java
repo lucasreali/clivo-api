@@ -89,6 +89,10 @@ abstract class EncounterFixture extends DatabaseTest {
         return practitionerId;
     }
 
+    protected Long serviceId() {
+        return serviceId;
+    }
+
     protected Long publishTemplate(String name, TemplateContent content) {
         Long draftId = templates.draft(name, null, content).id();
         return templates.publish(draftId).id();

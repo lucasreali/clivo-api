@@ -106,7 +106,7 @@ class RecordEngineTest extends EncounterFixture {
 
     private Long openWith(TemplateContent content) {
         Long templateId = publishTemplate("Consultation", content);
-        return encounters.open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId)).id();
+        return encounters.open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId)).id();
     }
 
     private TemplateContent fullTemplate() {

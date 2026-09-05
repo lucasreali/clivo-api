@@ -3,7 +3,8 @@ package com.example.clivoapi.core.encounter;
 import com.example.clivoapi.common.exception.BusinessException;
 import java.util.Optional;
 
-public record EncounterOpening(Long appointmentId, Long customerId, Long practitionerId, Long recordTemplateId) {
+public record EncounterOpening(
+        Long appointmentId, Long customerId, Long practitionerId, Long serviceId, Long recordTemplateId) {
 
     public EncounterOpening {
         require(recordTemplateId, "record template");
@@ -11,13 +12,15 @@ public record EncounterOpening(Long appointmentId, Long customerId, Long practit
 
     public static EncounterOpening forAppointment(Long appointmentId, Long recordTemplateId) {
         require(appointmentId, "appointment");
-        return new EncounterOpening(appointmentId, null, null, recordTemplateId);
+        return new EncounterOpening(appointmentId, null, null, null, recordTemplateId);
     }
 
-    public static EncounterOpening walkIn(Long customerId, Long practitionerId, Long recordTemplateId) {
+    public static EncounterOpening walkIn(
+            Long customerId, Long practitionerId, Long serviceId, Long recordTemplateId) {
         require(customerId, "customer");
         require(practitionerId, "practitioner");
-        return new EncounterOpening(null, customerId, practitionerId, recordTemplateId);
+        require(serviceId, "service");
+        return new EncounterOpening(null, customerId, practitionerId, serviceId, recordTemplateId);
     }
 
     public Optional<Long> appointment() {

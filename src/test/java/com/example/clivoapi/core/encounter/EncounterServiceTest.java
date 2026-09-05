@@ -116,6 +116,6 @@ class EncounterServiceTest extends EncounterFixture {
     }
 
     private EncounterSnapshot openWalkIn() {
-        return encounters.open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId));
+        return encounters.open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId));
     }
 }

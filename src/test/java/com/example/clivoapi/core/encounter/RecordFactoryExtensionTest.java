@@ -99,7 +99,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
     void theBuiltInFieldTypesKeepWorkingBesideTheNewOne() {
         Long templateId = publishTemplate("Wellbeing", moodAndNotes());
         Long id = encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
 
         encounters.fill(id, RecordValues.of(Map.of("mood", "fine", "notes", "Tudo certo")));
@@ -110,7 +110,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
     private Long openWithMood() {
         Long templateId = publishTemplate("Mood", complaintWith("mood", EMOJI_SCALE));
         return encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
     }
 

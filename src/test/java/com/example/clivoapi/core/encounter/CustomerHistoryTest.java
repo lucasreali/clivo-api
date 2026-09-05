@@ -75,7 +75,7 @@ class CustomerHistoryTest extends EncounterFixture {
     @Test
     void completingAnEncounterAnswersReceptionWithoutTheClinicalContent() {
         Long id = encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", "Dor no dente 26")));
 
@@ -89,7 +89,7 @@ class CustomerHistoryTest extends EncounterFixture {
 
     private Long completedEncounterSaying(String complaint) {
         Long id = encounters
-                .open(EncounterOpening.walkIn(customerId(), practitionerId(), templateId))
+                .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", complaint)));
         return completeAsPractitioner(id).id();

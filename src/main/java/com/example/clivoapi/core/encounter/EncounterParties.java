@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.encounter;
 
+import com.example.clivoapi.core.catalog.CatalogService;
+import com.example.clivoapi.core.catalog.Service;
 import com.example.clivoapi.core.customer.Customer;
 import com.example.clivoapi.core.customer.CustomerService;
 import com.example.clivoapi.core.practitioner.Practitioner;
@@ -9,10 +11,12 @@ class EncounterParties {
 
     private final CustomerService customers;
     private final PractitionerService practitioners;
+    private final CatalogService catalogue;
 
-    EncounterParties(CustomerService customers, PractitionerService practitioners) {
+    EncounterParties(CustomerService customers, PractitionerService practitioners, CatalogService catalogue) {
         this.customers = customers;
         this.practitioners = practitioners;
+        this.catalogue = catalogue;
     }
 
     Customer customer(Long id) {
@@ -21,5 +25,9 @@ class EncounterParties {
 
     Practitioner practitioner(Long id) {
         return practitioners.reference(id);
+    }
+
+    Service service(Long id) {
+        return catalogue.reference(id);
     }
 }
