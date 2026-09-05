@@ -58,7 +58,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.6 Pacotes de sessões
 - [X] 6.7 Convênios
 - [X] 6.8 Notificações
-- [ ] 6.9 Comissionamento
+- [X] 6.9 Comissionamento
 
 **Fase 7 — Verificação**
 - [ ] 7.1 Prova de reuso (`ReuseTest`)
@@ -462,7 +462,7 @@ Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPol
 
 **Como:** o envio usa a antecedência de `reminder_lead_hours`. O gateway de mensagens é ator externo; abstraia atrás de uma interface e implemente uma versão de log por enquanto.
 
-### [ ] 6.9 · Comissionamento
+### [X] 6.9 · Comissionamento
 
 `Commission` com `calculate(Money invoiceAmount)`. Apuração por período com fechamento.
 

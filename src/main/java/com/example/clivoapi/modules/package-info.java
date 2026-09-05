@@ -6,6 +6,7 @@
     "core :: catalog",
     "core :: customer",
     "core :: encounter",
+    "core :: practitioner",
     "core :: scheduling"
 })
 package com.example.clivoapi.modules;
