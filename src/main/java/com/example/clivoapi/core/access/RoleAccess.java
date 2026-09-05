@@ -1,6 +1,7 @@
 package com.example.clivoapi.core.access;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.exception.ForbiddenOperationException;
 import com.example.clivoapi.common.extension.ClinicParameters;
 import com.example.clivoapi.common.extension.ParameterCode;
 import com.example.clivoapi.common.extension.RoleAccessPolicy;
@@ -23,6 +24,14 @@ public class RoleAccess {
 
     public boolean allowsClinicalRecord(Role role) {
         return currentPolicy().allowsClinicalRecord(role.asViewer());
+    }
+
+    public void requireFinancialReport(Role role) {
+        if (currentPolicy().allowsFinancialReport(role.asViewer())) {
+            return;
+        }
+        throw new ForbiddenOperationException(
+                "the financial report is restricted to management in this clinic");
     }
 
     private RoleAccessPolicy currentPolicy() {

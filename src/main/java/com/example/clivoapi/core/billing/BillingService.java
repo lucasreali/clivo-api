@@ -4,6 +4,8 @@ import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.CompletedEncounter;
 import com.example.clivoapi.common.money.Money;
+import com.example.clivoapi.core.access.Role;
+import com.example.clivoapi.core.access.RoleAccess;
 import com.example.clivoapi.core.billing.internal.InvoiceRepository;
 import java.util.List;
 import org.springframework.data.domain.AuditorAware;
@@ -17,11 +19,29 @@ public class BillingService {
     private final InvoiceRepository invoices;
     private final InvoiceAssembler assembler;
     private final AuditorAware<Long> auditor;
+    private final RoleAccess roleAccess;
 
-    BillingService(InvoiceRepository invoices, InvoiceAssembler assembler, AuditorAware<Long> auditor) {
+    BillingService(
+            InvoiceRepository invoices,
+            InvoiceAssembler assembler,
+            AuditorAware<Long> auditor,
+            RoleAccess roleAccess) {
         this.invoices = invoices;
         this.assembler = assembler;
         this.auditor = auditor;
+        this.roleAccess = roleAccess;
+    }
+
+    @Transactional(readOnly = true)
+    public BillingReport reportOf(ReportPeriod period, Role viewer) {
+        roleAccess.requireFinancialReport(viewer);
+        return BillingReport.of(period, snapshotsWithin(period));
+    }
+
+    private List<InvoiceSnapshot> snapshotsWithin(ReportPeriod period) {
+        return invoices.findByDueDateBetweenOrderByDueDateAsc(period.from(), period.to()).stream()
+                .map(Invoice::snapshot)
+                .toList();
     }
 
     public InvoiceSnapshot issueFor(CompletedEncounter completed) {

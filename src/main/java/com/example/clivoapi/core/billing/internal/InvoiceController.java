@@ -1,7 +1,13 @@
 package com.example.clivoapi.core.billing.internal;
 
+import com.example.clivoapi.core.access.AuthenticatedUser;
+import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.billing.BillingService;
+import com.example.clivoapi.core.billing.ReportPeriod;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.Optional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +34,14 @@ class InvoiceController {
         return billing.findByCustomer(customerId).stream().map(InvoiceView::of).toList();
     }
 
+    @GetMapping("/report")
+    BillingReportView report(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to,
+            @AuthenticationPrincipal AuthenticatedUser viewer) {
+        return BillingReportView.of(billing.reportOf(new ReportPeriod(from, to), roleOf(viewer)));
+    }
+
     @GetMapping("/{id}")
     InvoiceView findOne(@PathVariable Long id) {
         return InvoiceView.of(billing.findOne(id));
@@ -48,5 +62,9 @@ class InvoiceController {
     InvoiceView refund(
             @PathVariable Long id, @PathVariable Long paymentId, @RequestBody RefundRequest request) {
         return InvoiceView.of(billing.refund(id, paymentId, request.toReason()));
+    }
+
+    private Role roleOf(AuthenticatedUser viewer) {
+        return Optional.ofNullable(viewer).map(AuthenticatedUser::role).orElse(Role.RECEPTION);
     }
 }

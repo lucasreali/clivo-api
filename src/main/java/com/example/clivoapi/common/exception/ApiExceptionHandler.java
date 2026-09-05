@@ -26,6 +26,12 @@ public class ApiExceptionHandler {
         return ErrorResponse.of(HttpStatus.NOT_FOUND, exception.getMessage(), pathOf(request));
     }
 
+    @ExceptionHandler(ForbiddenOperationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbiddenOperation(ForbiddenOperationException exception, HttpServletRequest request) {
+        return ErrorResponse.of(HttpStatus.FORBIDDEN, exception.getMessage(), pathOf(request));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidPayload(MethodArgumentNotValidException exception, HttpServletRequest request) {

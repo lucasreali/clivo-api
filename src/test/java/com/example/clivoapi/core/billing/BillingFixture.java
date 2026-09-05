@@ -109,18 +109,18 @@ abstract class BillingFixture extends DatabaseTest {
     }
 
     private void signInAsManager() {
-        UserSummary manager = access.registerIn(
+        signInAs(Role.MANAGER, "gestora@clivo.test");
+    }
+
+    protected void signInAs(Role role, String email) {
+        UserSummary user = access.registerIn(
                 clinic,
                 new UserRegistration(
-                        "Marina Gestora",
-                        new EmailAddress("gestora@clivo.test"),
-                        new RawPassword("segredo123"),
-                        Role.MANAGER));
-        AuthenticatedUser identity =
-                new AuthenticatedUser(manager.id(), clinic.id(), manager.name(), Role.MANAGER);
+                        role.name(), new EmailAddress(email), new RawPassword("segredo123"), role));
+        AuthenticatedUser identity = new AuthenticatedUser(user.id(), clinic.id(), user.name(), role);
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(
-                        identity, null, List.of(new SimpleGrantedAuthority(Role.MANAGER.authority()))));
+                        identity, null, List.of(new SimpleGrantedAuthority(role.authority()))));
     }
 
     private Long publishedTemplate() {

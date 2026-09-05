@@ -12,9 +12,15 @@ public class SegregatedRoleAccessPolicy implements RoleAccessPolicy {
     public static final String SEGREGATED = "SEGREGATED";
 
     private static final Set<String> CLINICAL_ROLES = Set.of(Role.PRACTITIONER.name());
+    private static final Set<String> FINANCIAL_ROLES = Set.of(Role.MANAGER.name());
 
     @Override
     public boolean allowsClinicalRecord(ViewerRole viewer) {
         return viewer.isAnyOf(CLINICAL_ROLES);
+    }
+
+    @Override
+    public boolean allowsFinancialReport(ViewerRole viewer) {
+        return viewer.isAnyOf(FINANCIAL_ROLES);
     }
 }

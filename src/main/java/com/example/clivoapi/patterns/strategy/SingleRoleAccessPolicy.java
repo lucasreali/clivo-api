@@ -13,4 +13,9 @@ public class SingleRoleAccessPolicy implements RoleAccessPolicy {
     public boolean allowsClinicalRecord(ViewerRole viewer) {
         return true;
     }
+
+    @Override
+    public boolean allowsFinancialReport(ViewerRole viewer) {
+        return true;
+    }
 }

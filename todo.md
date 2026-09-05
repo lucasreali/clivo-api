@@ -54,7 +54,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.2 Estoque
 - [X] 6.3 Lote e validade *(exige 6.2)*
 - [X] 6.4 **Strategy** — política de lote vencido
-- [ ] 6.5 **Strategy** — política de acesso por perfil
+- [X] 6.5 **Strategy** — política de acesso por perfil
 - [ ] 6.6 Pacotes de sessões
 - [ ] 6.7 Convênios
 - [ ] 6.8 Notificações
@@ -436,7 +436,7 @@ Esta é a função exclusiva do produto. Capriche.
 
 **Pronto quando:** a mesma operação recusa numa clínica e alerta na outra, e a diferença entre as duas é uma linha na tabela de parâmetros.
 
-### [ ] 6.5 · Strategy — política de acesso por perfil
+### [X] 6.5 · Strategy — política de acesso por perfil
 
 Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPolicy`.
 
