@@ -60,6 +60,11 @@ public class SchedulingService {
     }
 
     @Transactional(readOnly = true)
+    public Appointment reference(Long id) {
+        return book.reference(id);
+    }
+
+    @Transactional(readOnly = true)
     public AppointmentSnapshot findOne(Long id) {
         return book.reference(id).snapshot();
     }

@@ -5,7 +5,8 @@
     "core :: billing",
     "core :: catalog",
     "core :: customer",
-    "core :: encounter"
+    "core :: encounter",
+    "core :: scheduling"
 })
 package com.example.clivoapi.modules;
 

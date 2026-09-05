@@ -24,7 +24,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
-abstract class SchedulingFixture extends DatabaseTest {
+public abstract class SchedulingFixture extends DatabaseTest {
 
     protected static final int SERVICE_MINUTES = 60;
 

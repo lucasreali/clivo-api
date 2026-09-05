@@ -57,7 +57,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.5 **Strategy** — política de acesso por perfil
 - [X] 6.6 Pacotes de sessões
 - [X] 6.7 Convênios
-- [ ] 6.8 Notificações
+- [X] 6.8 Notificações
 - [ ] 6.9 Comissionamento
 
 **Fase 7 — Verificação**
@@ -456,7 +456,7 @@ Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPol
 
 **Como:** implementar um ponto de extensão de ajuste de cobrança, para o percentual entrar sem o financeiro conhecer o módulo.
 
-### [ ] 6.8 · Notificações
+### [X] 6.8 · Notificações
 
 `Notification` com `markAsSent()` e `registerResponse(String)`.
 
