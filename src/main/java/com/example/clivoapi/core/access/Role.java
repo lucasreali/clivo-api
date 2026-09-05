@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.access;
 
+import com.example.clivoapi.common.extension.ViewerRole;
+
 public enum Role {
 
     RECEPTION,
@@ -14,5 +16,9 @@ public enum Role {
 
     public String authority() {
         return "ROLE_" + name();
+    }
+
+    public ViewerRole asViewer() {
+        return new ViewerRole(name());
     }
 }

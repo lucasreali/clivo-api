@@ -2,6 +2,7 @@ package com.example.clivoapi.core.encounter;
 
 import com.example.clivoapi.common.extension.RecordSheet;
 import java.time.Instant;
+import java.util.Optional;
 
 public record EncounterSnapshot(
         Long id,
@@ -13,5 +14,9 @@ public record EncounterSnapshot(
 
     public boolean isCompleted() {
         return status == EncounterStatus.COMPLETED;
+    }
+
+    public Optional<RecordSheet> clinicalRecord() {
+        return Optional.ofNullable(sheet);
     }
 }

@@ -108,6 +108,10 @@ public class Encounter extends TenantScopedEntity {
         return new EncounterSnapshot(id, participants(), sheet, startedAt, completedAt, status);
     }
 
+    public EncounterSnapshot summary() {
+        return snapshotWith(null);
+    }
+
     private EncounterParticipants participants() {
         return new EncounterParticipants(
                 appointmentId().orElse(null),

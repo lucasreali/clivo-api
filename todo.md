@@ -42,7 +42,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 4.1 Atendimento
 - [X] 4.2 **Abstract Factory** — montagem da ficha
 - [X] 4.3 Componentes especiais
-- [ ] 4.4 Histórico do cliente
+- [X] 4.4 Histórico do cliente
 
 **Fase 5 — Financeiro**
 - [ ] 5.1 Cobrança
@@ -362,7 +362,7 @@ Criar em `patterns/factory`: `SpecialComponentFactory` produzindo `Odontogram` e
 
 **Pronto quando:** publicar um modelo com odontograma numa clínica sem o módulo correspondente é recusado.
 
-### [ ] 4.4 · Histórico do cliente
+### [X] 4.4 · Histórico do cliente
 
 Criar em `core/encounter`: endpoint de histórico por cliente, em ordem cronológica reversa.
 

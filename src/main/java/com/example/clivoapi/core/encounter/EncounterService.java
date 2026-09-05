@@ -3,7 +3,10 @@ package com.example.clivoapi.core.encounter;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.RecordAssembly;
 import com.example.clivoapi.common.extension.RecordValues;
+import com.example.clivoapi.core.access.Role;
+import com.example.clivoapi.core.access.RoleAccess;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +17,17 @@ public class EncounterService {
     private final EncounterRepository encounters;
     private final EncounterAssembler assembler;
     private final RecordAssembly records;
+    private final RoleAccess roleAccess;
 
-    EncounterService(EncounterRepository encounters, EncounterAssembler assembler, RecordAssembly records) {
+    EncounterService(
+            EncounterRepository encounters,
+            EncounterAssembler assembler,
+            RecordAssembly records,
+            RoleAccess roleAccess) {
         this.encounters = encounters;
         this.assembler = assembler;
         this.records = records;
+        this.roleAccess = roleAccess;
     }
 
     public EncounterSnapshot open(EncounterOpening opening) {
@@ -41,6 +50,15 @@ public class EncounterService {
     @Transactional(readOnly = true)
     public EncounterSnapshot findOne(Long id) {
         return snapshotOf(encounterOf(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<EncounterSnapshot> historyOf(Long customerId, Role viewer) {
+        List<Encounter> history = encounters.findByCustomerIdOrderByStartedAtDesc(customerId);
+        if (roleAccess.allowsClinicalRecord(viewer)) {
+            return history.stream().map(this::snapshotOf).toList();
+        }
+        return history.stream().map(Encounter::summary).toList();
     }
 
     private EncounterSnapshot snapshotOf(Encounter encounter) {

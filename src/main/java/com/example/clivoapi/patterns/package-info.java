@@ -1,5 +1,6 @@
 @ApplicationModule(allowedDependencies = {
     "common",
+    "core :: access",
     "core :: practitioner",
     "core :: scheduling",
     "configuration :: modules",

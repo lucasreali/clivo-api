@@ -1,7 +1,12 @@
 package com.example.clivoapi.core.encounter.internal;
 
+import com.example.clivoapi.core.access.AuthenticatedUser;
+import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.encounter.EncounterService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +39,14 @@ class EncounterController {
         return EncounterView.of(encounters.findOne(id));
     }
 
+    @GetMapping
+    List<EncounterHistoryView> history(
+            @RequestParam Long customerId, @AuthenticationPrincipal AuthenticatedUser viewer) {
+        return encounters.historyOf(customerId, roleOf(viewer)).stream()
+                .map(EncounterHistoryView::of)
+                .toList();
+    }
+
     @PutMapping("/{id}/record")
     EncounterView fill(@PathVariable Long id, @RequestBody RecordFillingRequest request) {
         return EncounterView.of(encounters.fill(id, request.toValues()));
@@ -41,5 +55,9 @@ class EncounterController {
     @PostMapping("/{id}/completion")
     EncounterView complete(@PathVariable Long id) {
         return EncounterView.of(encounters.complete(id));
+    }
+
+    private Role roleOf(AuthenticatedUser viewer) {
+        return Optional.ofNullable(viewer).map(AuthenticatedUser::role).orElse(Role.RECEPTION);
     }
 }
