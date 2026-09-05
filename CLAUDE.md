@@ -33,3 +33,19 @@ together.
 - Tick the task `[X]` in `todo.md` in the same commit as the code.
 - Include the `.cortex/decisions/` files written for that work; they are
   committed with the code they explain.
+
+### Message format
+
+Commits and branch names follow
+[Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+`<type>[optional scope]: <description>`. The scope is the module the change
+lands in (`billing`, `encounter`, `scheduling`, ...), and the description is
+written in English, in the imperative, saying what the change does for the
+domain — `feat(billing): settle an invoice in full or in part`, not
+`feat(billing): add PaymentService`.
+
+Branches use the same type prefixes: `fix/login-race-condition`.
+
+No AI attribution anywhere in commits, branches or pull requests: no
+"Generated with" badges, no `Co-Authored-By` trailers for agents, nothing
+similar.
