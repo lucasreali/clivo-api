@@ -47,7 +47,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 **Fase 5 — Financeiro**
 - [ ] 5.1 Cobrança
 - [ ] 5.2 Pagamento
-- [ ] 5.3 Ponto de extensão do atendimento
+- [X] 5.3 Ponto de extensão do atendimento
 
 **Fase 6 — Módulos**
 - [ ] 6.1 Dependentes
@@ -394,7 +394,7 @@ Método: `refund(reason)`.
 
 **Pronto quando:** pagamento total e parcial funcionam, e estorno recompõe o saldo.
 
-### [ ] 5.3 · Ponto de extensão do atendimento
+### [X] 5.3 · Ponto de extensão do atendimento
 
 **Objetivo:** o núcleo aciona comportamento de módulo sem conhecê-lo.
 

@@ -1,6 +1,7 @@
 package com.example.clivoapi.core.encounter;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.extension.CompletedEncounter;
 import com.example.clivoapi.common.extension.RecordFilling;
 import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
@@ -111,6 +112,10 @@ public class Encounter extends TenantScopedEntity {
 
     public boolean isCompleted() {
         return status == EncounterStatus.COMPLETED;
+    }
+
+    public CompletedEncounter completion() {
+        return new CompletedEncounter(id, customer.id(), practitioner.id(), service.id());
     }
 
     public EncounterSnapshot snapshotWith(RecordSheet sheet) {
