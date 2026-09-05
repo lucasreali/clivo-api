@@ -30,6 +30,9 @@ public abstract class DatabaseTest {
     void discardTestData() {
         tenantContext.clear();
         jdbcTemplate.update("DELETE FROM sample_entity");
+        jdbcTemplate.update("DELETE FROM payment");
+        jdbcTemplate.update("DELETE FROM invoice_item");
+        jdbcTemplate.update("DELETE FROM invoice");
         jdbcTemplate.update("DELETE FROM encounter");
         jdbcTemplate.update("DELETE FROM template_field");
         jdbcTemplate.update("DELETE FROM template_section");

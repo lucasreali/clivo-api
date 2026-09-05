@@ -45,7 +45,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 4.4 Histórico do cliente
 
 **Fase 5 — Financeiro**
-- [ ] 5.1 Cobrança
+- [X] 5.1 Cobrança
 - [ ] 5.2 Pagamento
 - [X] 5.3 Ponto de extensão do atendimento
 
@@ -374,7 +374,7 @@ Criar em `core/encounter`: endpoint de histórico por cliente, em ordem cronoló
 
 # FASE 5 — Financeiro
 
-### [ ] 5.1 · Cobrança
+### [X] 5.1 · Cobrança
 
 Criar em `core/billing`: `Invoice`, `InvoiceStatus`, serviço, repositório e controller.
 

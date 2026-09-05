@@ -27,6 +27,18 @@ public record Money(@Column(name = "amount", nullable = false, precision = 10, s
         return amount.signum() == 0;
     }
 
+    public Money plus(Money other) {
+        return new Money(amount.add(other.amount));
+    }
+
+    public Money minus(Money other) {
+        return new Money(amount.subtract(other.amount));
+    }
+
+    public boolean isGreaterThan(Money other) {
+        return amount.compareTo(other.amount) > 0;
+    }
+
     private static BigDecimal nonNegative(BigDecimal amount) {
         if (amount == null) {
             throw new BusinessException("an amount is required");
