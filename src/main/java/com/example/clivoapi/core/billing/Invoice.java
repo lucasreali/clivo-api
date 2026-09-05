@@ -1,6 +1,9 @@
 package com.example.clivoapi.core.billing;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.extension.BillableEncounter;
+import com.example.clivoapi.common.extension.CompletedEncounter;
+import com.example.clivoapi.common.extension.InvoiceAdjustment;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.core.catalog.Service;
@@ -127,6 +130,22 @@ public class Invoice extends TenantScopedEntity {
         discountReason = "fully covered by %s".formatted(source);
         netAmount = Money.zero();
         refreshStatus();
+    }
+
+    public void adjustBy(InvoiceAdjustment adjustment) {
+        requireOpen("adjusted");
+        Money reduced = discount.plus(adjustment.reduction());
+        requireWithinGross(reduced);
+        coverage = InvoiceCoverage.of(adjustment.coverage());
+        discount = reduced;
+        discountReason = adjustment.reason();
+        netAmount = calculateNetAmount();
+        refreshStatus();
+    }
+
+    public BillableEncounter billableAs(CompletedEncounter completed) {
+        return new BillableEncounter(
+                completed.encounterId(), completed.customerId(), completed.serviceId(), grossAmount);
     }
 
     public void settle(PaymentDetails details, Long recordedBy) {

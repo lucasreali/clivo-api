@@ -56,7 +56,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.4 **Strategy** — política de lote vencido
 - [X] 6.5 **Strategy** — política de acesso por perfil
 - [X] 6.6 Pacotes de sessões
-- [ ] 6.7 Convênios
+- [X] 6.7 Convênios
 - [ ] 6.8 Notificações
 - [ ] 6.9 Comissionamento
 
@@ -450,7 +450,7 @@ Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPol
 
 **Como:** um atendimento consome no máximo uma sessão. Implementar `EncounterCompletionListener` para o abatimento acontecer sozinho.
 
-### [ ] 6.7 · Convênios
+### [X] 6.7 · Convênios
 
 `InsurancePlan` com `reimbursementFor(Money grossAmount)` e `CustomerInsurance` ligando cliente e plano.
 

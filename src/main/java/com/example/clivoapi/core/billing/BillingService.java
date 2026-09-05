@@ -3,6 +3,7 @@ package com.example.clivoapi.core.billing;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.CompletedEncounter;
+import com.example.clivoapi.common.extension.InvoiceAdjuster;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.access.RoleAccess;
@@ -20,16 +21,19 @@ public class BillingService {
     private final InvoiceAssembler assembler;
     private final AuditorAware<Long> auditor;
     private final RoleAccess roleAccess;
+    private final InvoiceAdjustments adjustments;
 
     BillingService(
             InvoiceRepository invoices,
             InvoiceAssembler assembler,
             AuditorAware<Long> auditor,
-            RoleAccess roleAccess) {
+            RoleAccess roleAccess,
+            List<InvoiceAdjuster> adjusters) {
         this.invoices = invoices;
         this.assembler = assembler;
         this.auditor = auditor;
         this.roleAccess = roleAccess;
+        this.adjustments = new InvoiceAdjustments(adjusters);
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +49,9 @@ public class BillingService {
     }
 
     public InvoiceSnapshot issueFor(CompletedEncounter completed) {
-        return invoices.save(assembler.assemble(completed)).snapshot();
+        Invoice invoice = assembler.assemble(completed);
+        adjustments.applyTo(invoice, completed);
+        return invoices.save(invoice).snapshot();
     }
 
     public InvoiceSnapshot coverByPackage(Long encounterId) {
