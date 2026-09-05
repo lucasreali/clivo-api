@@ -1,0 +1,115 @@
+package com.example.clivoapi.core.encounter;
+
+import com.example.clivoapi.common.DatabaseTest;
+import com.example.clivoapi.common.money.Money;
+import com.example.clivoapi.common.tenant.Tenant;
+import com.example.clivoapi.configuration.template.FieldContent;
+import com.example.clivoapi.configuration.template.RecordTemplateService;
+import com.example.clivoapi.configuration.template.SectionContent;
+import com.example.clivoapi.configuration.template.TemplateContent;
+import com.example.clivoapi.core.catalog.CatalogService;
+import com.example.clivoapi.core.catalog.ServiceDetails;
+import com.example.clivoapi.core.catalog.ServiceDuration;
+import com.example.clivoapi.core.customer.ContactDetails;
+import com.example.clivoapi.core.customer.CustomerDetails;
+import com.example.clivoapi.core.customer.CustomerService;
+import com.example.clivoapi.core.customer.NationalId;
+import com.example.clivoapi.core.practitioner.AvailabilityPeriod;
+import com.example.clivoapi.core.practitioner.PractitionerDetails;
+import com.example.clivoapi.core.practitioner.PractitionerService;
+import com.example.clivoapi.core.practitioner.TimeRange;
+import com.example.clivoapi.core.practitioner.Weekday;
+import com.example.clivoapi.core.practitioner.WeeklySchedule;
+import com.example.clivoapi.core.scheduling.AppointmentBooking;
+import com.example.clivoapi.core.scheduling.SchedulingService;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+
+abstract class EncounterFixture extends DatabaseTest {
+
+    @Autowired
+    protected EncounterService encounters;
+
+    @Autowired
+    protected RecordTemplateService templates;
+
+    @Autowired
+    protected SchedulingService scheduling;
+
+    @Autowired
+    private CustomerService customers;
+
+    @Autowired
+    private PractitionerService practitioners;
+
+    @Autowired
+    private CatalogService catalogue;
+
+    private Tenant clinic;
+    private Long customerId;
+    private Long practitionerId;
+    private Long serviceId;
+
+    protected Tenant openClinic(String code) {
+        clinic = createTenant(code);
+        bindTenant(clinic);
+        customerId = customers.register(customerNamed("Ana Prado", "12345678901")).id();
+        practitionerId = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
+        practitioners.follow(practitionerId, businessHours());
+        serviceId = catalogue
+                .register(new ServiceDetails("Limpeza", ServiceDuration.ofMinutes(60), Money.of("180.00")))
+                .id();
+        return clinic;
+    }
+
+    protected Tenant clinic() {
+        return clinic;
+    }
+
+    protected Long customerId() {
+        return customerId;
+    }
+
+    protected Long practitionerId() {
+        return practitionerId;
+    }
+
+    protected Long publishTemplate(String name, TemplateContent content) {
+        Long draftId = templates.draft(name, null, content).id();
+        return templates.publish(draftId).id();
+    }
+
+    protected Long bookAppointment() {
+        LocalDate monday = LocalDate.now().plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        LocalDateTime start = LocalDateTime.of(monday, LocalTime.of(9, 0));
+        return scheduling.schedule(new AppointmentBooking(customerId, practitionerId, serviceId, start)).id();
+    }
+
+    protected TemplateContent complaintWith(String fieldCode, String fieldType) {
+        return new TemplateContent(List.of(new SectionContent(
+                "Complaint",
+                List.of(new FieldContent(fieldCode, fieldCode, fieldType, null, false, List.of(), Map.of(), null)))));
+    }
+
+    private CustomerDetails customerNamed(String name, String document) {
+        return new CustomerDetails(
+                name,
+                new NationalId(document),
+                LocalDate.of(1990, 1, 1),
+                new ContactDetails("41999990000", null),
+                null);
+    }
+
+    private WeeklySchedule businessHours() {
+        TimeRange hours = new TimeRange(LocalTime.of(8, 0), LocalTime.of(18, 0));
+        return new WeeklySchedule(List.of(
+                new AvailabilityPeriod(Weekday.of(DayOfWeek.MONDAY), hours),
+                new AvailabilityPeriod(Weekday.of(DayOfWeek.TUESDAY), hours)));
+    }
+}

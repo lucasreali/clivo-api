@@ -39,7 +39,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 3.5 Painel do dia
 
 **Fase 4 — Atendimento e ficha**
-- [ ] 4.1 Atendimento
+- [X] 4.1 Atendimento
 - [ ] 4.2 **Abstract Factory** — montagem da ficha
 - [ ] 4.3 Componentes especiais
 - [ ] 4.4 Histórico do cliente
@@ -334,7 +334,7 @@ Criar em `core/scheduling`: endpoint que lista os agendamentos do dia com situa�
 
 Objetivo: o motor que faz uma clínica odontológica e uma veterinária usarem a mesma tela.
 
-### [ ] 4.1 · Atendimento
+### [X] 4.1 · Atendimento
 
 Criar em `core/encounter`: `Encounter`, `EncounterStatus`, serviço, repositório e controller.
 

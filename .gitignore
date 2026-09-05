@@ -41,3 +41,6 @@ out/
 /.cortex/*
 !/.cortex/config
 !/.cortex/decisions/
+
+### Claude Code ###
+.claude/worktrees/
