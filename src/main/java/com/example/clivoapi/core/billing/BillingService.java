@@ -48,6 +48,12 @@ public class BillingService {
         return invoices.save(assembler.assemble(completed)).snapshot();
     }
 
+    public InvoiceSnapshot coverByPackage(Long encounterId) {
+        Invoice invoice = invoiceOfEncounter(encounterId);
+        invoice.coverBy(InvoiceCoverage.SESSION_PACKAGE);
+        return invoices.save(invoice).snapshot();
+    }
+
     public InvoiceSnapshot applyDiscount(Long id, Money amount, DiscountReason reason) {
         Invoice invoice = invoiceOf(id);
         invoice.applyDiscount(amount, reason);
@@ -88,6 +94,11 @@ public class BillingService {
     private Long recorder() {
         return auditor.getCurrentAuditor()
                 .orElseThrow(() -> new BusinessException("recording a payment requires an authenticated user"));
+    }
+
+    private Invoice invoiceOfEncounter(Long encounterId) {
+        return invoices.findByEncounterId(encounterId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice of encounter", encounterId));
     }
 
     private Invoice invoiceOf(Long id) {

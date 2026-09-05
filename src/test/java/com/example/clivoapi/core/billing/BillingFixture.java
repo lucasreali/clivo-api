@@ -35,7 +35,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-abstract class BillingFixture extends DatabaseTest {
+public abstract class BillingFixture extends DatabaseTest {
 
     protected static final String SERVICE_PRICE = "180.00";
 
@@ -94,6 +94,10 @@ abstract class BillingFixture extends DatabaseTest {
 
     protected Long serviceId() {
         return serviceId;
+    }
+
+    protected Long practitionerId() {
+        return practitionerId;
     }
 
     protected Long completeAnEncounter() {

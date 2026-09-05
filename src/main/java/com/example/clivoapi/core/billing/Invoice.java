@@ -120,6 +120,15 @@ public class Invoice extends TenantScopedEntity {
         refreshStatus();
     }
 
+    public void coverBy(InvoiceCoverage source) {
+        requireOpen("covered");
+        coverage = source;
+        discount = grossAmount;
+        discountReason = "fully covered by %s".formatted(source);
+        netAmount = Money.zero();
+        refreshStatus();
+    }
+
     public void settle(PaymentDetails details, Long recordedBy) {
         requireOpen("paid");
         requireWithinOutstanding(details.amount());

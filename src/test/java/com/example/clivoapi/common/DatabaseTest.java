@@ -33,6 +33,8 @@ public abstract class DatabaseTest {
         jdbcTemplate.update("DELETE FROM payment");
         jdbcTemplate.update("DELETE FROM invoice_item");
         jdbcTemplate.update("DELETE FROM invoice");
+        jdbcTemplate.update("DELETE FROM package_usage");
+        jdbcTemplate.update("DELETE FROM session_package");
         jdbcTemplate.update("DELETE FROM stock_movement");
         jdbcTemplate.update("DELETE FROM batch");
         jdbcTemplate.update("DELETE FROM product");

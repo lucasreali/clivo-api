@@ -55,7 +55,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 6.3 Lote e validade *(exige 6.2)*
 - [X] 6.4 **Strategy** — política de lote vencido
 - [X] 6.5 **Strategy** — política de acesso por perfil
-- [ ] 6.6 Pacotes de sessões
+- [X] 6.6 Pacotes de sessões
 - [ ] 6.7 Convênios
 - [ ] 6.8 Notificações
 - [ ] 6.9 Comissionamento
@@ -444,7 +444,7 @@ Criar `RoleAccessPolicy` com `SegregatedRoleAccessPolicy` e `SingleRoleAccessPol
 
 **Pronto quando:** recepção recebe 403 no relatório financeiro em modo segregado e 200 em modo único, sem nenhum papel de usuário ter sido alterado.
 
-### [ ] 6.6 · Pacotes de sessões
+### [X] 6.6 · Pacotes de sessões
 
 `SessionPackage` com `remainingSessions()`, `isActive()`, `consumeSession()`.
 
