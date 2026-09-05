@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -74,6 +75,10 @@ public class Invoice extends TenantScopedEntity {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceItem> items = new ArrayList<>();
 
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("paidAt")
+    private List<Payment> payments = new ArrayList<>();
+
     protected Invoice() {
     }
 
@@ -99,7 +104,7 @@ public class Invoice extends TenantScopedEntity {
     }
 
     public Money outstandingBalance() {
-        return netAmount;
+        return netAmount.minus(paidTotal());
     }
 
     public boolean isOverdue() {
@@ -112,6 +117,19 @@ public class Invoice extends TenantScopedEntity {
         discount = amount;
         discountReason = reason.asText();
         netAmount = calculateNetAmount();
+        refreshStatus();
+    }
+
+    public void settle(PaymentDetails details, Long recordedBy) {
+        requireOpen("paid");
+        requireWithinOutstanding(details.amount());
+        payments.add(new Payment(this, details, recordedBy));
+        refreshStatus();
+    }
+
+    public void refund(Long paymentId, RefundReason reason) {
+        paymentNumbered(paymentId).refund(reason);
+        refreshStatus();
     }
 
     public InvoiceSnapshot snapshot() {
@@ -126,11 +144,51 @@ public class Invoice extends TenantScopedEntity {
                 status,
                 coverage,
                 isOverdue(),
-                lines());
+                lines(),
+                receipts());
     }
 
     private List<InvoiceLine> lines() {
         return items.stream().map(InvoiceItem::line).toList();
+    }
+
+    private List<PaymentSnapshot> receipts() {
+        return payments.stream().map(Payment::snapshot).toList();
+    }
+
+    private Money paidTotal() {
+        return payments.stream().reduce(Money.zero(), (total, payment) -> payment.addTo(total), Money::plus);
+    }
+
+    private Payment paymentNumbered(Long paymentId) {
+        return payments.stream()
+                .filter(payment -> payment.identifiedBy(paymentId))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(
+                        "payment %d does not belong to invoice %d".formatted(paymentId, id)));
+    }
+
+    private void refreshStatus() {
+        status = statusFor(outstandingBalance());
+    }
+
+    private InvoiceStatus statusFor(Money outstanding) {
+        if (outstanding.isZero()) {
+            return InvoiceStatus.PAID;
+        }
+        if (outstanding.equals(netAmount)) {
+            return InvoiceStatus.OPEN;
+        }
+        return InvoiceStatus.PARTIAL;
+    }
+
+    private void requireWithinOutstanding(Money amount) {
+        Money outstanding = outstandingBalance();
+        if (!amount.isGreaterThan(outstanding)) {
+            return;
+        }
+        throw new BusinessException(
+                "a payment of %s is above the outstanding balance of %s".formatted(amount, outstanding));
     }
 
     private void requireWithinGross(Money amount) {

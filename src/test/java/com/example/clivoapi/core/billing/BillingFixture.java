@@ -8,7 +8,13 @@ import com.example.clivoapi.configuration.template.FieldContent;
 import com.example.clivoapi.configuration.template.RecordTemplateService;
 import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateContent;
+import com.example.clivoapi.core.access.AccessService;
+import com.example.clivoapi.core.access.AuthenticatedUser;
+import com.example.clivoapi.core.access.EmailAddress;
+import com.example.clivoapi.core.access.RawPassword;
 import com.example.clivoapi.core.access.Role;
+import com.example.clivoapi.core.access.UserRegistration;
+import com.example.clivoapi.core.access.UserSummary;
 import com.example.clivoapi.core.catalog.CatalogService;
 import com.example.clivoapi.core.catalog.ServiceDetails;
 import com.example.clivoapi.core.catalog.ServiceDuration;
@@ -23,7 +29,11 @@ import com.example.clivoapi.core.practitioner.PractitionerService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 abstract class BillingFixture extends DatabaseTest {
 
@@ -47,6 +57,9 @@ abstract class BillingFixture extends DatabaseTest {
     @Autowired
     private CatalogService catalogue;
 
+    @Autowired
+    private AccessService access;
+
     private Tenant clinic;
     private Long customerId;
     private Long practitionerId;
@@ -62,7 +75,13 @@ abstract class BillingFixture extends DatabaseTest {
                 .register(new ServiceDetails("Limpeza", ServiceDuration.ofMinutes(60), Money.of(SERVICE_PRICE)))
                 .id();
         templateId = publishedTemplate();
+        signInAsManager();
         return clinic;
+    }
+
+    @AfterEach
+    void signOut() {
+        SecurityContextHolder.clearContext();
     }
 
     protected Tenant clinic() {
@@ -87,6 +106,21 @@ abstract class BillingFixture extends DatabaseTest {
 
     protected InvoiceSnapshot invoiceOfACompletedEncounter() {
         return billing.findByEncounter(completeAnEncounter());
+    }
+
+    private void signInAsManager() {
+        UserSummary manager = access.registerIn(
+                clinic,
+                new UserRegistration(
+                        "Marina Gestora",
+                        new EmailAddress("gestora@clivo.test"),
+                        new RawPassword("segredo123"),
+                        Role.MANAGER));
+        AuthenticatedUser identity =
+                new AuthenticatedUser(manager.id(), clinic.id(), manager.name(), Role.MANAGER);
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(
+                        identity, null, List.of(new SimpleGrantedAuthority(Role.MANAGER.authority()))));
     }
 
     private Long publishedTemplate() {

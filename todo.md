@@ -46,7 +46,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 
 **Fase 5 — Financeiro**
 - [X] 5.1 Cobrança
-- [ ] 5.2 Pagamento
+- [X] 5.2 Pagamento
 - [X] 5.3 Ponto de extensão do atendimento
 
 **Fase 6 — Módulos**
@@ -384,7 +384,7 @@ Métodos: `calculateNetAmount()`, `applyDiscount(amount, reason)`, `outstandingB
 
 **Pronto quando:** concluir atendimento gera cobrança em aberto com o valor do serviço.
 
-### [ ] 5.2 · Pagamento
+### [X] 5.2 · Pagamento
 
 Criar em `core/billing`: `Payment`, `PaymentMethod`, serviço, repositório e controller.
 

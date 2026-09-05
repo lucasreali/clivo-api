@@ -15,10 +15,12 @@ public record InvoiceSnapshot(
         InvoiceStatus status,
         InvoiceCoverage coverage,
         boolean overdue,
-        List<InvoiceLine> lines) {
+        List<InvoiceLine> lines,
+        List<PaymentSnapshot> payments) {
 
     public InvoiceSnapshot {
         lines = List.copyOf(lines);
+        payments = List.copyOf(payments);
     }
 
     public Optional<String> reasonGiven() {
