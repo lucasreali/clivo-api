@@ -50,7 +50,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [X] 5.3 Ponto de extensão do atendimento
 
 **Fase 6 — Módulos**
-- [ ] 6.1 Dependentes
+- [X] 6.1 Dependentes
 - [ ] 6.2 Estoque
 - [ ] 6.3 Lote e validade *(exige 6.2)*
 - [ ] 6.4 **Strategy** — política de lote vencido
@@ -408,7 +408,7 @@ Criar `EncounterCompletionListener` em `common/extension`. `EncounterService` in
 
 Cada módulo é uma fatia independente. Faça um de cada vez. Todos seguem a mesma forma: entidade, serviço, repositório em `internal`, controller anotado com `@RequiresModule`.
 
-### [ ] 6.1 · Dependentes
+### [X] 6.1 · Dependentes
 
 `Dependent` com `ageInYears()`. Atributos específicos do tipo em JSON, para servir a animal sob tutor, menor sob responsável e assistido sob cuidador sem fechar a estrutura.
 
