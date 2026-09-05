@@ -1,12 +1,12 @@
 package com.example.clivoapi.core.encounter;
 
-import com.example.clivoapi.common.extension.RecordFilling;
+import com.example.clivoapi.common.extension.RecordSheet;
 import java.time.Instant;
 
 public record EncounterSnapshot(
         Long id,
         EncounterParticipants participants,
-        RecordFilling filling,
+        RecordSheet sheet,
         Instant startedAt,
         Instant completedAt,
         EncounterStatus status) {

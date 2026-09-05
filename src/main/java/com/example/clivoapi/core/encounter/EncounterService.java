@@ -1,6 +1,7 @@
 package com.example.clivoapi.core.encounter;
 
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
+import com.example.clivoapi.common.extension.RecordAssembly;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
 import org.springframework.stereotype.Service;
@@ -12,31 +13,38 @@ public class EncounterService {
 
     private final EncounterRepository encounters;
     private final EncounterAssembler assembler;
+    private final RecordAssembly records;
 
-    EncounterService(EncounterRepository encounters, EncounterAssembler assembler) {
+    EncounterService(EncounterRepository encounters, EncounterAssembler assembler, RecordAssembly records) {
         this.encounters = encounters;
         this.assembler = assembler;
+        this.records = records;
     }
 
     public EncounterSnapshot open(EncounterOpening opening) {
-        return encounters.save(assembler.assemble(opening)).snapshot();
+        return snapshotOf(encounters.save(assembler.assemble(opening)));
     }
 
     public EncounterSnapshot fill(Long id, RecordValues values) {
         Encounter encounter = encounterOf(id);
         encounter.fill(values);
-        return encounters.save(encounter).snapshot();
+        return snapshotOf(encounters.save(encounter));
     }
 
     public EncounterSnapshot complete(Long id) {
         Encounter encounter = encounterOf(id);
+        records.validate(encounter.filling());
         encounter.complete();
-        return encounters.save(encounter).snapshot();
+        return snapshotOf(encounters.save(encounter));
     }
 
     @Transactional(readOnly = true)
     public EncounterSnapshot findOne(Long id) {
-        return encounterOf(id).snapshot();
+        return snapshotOf(encounterOf(id));
+    }
+
+    private EncounterSnapshot snapshotOf(Encounter encounter) {
+        return encounter.snapshotWith(records.assemble(encounter.filling()));
     }
 
     private Encounter encounterOf(Long id) {

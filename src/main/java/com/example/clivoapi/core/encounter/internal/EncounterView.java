@@ -1,10 +1,9 @@
 package com.example.clivoapi.core.encounter.internal;
 
-import com.example.clivoapi.common.extension.RecordFilling;
+import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.core.encounter.EncounterParticipants;
 import com.example.clivoapi.core.encounter.EncounterSnapshot;
 import java.time.Instant;
-import java.util.Map;
 
 record EncounterView(
         Long id,
@@ -15,15 +14,13 @@ record EncounterView(
         String practitionerName,
         Long serviceId,
         String serviceName,
-        Long recordTemplateId,
-        Map<String, Object> values,
+        RecordSheet sheet,
         Instant startedAt,
         Instant completedAt,
         String status) {
 
     static EncounterView of(EncounterSnapshot encounter) {
         EncounterParticipants participants = encounter.participants();
-        RecordFilling filling = encounter.filling();
         return new EncounterView(
                 encounter.id(),
                 participants.appointmentId(),
@@ -33,8 +30,7 @@ record EncounterView(
                 participants.practitionerName(),
                 participants.serviceId(),
                 participants.serviceName(),
-                filling.templateId(),
-                filling.values().asMap(),
+                encounter.sheet(),
                 encounter.startedAt(),
                 encounter.completedAt(),
                 encounter.status().name());

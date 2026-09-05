@@ -4,8 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
+import com.example.clivoapi.common.extension.SheetField;
 import com.example.clivoapi.common.tenant.Tenant;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +52,7 @@ class EncounterServiceTest extends EncounterFixture {
 
         encounters.fill(draft.id(), RecordValues.of(Map.of("complaint", "Dor no dente 26")));
 
-        assertThat(encounters.findOne(draft.id()).filling().values().asMap())
+        assertThat(fieldValuesOf(encounters.findOne(draft.id())))
                 .containsEntry("complaint", "Dor no dente 26");
     }
 
@@ -81,7 +85,11 @@ class EncounterServiceTest extends EncounterFixture {
         Long secondVersionId = templates.redefine(templateId, complaintWith("history", "LONG_TEXT")).id();
         templates.publish(secondVersionId);
 
-        assertThat(encounters.findOne(draft.id()).filling().templateId()).isEqualTo(templateId);
+        RecordSheet reopened = encounters.findOne(draft.id()).sheet();
+
+        assertThat(reopened.templateId()).isEqualTo(templateId);
+        assertThat(reopened.templateVersion()).isEqualTo(1);
+        assertThat(fieldCodesOf(reopened)).containsExactly("complaint");
         assertThat(secondVersionId).isNotEqualTo(templateId);
     }
 
@@ -92,6 +100,19 @@ class EncounterServiceTest extends EncounterFixture {
 
         assertThatThrownBy(() -> valueInTenant(other, () -> encounters.findOne(draft.id())))
                 .hasMessageContaining("Encounter");
+    }
+
+    private Map<String, Object> fieldValuesOf(EncounterSnapshot encounter) {
+        return fieldsOf(encounter.sheet()).stream()
+                .collect(HashMap::new, (values, field) -> values.put(field.code(), field.value()), HashMap::putAll);
+    }
+
+    private List<String> fieldCodesOf(RecordSheet sheet) {
+        return fieldsOf(sheet).stream().map(SheetField::code).toList();
+    }
+
+    private List<SheetField> fieldsOf(RecordSheet sheet) {
+        return sheet.sections().stream().flatMap(section -> section.fields().stream()).toList();
     }
 
     private EncounterSnapshot openWalkIn() {

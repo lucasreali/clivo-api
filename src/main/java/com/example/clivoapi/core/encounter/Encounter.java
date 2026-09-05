@@ -2,6 +2,7 @@ package com.example.clivoapi.core.encounter;
 
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.RecordFilling;
+import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.core.customer.Customer;
@@ -103,8 +104,8 @@ public class Encounter extends TenantScopedEntity {
         return status == EncounterStatus.COMPLETED;
     }
 
-    public EncounterSnapshot snapshot() {
-        return new EncounterSnapshot(id, participants(), filling(), startedAt, completedAt, status);
+    public EncounterSnapshot snapshotWith(RecordSheet sheet) {
+        return new EncounterSnapshot(id, participants(), sheet, startedAt, completedAt, status);
     }
 
     private EncounterParticipants participants() {

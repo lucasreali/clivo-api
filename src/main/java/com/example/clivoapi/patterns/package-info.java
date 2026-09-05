@@ -2,7 +2,8 @@
     "common",
     "core :: practitioner",
     "core :: scheduling",
-    "configuration :: modules"
+    "configuration :: modules",
+    "configuration :: template"
 })
 package com.example.clivoapi.patterns;
 

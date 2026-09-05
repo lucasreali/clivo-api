@@ -40,7 +40,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 
 **Fase 4 — Atendimento e ficha**
 - [X] 4.1 Atendimento
-- [ ] 4.2 **Abstract Factory** — montagem da ficha
+- [X] 4.2 **Abstract Factory** — montagem da ficha
 - [ ] 4.3 Componentes especiais
 - [ ] 4.4 Histórico do cliente
 
@@ -344,7 +344,7 @@ Métodos: `complete()`, `isCompleted()`.
 
 **Pronto quando:** registrar e concluir um atendimento funciona, e reabrir um concluído devolve a ficha na versão em que foi preenchida.
 
-### [ ] 4.2 · Abstract Factory — montagem da ficha
+### [X] 4.2 · Abstract Factory — montagem da ficha
 
 **Objetivo do padrão:** um tipo de campo novo deve exigir **criar uma classe e nada mais**.
 
