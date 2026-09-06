@@ -3,6 +3,8 @@ package com.example.clivoapi.core.encounter.internal;
 import com.example.clivoapi.core.access.AuthenticatedUser;
 import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.encounter.EncounterService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/encounters")
+@Tag(name = "Encounters", description = "Appointments turned into attended visits and their clinical records")
 class EncounterController {
 
     private final EncounterService encounters;
@@ -28,17 +31,20 @@ class EncounterController {
         this.encounters = encounters;
     }
 
+    @Operation(operationId = "openEncounter", summary = "Open an encounter over a published record template")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     EncounterView open(@Valid @RequestBody EncounterRequest request) {
         return EncounterView.of(encounters.open(request.toOpening()));
     }
 
+    @Operation(operationId = "getEncounter", summary = "Read one encounter; clinical content depends on the caller's role")
     @GetMapping("/{id}")
     EncounterView findOne(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
         return EncounterView.of(encounters.findOne(id, roleOf(viewer)));
     }
 
+    @Operation(operationId = "listCustomerEncounters", summary = "List a customer's encounters; clinical content depends on the caller's role")
     @GetMapping
     List<EncounterHistoryView> history(
             @RequestParam Long customerId, @AuthenticationPrincipal AuthenticatedUser viewer) {
@@ -47,11 +53,13 @@ class EncounterController {
                 .toList();
     }
 
+    @Operation(operationId = "fillEncounterRecord", summary = "Fill the encounter's record with the template's field values")
     @PutMapping("/{id}/record")
     EncounterView fill(@PathVariable Long id, @RequestBody RecordFillingRequest request) {
         return EncounterView.of(encounters.fill(id, request.toValues()));
     }
 
+    @Operation(operationId = "completeEncounter", summary = "Complete an encounter, closing its record and billing it")
     @PostMapping("/{id}/completion")
     EncounterView complete(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
         return EncounterView.of(encounters.complete(id, roleOf(viewer)));

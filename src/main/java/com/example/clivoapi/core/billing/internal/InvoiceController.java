@@ -4,6 +4,8 @@ import com.example.clivoapi.core.access.AuthenticatedUser;
 import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.billing.BillingService;
 import com.example.clivoapi.core.billing.ReportPeriod;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/invoices")
+@Tag(name = "Billing", description = "Invoices, discounts, payments and the financial report")
 class InvoiceController {
 
     private final BillingService billing;
@@ -29,11 +32,13 @@ class InvoiceController {
         this.billing = billing;
     }
 
+    @Operation(operationId = "listInvoicesByCustomer", summary = "List a customer's invoices")
     @GetMapping
     List<InvoiceView> byCustomer(@RequestParam Long customerId) {
         return billing.findByCustomer(customerId).stream().map(InvoiceView::of).toList();
     }
 
+    @Operation(operationId = "getBillingReport", summary = "Report what was billed and received over a period")
     @GetMapping("/report")
     BillingReportView report(
             @RequestParam LocalDate from,
@@ -42,22 +47,26 @@ class InvoiceController {
         return BillingReportView.of(billing.reportOf(new ReportPeriod(from, to), roleOf(viewer)));
     }
 
+    @Operation(operationId = "getInvoice", summary = "Read one invoice with its items and payments")
     @GetMapping("/{id}")
     InvoiceView findOne(@PathVariable Long id) {
         return InvoiceView.of(billing.findOne(id));
     }
 
+    @Operation(operationId = "applyInvoiceDiscount", summary = "Apply a discount to an open invoice")
     @PostMapping("/{id}/discount")
     InvoiceView applyDiscount(@PathVariable Long id, @Valid @RequestBody DiscountRequest request) {
         return InvoiceView.of(billing.applyDiscount(id, request.toAmount(), request.toReason()));
     }
 
+    @Operation(operationId = "settleInvoice", summary = "Settle an invoice in full or in part")
     @PostMapping("/{id}/payments")
     @ResponseStatus(HttpStatus.CREATED)
     InvoiceView settle(@PathVariable Long id, @Valid @RequestBody PaymentRequest request) {
         return InvoiceView.of(billing.settle(id, request.toDetails()));
     }
 
+    @Operation(operationId = "refundInvoicePayment", summary = "Refund a payment already taken")
     @PostMapping("/{id}/payments/{paymentId}/refund")
     InvoiceView refund(
             @PathVariable Long id, @PathVariable Long paymentId, @RequestBody RefundRequest request) {

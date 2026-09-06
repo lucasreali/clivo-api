@@ -2,6 +2,8 @@ package com.example.clivoapi.modules.inventory.internal;
 
 import com.example.clivoapi.common.extension.RequiresModule;
 import com.example.clivoapi.core.encounter.EncounterService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiresModule("inventory")
+@Tag(name = "Inventory")
 class SupplyController {
 
     private final EncounterService encounters;
@@ -20,6 +23,7 @@ class SupplyController {
         this.encounters = encounters;
     }
 
+    @Operation(operationId = "useSupplies", summary = "Consume a product during an encounter, drawing it from stock")
     @PostMapping("/api/encounters/{encounterId}/supplies")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void use(@PathVariable Long encounterId, @Valid @RequestBody SupplyRequest request) {

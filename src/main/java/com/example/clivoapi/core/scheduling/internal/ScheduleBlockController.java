@@ -2,6 +2,8 @@ package com.example.clivoapi.core.scheduling.internal;
 
 import com.example.clivoapi.common.time.TimeWindow;
 import com.example.clivoapi.core.scheduling.ScheduleBlockService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/schedule-blocks")
+@Tag(name = "Schedule blocks", description = "Windows in which the agenda accepts nothing")
 class ScheduleBlockController {
 
     private final ScheduleBlockService blocks;
@@ -27,12 +30,14 @@ class ScheduleBlockController {
         this.blocks = blocks;
     }
 
+    @Operation(operationId = "registerScheduleBlock", summary = "Block a window of the agenda")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ScheduleBlockView register(@Valid @RequestBody ScheduleBlockRequest request) {
         return ScheduleBlockView.of(blocks.register(request.toDetails()));
     }
 
+    @Operation(operationId = "listScheduleBlocks", summary = "List the blocks overlapping a window")
     @GetMapping
     List<ScheduleBlockView> findWithin(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
@@ -40,6 +45,7 @@ class ScheduleBlockController {
         return blocks.findWithin(TimeWindow.of(from, to)).stream().map(ScheduleBlockView::of).toList();
     }
 
+    @Operation(operationId = "releaseScheduleBlock", summary = "Release a block")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void release(@PathVariable Long id) {

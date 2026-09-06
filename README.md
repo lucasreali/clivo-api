@@ -72,15 +72,51 @@ formatted SQL. Flyway applies `src/main/resources/db/migration` on startup.
 
 ### API documentation
 
+The OpenAPI document is generated from the code, never written by hand. Every
+endpoint declares its own `operationId`, summary and tag; the request and
+response schemas come from the records, and their constraints from Bean
+Validation.
+
 With the application running:
 
 - Swagger UI — `http://localhost:8080/swagger-ui.html`
 - OpenAPI document — `http://localhost:8080/v3/api-docs`
 
-Current resources: `/api/capabilities`, `/api/modules`, `/api/parameters`,
-`/api/record-templates`, `/api/customers`, `/api/practitioners`,
-`/api/services`, `/api/schedule-blocks`, `/api/appointments`,
-`/api/encounters`, `/api/invoices`.
+`openapi.json` at the repository root is the same document, committed so a
+client can be generated without the API on air. It is written by
+`OpenApiSpecificationTest`, so `./gradlew test` refreshes it and a contract
+change shows up in the diff of the commit that caused it.
+
+That test also guards the contract: it fails when an endpoint declares no
+`operationId`, or when two endpoints answer to the same one. Without that
+guard, a generator names its functions after the Java methods, and the
+eleventh `findOne` becomes `findOne_10`.
+
+#### Generating a typed client
+
+Point the generator at the committed document. With [Kubb](https://kubb.dev):
+
+```ts
+// kubb.config.ts
+import { defineConfig } from '@kubb/core'
+import { pluginOas } from '@kubb/plugin-oas'
+import { pluginTs } from '@kubb/plugin-ts'
+import { pluginClient } from '@kubb/plugin-client'
+
+export default defineConfig({
+  input: { path: '../clivo-api/openapi.json' },
+  output: { path: './src/gen' },
+  plugins: [pluginOas(), pluginTs(), pluginClient({ group: { type: 'tag' } })],
+})
+```
+
+Grouping by tag mirrors the API's own division — `Customers`, `Billing`,
+`Encounters`, `Inventory` — so the generated files land one per subject.
+
+Authentication is the session cookie from `POST /api/session`; send requests
+with credentials included. Endpoints of an optional module answer `404` while
+the clinic has not activated it, so a client should read
+`GET /api/capabilities` before offering those features.
 
 ## Environment variables
 
@@ -137,6 +173,15 @@ Dependencies are declared and enforced:
 
 Inside every module, only the root package is public API. Repositories,
 controllers and implementations live in `internal`.
+
+There is no `reporting` module. The only report the product needs is the
+financial one, and it reads nothing but invoices: `BillingReport`,
+`BillingTotals` and `ReportPeriod` therefore live in `core/billing`, beside the
+data they summarize, and are served by `/api/invoices/report`. A separate module
+would own no data of its own, would have to depend on billing to say anything,
+and would move the `RoleAccess` check that restricts the financial figures to
+management away from the module that enforces it. When a report spans more than
+billing, it earns its own module then.
 
 ## Conventions
 

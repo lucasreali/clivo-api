@@ -3,6 +3,9 @@ package com.example.clivoapi.core.access.internal;
 import com.example.clivoapi.common.tenant.TenantResolutionFilter;
 import com.example.clivoapi.core.access.AccessService;
 import com.example.clivoapi.core.access.AuthenticatedUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(SessionController.PATH)
+@Tag(name = "Session", description = "Signing in and out; the session cookie every other operation needs")
 class SessionController {
 
     static final String PATH = "/api/session";
@@ -39,6 +43,8 @@ class SessionController {
         this.contexts = contexts;
     }
 
+    @Operation(operationId = "signIn", summary = "Open a session and receive the session cookie")
+    @SecurityRequirements
     @PostMapping
     SessionView signIn(
             @Valid @RequestBody SignInRequest request,
@@ -49,11 +55,13 @@ class SessionController {
         return SessionView.of(user);
     }
 
+    @Operation(operationId = "getCurrentSession", summary = "Describe the user behind the current session")
     @GetMapping
     SessionView current(@AuthenticationPrincipal AuthenticatedUser user) {
         return SessionView.of(user);
     }
 
+    @Operation(operationId = "signOut", summary = "Close the current session")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void signOut(HttpServletRequest request) {
