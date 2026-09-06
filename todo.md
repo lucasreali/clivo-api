@@ -66,9 +66,9 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 - [ ] 7.3 Cenários
 
 **Entrega da atividade de padrões**
-- [ ] 3 padrões codificados: Chain, Abstract Factory, Strategy
-- [ ] 2 exemplos de cada, todos funcionais e ligados ao núcleo
-- [ ] 14 classes de domínio com métodos de negócio
+- [X] 3 padrões codificados: Chain, Abstract Factory, Strategy
+- [X] 2 exemplos de cada, todos funcionais e ligados ao núcleo
+- [X] 14 classes de domínio com métodos de negócio
 - [X] `ReuseTest` verde nos 3 métodos
 - [X] `ModularityTest` e `ArchitectureTest` verdes
 
