@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -198,9 +199,8 @@ public abstract class ClinicFixture extends DatabaseTest {
 
     private WeeklySchedule businessHours() {
         TimeRange hours = new TimeRange(OPENS_AT, CLOSES_AT);
-        return new WeeklySchedule(List.of(
-                new AvailabilityPeriod(Weekday.of(DayOfWeek.MONDAY), hours),
-                new AvailabilityPeriod(Weekday.of(DayOfWeek.TUESDAY), hours),
-                new AvailabilityPeriod(Weekday.of(DayOfWeek.WEDNESDAY), hours)));
+        return new WeeklySchedule(Arrays.stream(DayOfWeek.values())
+                .map(day -> new AvailabilityPeriod(Weekday.of(day), hours))
+                .toList());
     }
 }

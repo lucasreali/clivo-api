@@ -63,7 +63,7 @@ Build: Gradle Kotlin DSL · Java 21 · Spring Boot 4.1.x · Spring Modulith 2.1.
 **Fase 7 — Verificação**
 - [X] 7.1 Prova de reuso (`ReuseTest`)
 - [X] 7.2 Testes de arquitetura
-- [ ] 7.3 Cenários
+- [X] 7.3 Cenários
 
 **Entrega da atividade de padrões**
 - [X] 3 padrões codificados: Chain, Abstract Factory, Strategy
@@ -484,7 +484,7 @@ Criar `ReuseTest` em `src/test/java/com/example/clivoapi/patterns/`, com um mét
 
 `ModularityTest` com `verify()` e `Documenter`. `ArchitectureTest` com ArchUnit provando que `..core..` não acessa `..modules..`.
 
-### [ ] 7.3 · Cenários
+### [X] 7.3 · Cenários
 
 Criar `src/test/java/com/example/clivoapi/scenarios/` com Testcontainers PostgreSQL. Nomear os métodos no formato `ct01_descricaoDoCenario()`, para cruzarem com a suíte de casos de teste do projeto.
 
