@@ -1,22 +1,24 @@
 package com.example.clivoapi.common.tenant;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "tenant")
 public class Tenant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @Column(nullable = false, updatable = false)
     private String code;
@@ -49,7 +51,7 @@ public class Tenant {
         this.createdAt = Instant.now();
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

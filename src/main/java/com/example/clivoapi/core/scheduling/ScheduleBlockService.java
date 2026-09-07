@@ -7,6 +7,7 @@ import com.example.clivoapi.core.practitioner.PractitionerService;
 import com.example.clivoapi.core.scheduling.internal.ScheduleBlockRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class ScheduleBlockService {
         return blocks.save(block).snapshot();
     }
 
-    public void release(Long id) {
+    public void release(UUID id) {
         blocks.delete(blockOf(id));
     }
 
@@ -37,7 +38,7 @@ public class ScheduleBlockService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<ScheduleBlockSnapshot> firstBlocking(Long practitionerId, TimeWindow period) {
+    public Optional<ScheduleBlockSnapshot> firstBlocking(UUID practitionerId, TimeWindow period) {
         Practitioner practitioner = practitioners.reference(practitionerId);
         return within(period).stream()
                 .filter(block -> block.appliesTo(practitioner))
@@ -54,7 +55,7 @@ public class ScheduleBlockService {
         return details.practitioner().map(practitioners::reference).orElse(null);
     }
 
-    private ScheduleBlock blockOf(Long id) {
+    private ScheduleBlock blockOf(UUID id) {
         return blocks.findById(id).orElseThrow(() -> new ResourceNotFoundException("ScheduleBlock", id));
     }
 }

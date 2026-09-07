@@ -3,10 +3,11 @@ package com.example.clivoapi.modules.notification;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 public record NotificationSnapshot(
-        Long id,
-        Long appointmentId,
+        UUID id,
+        UUID appointmentId,
         LocalDateTime appointmentStart,
         NotificationChannel channel,
         Recipient recipient,

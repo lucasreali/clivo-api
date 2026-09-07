@@ -8,6 +8,7 @@ import com.example.clivoapi.core.scheduling.SchedulingService;
 import com.example.clivoapi.modules.notification.internal.NotificationRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class NotificationService {
         this.gateway = gateway;
     }
 
-    public NotificationSnapshot schedule(Long appointmentId, NotificationChannel channel, Recipient recipient) {
+    public NotificationSnapshot schedule(UUID appointmentId, NotificationChannel channel, Recipient recipient) {
         Notification reminder =
                 new Notification(appointments.reference(appointmentId), channel, recipient);
         return notifications.save(reminder).snapshot();
@@ -43,14 +44,14 @@ public class NotificationService {
         return dueNow().stream().map(this::deliver).toList();
     }
 
-    public NotificationSnapshot registerResponse(Long id, String answer) {
+    public NotificationSnapshot registerResponse(UUID id, String answer) {
         Notification reminder = notificationOf(id);
         reminder.registerResponse(answer);
         return notifications.save(reminder).snapshot();
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationSnapshot> forAppointment(Long appointmentId) {
+    public List<NotificationSnapshot> forAppointment(UUID appointmentId) {
         return notifications.findByAppointmentIdOrderByIdAsc(appointmentId).stream()
                 .map(Notification::snapshot)
                 .toList();
@@ -64,7 +65,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public NotificationSnapshot findOne(Long id) {
+    public NotificationSnapshot findOne(UUID id) {
         return notificationOf(id).snapshot();
     }
 
@@ -84,7 +85,7 @@ public class NotificationService {
         return parameters.valueOf(REMINDER_LEAD_HOURS).asInteger();
     }
 
-    private Notification notificationOf(Long id) {
+    private Notification notificationOf(UUID id) {
         return notifications.findById(id).orElseThrow(() -> new ResourceNotFoundException("Notification", id));
     }
 }

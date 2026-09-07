@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tenant_parameter")
@@ -24,7 +25,7 @@ public class ClinicParameter extends TenantScopedEntity {
     private Instant updatedAt;
 
     @Column(name = "updated_by")
-    private Long updatedBy;
+    private UUID updatedBy;
 
     protected ClinicParameter() {
     }
@@ -41,7 +42,7 @@ public class ClinicParameter extends TenantScopedEntity {
         return new ParameterValue(value);
     }
 
-    public void changeTo(ParameterValue newValue, Long userId) {
+    public void changeTo(ParameterValue newValue, UUID userId) {
         value = newValue.asText();
         updatedAt = Instant.now();
         updatedBy = userId;

@@ -10,6 +10,7 @@ import com.example.clivoapi.configuration.parameter.ClinicParameterService;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ class AppointmentValidationChainTest extends SchedulingFixture {
 
     @Test
     void reschedulingInsideTheNoticeWindowIsRefused() {
-        Long id = bookAt(soonAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(soonAt(DayOfWeek.MONDAY, "09:00")).id();
         parameters.change(RESCHEDULE_WINDOW, ParameterValue.of("168"));
 
         assertThatExceptionOfType(BusinessException.class)
@@ -76,7 +77,7 @@ class AppointmentValidationChainTest extends SchedulingFixture {
     @Test
     void reschedulingOutsideTheNoticeWindowIsAccepted() {
         LocalDateTime start = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long id = bookAt(start).id();
+        UUID id = bookAt(start).id();
         parameters.change(RESCHEDULE_WINDOW, ParameterValue.of("1"));
 
         LocalDateTime later = nextWeekAt(DayOfWeek.TUESDAY, "09:00");
@@ -89,7 +90,7 @@ class AppointmentValidationChainTest extends SchedulingFixture {
         LocalDateTime blocked = soonAt(DayOfWeek.TUESDAY, "09:00");
         blocks.register(new ScheduleBlockDetails(null, windowOf(blocked, 60), new BlockReason("Feriado")));
         LocalDateTime taken = soonAt(DayOfWeek.MONDAY, "09:00");
-        Long id = bookAt(taken).id();
+        UUID id = bookAt(taken).id();
         parameters.change(RESCHEDULE_WINDOW, ParameterValue.of("168"));
 
         List<String> refusals = List.of(

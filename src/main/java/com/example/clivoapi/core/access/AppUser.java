@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.access;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
 import jakarta.persistence.Column;
@@ -7,22 +9,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "app_user")
 public class AppUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", updatable = false)
@@ -65,7 +67,7 @@ public class AppUser {
         this.createdAt = Instant.now();
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -98,7 +100,7 @@ public class AppUser {
         status = AppUserStatus.INACTIVE;
     }
 
-    private Optional<Long> clinicId() {
+    private Optional<UUID> clinicId() {
         return Optional.ofNullable(clinic).map(Tenant::id);
     }
 

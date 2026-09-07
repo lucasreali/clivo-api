@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,19 +33,19 @@ class BatchController {
     @Operation(operationId = "receiveBatch", summary = "Receive a batch of a product")
     @PostMapping("/api/products/{productId}/batches")
     @ResponseStatus(HttpStatus.CREATED)
-    BatchView receive(@PathVariable Long productId, @Valid @RequestBody BatchRequest request) {
+    BatchView receive(@PathVariable UUID productId, @Valid @RequestBody BatchRequest request) {
         return BatchView.of(batches.receive(productId, request.toDetails()));
     }
 
     @Operation(operationId = "listProductBatches", summary = "List a product's batches")
     @GetMapping("/api/products/{productId}/batches")
-    List<BatchView> of(@PathVariable Long productId) {
+    List<BatchView> of(@PathVariable UUID productId) {
         return viewsOf(batches.of(productId));
     }
 
     @Operation(operationId = "selectBatchForDispatch", summary = "Choose the batch that should serve a quantity, nearest expiry first")
     @GetMapping("/api/products/{productId}/batches/selection")
-    BatchChoiceView selectFor(@PathVariable Long productId, @RequestParam BigDecimal quantity) {
+    BatchChoiceView selectFor(@PathVariable UUID productId, @RequestParam BigDecimal quantity) {
         return BatchChoiceView.of(batches.selectFor(productId, new Quantity(quantity)));
     }
 
@@ -62,13 +63,13 @@ class BatchController {
 
     @Operation(operationId = "getBatch", summary = "Read one batch")
     @GetMapping("/api/batches/{id}")
-    BatchView findOne(@PathVariable Long id) {
+    BatchView findOne(@PathVariable UUID id) {
         return BatchView.of(batches.findOne(id));
     }
 
     @Operation(operationId = "discardBatch", summary = "Discard a batch, stating the reason")
     @PostMapping("/api/batches/{id}/discard")
-    BatchView discard(@PathVariable Long id, @RequestBody DiscardRequest request) {
+    BatchView discard(@PathVariable UUID id, @RequestBody DiscardRequest request) {
         return BatchView.of(batches.discard(id, request.toReason()));
     }
 

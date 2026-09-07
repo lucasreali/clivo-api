@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.commission;
 
+import java.util.UUID;
+
 public record PractitionerCommissionSnapshot(
-        Long id, Long practitionerId, String practitionerName, CommissionRate rate) {
+        UUID id, UUID practitionerId, String practitionerName, CommissionRate rate) {
 }

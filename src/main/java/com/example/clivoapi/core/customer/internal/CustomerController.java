@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,26 +43,26 @@ class CustomerController {
 
     @Operation(operationId = "getCustomer", summary = "Read one customer")
     @GetMapping("/{id}")
-    CustomerView findOne(@PathVariable Long id) {
+    CustomerView findOne(@PathVariable UUID id) {
         return CustomerView.of(customers.findOne(id));
     }
 
     @Operation(operationId = "describeCustomer", summary = "Redescribe a customer")
     @PutMapping("/{id}")
-    CustomerView describe(@PathVariable Long id, @Valid @RequestBody CustomerRequest request) {
+    CustomerView describe(@PathVariable UUID id, @Valid @RequestBody CustomerRequest request) {
         return CustomerView.of(customers.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivateCustomer", summary = "Deactivate a customer, stating the reason")
     @PostMapping("/{id}/deactivation")
-    CustomerView deactivate(@PathVariable Long id, @RequestBody DeactivationRequest request) {
+    CustomerView deactivate(@PathVariable UUID id, @RequestBody DeactivationRequest request) {
         return CustomerView.of(customers.deactivate(id, request.toReason()));
     }
 
     @Operation(operationId = "recordCustomerConsent", summary = "Record a consent statement, appended to the customer's history")
     @PostMapping("/{id}/consents")
     @ResponseStatus(HttpStatus.CREATED)
-    CustomerView record(@PathVariable Long id, @Valid @RequestBody ConsentRequest request) {
+    CustomerView record(@PathVariable UUID id, @Valid @RequestBody ConsentRequest request) {
         return CustomerView.of(customers.record(id, request.toStatement()));
     }
 }

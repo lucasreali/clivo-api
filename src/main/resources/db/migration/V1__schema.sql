@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS btree_gist;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE TABLE tenant (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id              UUID         PRIMARY KEY,
     code            VARCHAR(20)  NOT NULL UNIQUE,
     name            VARCHAR(120) NOT NULL,
     legal_name      VARCHAR(160),
@@ -22,11 +22,11 @@ CREATE TABLE module (
 );
 
 CREATE TABLE tenant_module (
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
     module_code     VARCHAR(4)   NOT NULL REFERENCES module(code),
     enabled         BOOLEAN      NOT NULL DEFAULT false,
     enabled_at      TIMESTAMPTZ,
-    enabled_by      BIGINT,
+    enabled_by      UUID,
     PRIMARY KEY (tenant_id, module_code)
 );
 
@@ -43,17 +43,17 @@ CREATE TABLE parameter (
 );
 
 CREATE TABLE tenant_parameter (
-    tenant_id       BIGINT      NOT NULL REFERENCES tenant(id),
+    tenant_id       UUID        NOT NULL REFERENCES tenant(id),
     parameter_code  VARCHAR(40) NOT NULL REFERENCES parameter(code),
     value           TEXT        NOT NULL,
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_by      BIGINT,
+    updated_by      UUID,
     PRIMARY KEY (tenant_id, parameter_code)
 );
 
 CREATE TABLE app_user (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       REFERENCES tenant(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         REFERENCES tenant(id),
     name            VARCHAR(120) NOT NULL,
     email           VARCHAR(160) NOT NULL,
     password_hash   VARCHAR(120) NOT NULL,
@@ -67,11 +67,12 @@ CREATE TABLE app_user (
     CHECK ((user_role = 'PLATFORM_ADMIN') = (tenant_id IS NULL))
 );
 
-CREATE UNIQUE INDEX ux_app_user_email ON app_user (COALESCE(tenant_id, 0), lower(email));
+CREATE UNIQUE INDEX ux_app_user_email
+    ON app_user (COALESCE(tenant_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(email));
 
 CREATE TABLE customer (
-    id                      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id               BIGINT       NOT NULL REFERENCES tenant(id),
+    id                      UUID         PRIMARY KEY,
+    tenant_id               UUID         NOT NULL REFERENCES tenant(id),
     name                    VARCHAR(120) NOT NULL,
     national_id             VARCHAR(11),
     birth_date              DATE,
@@ -84,7 +85,7 @@ CREATE TABLE customer (
     deactivation_reason     VARCHAR(200),
     created_at              TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at              TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    updated_by              BIGINT       REFERENCES app_user(id),
+    updated_by              UUID         REFERENCES app_user(id),
     CHECK (status = 'ACTIVE' OR deactivation_reason IS NOT NULL)
 );
 
@@ -94,9 +95,9 @@ CREATE INDEX ix_customer_name ON customer USING gin (name gin_trgm_ops);
 CREATE INDEX ix_customer_tenant ON customer (tenant_id, status);
 
 CREATE TABLE dependent (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT       NOT NULL REFERENCES tenant(id),
-    customer_id         BIGINT       NOT NULL REFERENCES customer(id),
+    id                  UUID         PRIMARY KEY,
+    tenant_id           UUID         NOT NULL REFERENCES tenant(id),
+    customer_id         UUID         NOT NULL REFERENCES customer(id),
     name                VARCHAR(120) NOT NULL,
     dependent_type      VARCHAR(20)  NOT NULL
                         CHECK (dependent_type IN ('ANIMAL','MINOR','ASSISTED')),
@@ -110,37 +111,37 @@ CREATE INDEX ix_dependent_customer ON dependent (tenant_id, customer_id);
 CREATE INDEX ix_dependent_attributes ON dependent USING gin (attributes);
 
 CREATE TABLE specialty (
-    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id   BIGINT       NOT NULL REFERENCES tenant(id),
+    id          UUID         PRIMARY KEY,
+    tenant_id   UUID         NOT NULL REFERENCES tenant(id),
     name        VARCHAR(80)  NOT NULL,
     UNIQUE (tenant_id, name)
 );
 
 CREATE TABLE practitioner (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    user_id         BIGINT       REFERENCES app_user(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    user_id         UUID         REFERENCES app_user(id),
     name            VARCHAR(120) NOT NULL,
     license_number  VARCHAR(30),
-    specialty_id    BIGINT       REFERENCES specialty(id),
+    specialty_id    UUID         REFERENCES specialty(id),
     status          VARCHAR(10)  NOT NULL DEFAULT 'ACTIVE',
     UNIQUE (tenant_id, user_id)
 );
 
 CREATE TABLE service (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
     name            VARCHAR(120)  NOT NULL,
     duration_min    SMALLINT      NOT NULL CHECK (duration_min BETWEEN 5 AND 480),
     price           NUMERIC(10,2) NOT NULL CHECK (price >= 0),
-    specialty_id    BIGINT        REFERENCES specialty(id),
+    specialty_id    UUID          REFERENCES specialty(id),
     status          VARCHAR(10)   NOT NULL DEFAULT 'ACTIVE',
     UNIQUE (tenant_id, name)
 );
 
 CREATE TABLE insurance_plan (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT       NOT NULL REFERENCES tenant(id),
+    id                  UUID         PRIMARY KEY,
+    tenant_id           UUID         NOT NULL REFERENCES tenant(id),
     name                VARCHAR(120) NOT NULL,
     reimbursement_pct   NUMERIC(5,2) CHECK (reimbursement_pct BETWEEN 0 AND 100),
     status              VARCHAR(10)  NOT NULL DEFAULT 'ACTIVE',
@@ -148,17 +149,17 @@ CREATE TABLE insurance_plan (
 );
 
 CREATE TABLE customer_insurance (
-    tenant_id           BIGINT      NOT NULL REFERENCES tenant(id),
-    customer_id         BIGINT      NOT NULL REFERENCES customer(id),
-    insurance_plan_id   BIGINT      NOT NULL REFERENCES insurance_plan(id),
+    tenant_id           UUID        NOT NULL REFERENCES tenant(id),
+    customer_id         UUID        NOT NULL REFERENCES customer(id),
+    insurance_plan_id   UUID        NOT NULL REFERENCES insurance_plan(id),
     member_number       VARCHAR(40) NOT NULL,
     PRIMARY KEY (customer_id, insurance_plan_id)
 );
 
 CREATE TABLE availability (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT   NOT NULL REFERENCES tenant(id),
-    practitioner_id BIGINT   NOT NULL REFERENCES practitioner(id),
+    id              UUID     PRIMARY KEY,
+    tenant_id       UUID     NOT NULL REFERENCES tenant(id),
+    practitioner_id UUID     NOT NULL REFERENCES practitioner(id),
     weekday         SMALLINT NOT NULL CHECK (weekday BETWEEN 0 AND 6),
     start_time      TIME     NOT NULL,
     end_time        TIME     NOT NULL,
@@ -166,9 +167,9 @@ CREATE TABLE availability (
 );
 
 CREATE TABLE schedule_block (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    practitioner_id BIGINT       REFERENCES practitioner(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    practitioner_id UUID         REFERENCES practitioner(id),
     starts_at       TIMESTAMPTZ  NOT NULL,
     ends_at         TIMESTAMPTZ  NOT NULL,
     reason          VARCHAR(120) NOT NULL,
@@ -179,12 +180,12 @@ CREATE INDEX ix_schedule_block_period
     ON schedule_block (tenant_id, practitioner_id, starts_at, ends_at);
 
 CREATE TABLE appointment (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    customer_id     BIGINT       NOT NULL REFERENCES customer(id),
-    dependent_id    BIGINT       REFERENCES dependent(id),
-    practitioner_id BIGINT       NOT NULL REFERENCES practitioner(id),
-    service_id      BIGINT       NOT NULL REFERENCES service(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    customer_id     UUID         NOT NULL REFERENCES customer(id),
+    dependent_id    UUID         REFERENCES dependent(id),
+    practitioner_id UUID         NOT NULL REFERENCES practitioner(id),
+    service_id      UUID         NOT NULL REFERENCES service(id),
     starts_at       TIMESTAMPTZ  NOT NULL,
     ends_at         TIMESTAMPTZ  NOT NULL,
     status          VARCHAR(20)  NOT NULL DEFAULT 'SCHEDULED'
@@ -193,7 +194,7 @@ CREATE TABLE appointment (
                                       'CANCELLED','NO_SHOW')),
     reason          VARCHAR(200),
     source          VARCHAR(20)  NOT NULL DEFAULT 'RECEPTION',
-    created_by      BIGINT       REFERENCES app_user(id),
+    created_by      UUID         REFERENCES app_user(id),
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT now(),
     CHECK (ends_at > starts_at),
     CHECK (status NOT IN ('CANCELLED','NO_SHOW') OR reason IS NOT NULL)
@@ -210,31 +211,31 @@ CREATE INDEX ix_appointment_day ON appointment (tenant_id, starts_at)
     WHERE status <> 'CANCELLED';
 
 CREATE TABLE record_template (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       REFERENCES tenant(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         REFERENCES tenant(id),
     name            VARCHAR(120) NOT NULL,
     version         SMALLINT     NOT NULL DEFAULT 1,
     status          VARCHAR(12)  NOT NULL DEFAULT 'DRAFT'
                     CHECK (status IN ('DRAFT','PUBLISHED','RETIRED')),
-    cloned_from     BIGINT       REFERENCES record_template(id),
+    cloned_from     UUID         REFERENCES record_template(id),
     requires_module VARCHAR(4)   REFERENCES module(code),
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 CREATE UNIQUE INDEX ux_record_template
-    ON record_template (COALESCE(tenant_id, 0), name, version);
+    ON record_template (COALESCE(tenant_id, '00000000-0000-0000-0000-000000000000'::uuid), name, version);
 
 CREATE TABLE template_section (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    record_template_id  BIGINT       NOT NULL REFERENCES record_template(id) ON DELETE CASCADE,
+    id                  UUID         PRIMARY KEY,
+    record_template_id  UUID         NOT NULL REFERENCES record_template(id) ON DELETE CASCADE,
     name                VARCHAR(80)  NOT NULL,
     sort_order          SMALLINT     NOT NULL,
     UNIQUE (record_template_id, sort_order)
 );
 
 CREATE TABLE template_field (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    template_section_id BIGINT       NOT NULL REFERENCES template_section(id) ON DELETE CASCADE,
+    id                  UUID         PRIMARY KEY,
+    template_section_id UUID         NOT NULL REFERENCES template_section(id) ON DELETE CASCADE,
     code                VARCHAR(40)  NOT NULL,
     label               VARCHAR(80)  NOT NULL,
     field_type          VARCHAR(20)  NOT NULL
@@ -252,28 +253,28 @@ CREATE TABLE template_field (
 );
 
 CREATE TABLE encounter (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT       NOT NULL REFERENCES tenant(id),
-    appointment_id      BIGINT       REFERENCES appointment(id),
-    customer_id         BIGINT       NOT NULL REFERENCES customer(id),
-    dependent_id        BIGINT       REFERENCES dependent(id),
-    practitioner_id     BIGINT       NOT NULL REFERENCES practitioner(id),
-    record_template_id  BIGINT       NOT NULL REFERENCES record_template(id),
+    id                  UUID         PRIMARY KEY,
+    tenant_id           UUID         NOT NULL REFERENCES tenant(id),
+    appointment_id      UUID         REFERENCES appointment(id),
+    customer_id         UUID         NOT NULL REFERENCES customer(id),
+    dependent_id        UUID         REFERENCES dependent(id),
+    practitioner_id     UUID         NOT NULL REFERENCES practitioner(id),
+    record_template_id  UUID         NOT NULL REFERENCES record_template(id),
     field_values        JSONB        NOT NULL DEFAULT '{}'::jsonb,
     started_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
     completed_at        TIMESTAMPTZ,
     status              VARCHAR(12)  NOT NULL DEFAULT 'DRAFT'
                         CHECK (status IN ('DRAFT','COMPLETED','CANCELLED')),
-    signed_by           BIGINT       REFERENCES app_user(id)
+    signed_by           UUID         REFERENCES app_user(id)
 );
 
 CREATE INDEX ix_encounter_values ON encounter USING gin (field_values jsonb_path_ops);
 CREATE INDEX ix_encounter_customer ON encounter (tenant_id, customer_id, started_at DESC);
 
 CREATE TABLE attachment (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    encounter_id    BIGINT       NOT NULL REFERENCES encounter(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    encounter_id    UUID         NOT NULL REFERENCES encounter(id),
     file_name       VARCHAR(160) NOT NULL,
     mime_type       VARCHAR(80)  NOT NULL,
     object_key      VARCHAR(255) NOT NULL,
@@ -282,11 +283,11 @@ CREATE TABLE attachment (
 );
 
 CREATE TABLE invoice (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT        NOT NULL REFERENCES tenant(id),
-    encounter_id        BIGINT        NOT NULL REFERENCES encounter(id),
-    customer_id         BIGINT        NOT NULL REFERENCES customer(id),
-    insurance_plan_id   BIGINT        REFERENCES insurance_plan(id),
+    id                  UUID          PRIMARY KEY,
+    tenant_id           UUID          NOT NULL REFERENCES tenant(id),
+    encounter_id        UUID          NOT NULL REFERENCES encounter(id),
+    customer_id         UUID          NOT NULL REFERENCES customer(id),
+    insurance_plan_id   UUID          REFERENCES insurance_plan(id),
     gross_amount        NUMERIC(10,2) NOT NULL CHECK (gross_amount >= 0),
     discount            NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (discount >= 0),
     net_amount          NUMERIC(10,2) NOT NULL CHECK (net_amount >= 0),
@@ -299,30 +300,30 @@ CREATE TABLE invoice (
 CREATE INDEX ix_invoice_status ON invoice (tenant_id, status, due_date);
 
 CREATE TABLE invoice_item (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    invoice_id      BIGINT        NOT NULL REFERENCES invoice(id) ON DELETE CASCADE,
-    service_id      BIGINT        REFERENCES service(id),
+    id              UUID          PRIMARY KEY,
+    invoice_id      UUID          NOT NULL REFERENCES invoice(id) ON DELETE CASCADE,
+    service_id      UUID          REFERENCES service(id),
     description     VARCHAR(160)  NOT NULL,
     quantity        NUMERIC(8,2)  NOT NULL DEFAULT 1,
     unit_price      NUMERIC(10,2) NOT NULL
 );
 
 CREATE TABLE payment (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
-    invoice_id      BIGINT        NOT NULL REFERENCES invoice(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
+    invoice_id      UUID          NOT NULL REFERENCES invoice(id),
     amount          NUMERIC(10,2) NOT NULL CHECK (amount > 0),
     method          VARCHAR(20)   NOT NULL
                     CHECK (method IN ('CASH','PIX','DEBIT','CREDIT','INSURANCE')),
     paid_at         TIMESTAMPTZ   NOT NULL DEFAULT now(),
-    recorded_by     BIGINT        NOT NULL REFERENCES app_user(id)
+    recorded_by     UUID          NOT NULL REFERENCES app_user(id)
 );
 
 CREATE TABLE session_package (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
-    customer_id     BIGINT        NOT NULL REFERENCES customer(id),
-    service_id      BIGINT        NOT NULL REFERENCES service(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
+    customer_id     UUID          NOT NULL REFERENCES customer(id),
+    service_id      UUID          NOT NULL REFERENCES service(id),
     total_sessions  SMALLINT      NOT NULL CHECK (total_sessions > 0),
     used_sessions   SMALLINT      NOT NULL DEFAULT 0 CHECK (used_sessions >= 0),
     price           NUMERIC(10,2) NOT NULL,
@@ -333,19 +334,19 @@ CREATE TABLE session_package (
 );
 
 CREATE TABLE package_usage (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT      NOT NULL REFERENCES tenant(id),
-    session_package_id  BIGINT      NOT NULL REFERENCES session_package(id),
-    encounter_id        BIGINT      NOT NULL REFERENCES encounter(id),
+    id                  UUID        PRIMARY KEY,
+    tenant_id           UUID        NOT NULL REFERENCES tenant(id),
+    session_package_id  UUID        NOT NULL REFERENCES session_package(id),
+    encounter_id        UUID        NOT NULL REFERENCES encounter(id),
     used_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (encounter_id)
 );
 
 CREATE TABLE commission (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
-    encounter_id    BIGINT        NOT NULL REFERENCES encounter(id),
-    practitioner_id BIGINT        NOT NULL REFERENCES practitioner(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
+    encounter_id    UUID          NOT NULL REFERENCES encounter(id),
+    practitioner_id UUID          NOT NULL REFERENCES practitioner(id),
     percentage      NUMERIC(5,2)  NOT NULL CHECK (percentage BETWEEN 0 AND 100),
     amount          NUMERIC(10,2) NOT NULL,
     period          DATE          NOT NULL,
@@ -353,8 +354,8 @@ CREATE TABLE commission (
 );
 
 CREATE TABLE product (
-    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id           BIGINT        NOT NULL REFERENCES tenant(id),
+    id                  UUID          PRIMARY KEY,
+    tenant_id           UUID          NOT NULL REFERENCES tenant(id),
     name                VARCHAR(120)  NOT NULL,
     unit                VARCHAR(10)   NOT NULL,
     min_stock           NUMERIC(10,2) NOT NULL DEFAULT 0,
@@ -364,9 +365,9 @@ CREATE TABLE product (
 );
 
 CREATE TABLE batch (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
-    product_id      BIGINT        NOT NULL REFERENCES product(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
+    product_id      UUID          NOT NULL REFERENCES product(id),
     code            VARCHAR(40)   NOT NULL,
     expires_on      DATE          NOT NULL,
     quantity        NUMERIC(10,2) NOT NULL CHECK (quantity >= 0),
@@ -380,16 +381,16 @@ CREATE INDEX ix_batch_expiry ON batch (tenant_id, product_id, expires_on)
     WHERE status = 'AVAILABLE';
 
 CREATE TABLE stock_movement (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT        NOT NULL REFERENCES tenant(id),
-    product_id      BIGINT        NOT NULL REFERENCES product(id),
-    batch_id        BIGINT        REFERENCES batch(id),
-    encounter_id    BIGINT        REFERENCES encounter(id),
+    id              UUID          PRIMARY KEY,
+    tenant_id       UUID          NOT NULL REFERENCES tenant(id),
+    product_id      UUID          NOT NULL REFERENCES product(id),
+    batch_id        UUID          REFERENCES batch(id),
+    encounter_id    UUID          REFERENCES encounter(id),
     movement_type   VARCHAR(12)   NOT NULL
                     CHECK (movement_type IN ('INBOUND','OUTBOUND','ADJUSTMENT','DISCARD')),
     quantity        NUMERIC(10,2) NOT NULL CHECK (quantity > 0),
     reason          VARCHAR(160),
-    recorded_by     BIGINT        NOT NULL REFERENCES app_user(id),
+    recorded_by     UUID          NOT NULL REFERENCES app_user(id),
     recorded_at     TIMESTAMPTZ   NOT NULL DEFAULT now(),
     CHECK (movement_type <> 'OUTBOUND' OR encounter_id IS NOT NULL OR reason IS NOT NULL)
 );
@@ -397,9 +398,9 @@ CREATE TABLE stock_movement (
 CREATE INDEX ix_stock_movement_encounter ON stock_movement (tenant_id, encounter_id);
 
 CREATE TABLE notification (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    appointment_id  BIGINT       NOT NULL REFERENCES appointment(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    appointment_id  UUID         NOT NULL REFERENCES appointment(id),
     channel         VARCHAR(10)  NOT NULL CHECK (channel IN ('SMS','WHATSAPP','EMAIL')),
     recipient       VARCHAR(160) NOT NULL,
     sent_at         TIMESTAMPTZ,
@@ -412,11 +413,11 @@ CREATE TABLE notification (
 CREATE INDEX ix_notification_pending ON notification (tenant_id, status, sent_at);
 
 CREATE TABLE audit_log (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    user_id         BIGINT       NOT NULL REFERENCES app_user(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    user_id         UUID         NOT NULL REFERENCES app_user(id),
     entity          VARCHAR(40)  NOT NULL,
-    record_id       BIGINT       NOT NULL,
+    record_id       UUID         NOT NULL,
     action          VARCHAR(10)  NOT NULL
                     CHECK (action IN ('CREATE','UPDATE','DEACTIVATE','ACCESS')),
     old_value       JSONB,
@@ -429,9 +430,9 @@ CREATE INDEX ix_audit_log_record
     ON audit_log (tenant_id, entity, record_id, occurred_at DESC);
 
 CREATE TABLE consent (
-    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tenant_id       BIGINT       NOT NULL REFERENCES tenant(id),
-    customer_id     BIGINT       NOT NULL REFERENCES customer(id),
+    id              UUID         PRIMARY KEY,
+    tenant_id       UUID         NOT NULL REFERENCES tenant(id),
+    customer_id     UUID         NOT NULL REFERENCES customer(id),
     purpose         VARCHAR(60)  NOT NULL,
     granted         BOOLEAN      NOT NULL,
     source          VARCHAR(30)  NOT NULL,
@@ -457,4 +458,4 @@ INSERT INTO parameter (code, name, data_type, min_value, max_value, options, def
  ('late_fee_pct','Multa por atraso (%)','DECIMAL',0,10,NULL,'2',NULL),
  ('expiry_alert_days','Antecedência do alerta de validade (dias)','INTEGER',7,180,NULL,'30','M04'),
  ('block_expired_batch','Bloquear aplicação de lote vencido','BOOLEAN',NULL,NULL,NULL,'true','M04'),
- ('default_record_template','Modelo de ficha padrão','REF',NULL,NULL,NULL,'1',NULL);
+ ('default_record_template','Modelo de ficha padrão','REF',NULL,NULL,NULL,'00000000-0000-0000-0000-000000000000',NULL);

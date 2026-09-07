@@ -1,11 +1,12 @@
 package com.example.clivoapi.modules.commission;
 
 import com.example.clivoapi.common.money.Money;
+import java.util.UUID;
 
 public record CommissionSnapshot(
-        Long id,
-        Long encounterId,
-        Long practitionerId,
+        UUID id,
+        UUID encounterId,
+        UUID practitionerId,
         String practitionerName,
         CommissionRate percentage,
         Money amount,

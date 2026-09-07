@@ -13,6 +13,7 @@ import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateContent;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ class SpecialComponentTest extends EncounterFixture {
 
     @Test
     void publishingAnOdontogramWithoutItsModuleIsRefused() {
-        Long draftId = templates.draft("Dental chart", null, odontogram()).id();
+        UUID draftId = templates.draft("Dental chart", null, odontogram()).id();
 
         assertThatThrownBy(() -> templates.publish(draftId))
                 .isInstanceOf(BusinessException.class)
@@ -43,7 +44,7 @@ class SpecialComponentTest extends EncounterFixture {
     @Test
     void theOdontogramRendersEveryPermanentToothOnceItsModuleIsActive() {
         modules.activate(ODONTOGRAM);
-        Long id = openWith(odontogram());
+        UUID id = openWith(odontogram());
 
         SheetField chart = onlyFieldOf(id);
 
@@ -54,7 +55,7 @@ class SpecialComponentTest extends EncounterFixture {
     @Test
     void aToothOutsideTheChartRefusesTheCompletion() {
         modules.activate(ODONTOGRAM);
-        Long id = openWith(odontogram());
+        UUID id = openWith(odontogram());
         encounters.fill(id, RecordValues.of(Map.of("chart", Map.of("99", "carie"))));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -65,7 +66,7 @@ class SpecialComponentTest extends EncounterFixture {
     @Test
     void aMarkedToothIsAccepted() {
         modules.activate(ODONTOGRAM);
-        Long id = openWith(odontogram());
+        UUID id = openWith(odontogram());
         encounters.fill(id, RecordValues.of(Map.of("chart", Map.of("26", "carie"))));
 
         assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
@@ -74,7 +75,7 @@ class SpecialComponentTest extends EncounterFixture {
     @Test
     void theBodyMapRendersTheRegionsDeclaredInTheTemplate() {
         modules.activate(BODY_MAP);
-        Long id = openWith(bodyMap());
+        UUID id = openWith(bodyMap());
 
         SheetField chart = onlyFieldOf(id);
 
@@ -85,14 +86,14 @@ class SpecialComponentTest extends EncounterFixture {
     @Test
     void theComponentLeavesNoTraceOnceItsModuleIsSwitchedOff() {
         modules.activate(ODONTOGRAM);
-        Long id = openWith(odontogram());
+        UUID id = openWith(odontogram());
         modules.deactivate(ODONTOGRAM);
 
         assertThat(onlySectionOf(id)).isEmpty();
     }
 
-    private Long openWith(TemplateContent content) {
-        Long templateId = publishTemplate("Dental chart", content);
+    private UUID openWith(TemplateContent content) {
+        UUID templateId = publishTemplate("Dental chart", content);
         return encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
@@ -113,11 +114,11 @@ class SpecialComponentTest extends EncounterFixture {
                         "chart", "Dental chart", "COMPONENT", component, false, options, Map.of(), module)))));
     }
 
-    private SheetField onlyFieldOf(Long encounterId) {
+    private SheetField onlyFieldOf(UUID encounterId) {
         return onlySectionOf(encounterId).getFirst();
     }
 
-    private List<SheetField> onlySectionOf(Long encounterId) {
+    private List<SheetField> onlySectionOf(UUID encounterId) {
         EncounterSnapshot encounter = reopen(encounterId);
         return encounter.sheet().sections().getFirst().fields();
     }

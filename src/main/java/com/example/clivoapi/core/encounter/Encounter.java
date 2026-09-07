@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.encounter;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.CompletedEncounter;
 import com.example.clivoapi.common.extension.RecordFilling;
@@ -16,8 +18,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,7 +26,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 @Entity
@@ -34,8 +36,8 @@ import org.hibernate.type.SqlTypes;
 public class Encounter extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
@@ -54,7 +56,7 @@ public class Encounter extends TenantScopedEntity {
     private Service service;
 
     @Column(name = "record_template_id", nullable = false, updatable = false)
-    private Long recordTemplateId;
+    private UUID recordTemplateId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "field_values", nullable = false)
@@ -73,7 +75,7 @@ public class Encounter extends TenantScopedEntity {
     protected Encounter() {
     }
 
-    public Encounter(Customer customer, Practitioner practitioner, Service service, Long recordTemplateId) {
+    public Encounter(Customer customer, Practitioner practitioner, Service service, UUID recordTemplateId) {
         this.customer = customer;
         this.practitioner = practitioner;
         this.service = service;
@@ -88,12 +90,12 @@ public class Encounter extends TenantScopedEntity {
             Customer customer,
             Practitioner practitioner,
             Service service,
-            Long recordTemplateId) {
+            UUID recordTemplateId) {
         this(customer, practitioner, service, recordTemplateId);
         this.appointment = appointment;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -116,7 +118,7 @@ public class Encounter extends TenantScopedEntity {
         return status == EncounterStatus.COMPLETED;
     }
 
-    public SuppliesUsed consume(Long productId, BigDecimal quantity) {
+    public SuppliesUsed consume(UUID productId, BigDecimal quantity) {
         requireOpen("supplied");
         return new SuppliesUsed(id, productId, quantity);
     }
@@ -144,7 +146,7 @@ public class Encounter extends TenantScopedEntity {
                 service.name());
     }
 
-    private Optional<Long> appointmentId() {
+    private Optional<UUID> appointmentId() {
         return Optional.ofNullable(appointment).map(Appointment::id);
     }
 

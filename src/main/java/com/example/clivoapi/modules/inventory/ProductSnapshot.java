@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.inventory;
 
+import java.util.UUID;
+
 public record ProductSnapshot(
-        Long id, ProductDetails details, Quantity onHand, ProductStatus status, boolean belowMinimum) {
+        UUID id, ProductDetails details, Quantity onHand, ProductStatus status, boolean belowMinimum) {
 }

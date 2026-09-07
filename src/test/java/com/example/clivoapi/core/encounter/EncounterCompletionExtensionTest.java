@@ -8,6 +8,7 @@ import com.example.clivoapi.common.extension.CompletedEncounter;
 import com.example.clivoapi.common.extension.EncounterCompletionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ class EncounterCompletionExtensionTest extends EncounterFixture {
     @Autowired
     private CompletionLog log;
 
-    private Long templateId;
+    private UUID templateId;
 
     @BeforeEach
     void openTheClinic() {
@@ -82,7 +83,7 @@ class EncounterCompletionExtensionTest extends EncounterFixture {
 
     @Test
     void aListenerDeclaredOutsideTheProductionCodeIsCalledJustByExisting() {
-        Long id = openWalkIn();
+        UUID id = openWalkIn();
 
         completeAsPractitioner(id);
 
@@ -103,7 +104,7 @@ class EncounterCompletionExtensionTest extends EncounterFixture {
 
     @Test
     void aListenerThatRefusesLeavesTheEncounterOpen() {
-        Long id = openWalkIn();
+        UUID id = openWalkIn();
         log.close();
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -113,7 +114,7 @@ class EncounterCompletionExtensionTest extends EncounterFixture {
         assertThat(reopen(id).isCompleted()).isFalse();
     }
 
-    private Long openWalkIn() {
+    private UUID openWalkIn() {
         return encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();

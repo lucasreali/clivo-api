@@ -1,10 +1,11 @@
 package com.example.clivoapi.common.tenant;
 
+import java.util.UUID;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 
-class RequestTenantIdentifierResolver implements CurrentTenantIdentifierResolver<Long> {
+class RequestTenantIdentifierResolver implements CurrentTenantIdentifierResolver<UUID> {
 
-    private static final Long NO_TENANT = 0L;
+    private static final UUID NO_TENANT = new UUID(0, 0);
 
     private final TenantContext tenantContext;
 
@@ -13,7 +14,7 @@ class RequestTenantIdentifierResolver implements CurrentTenantIdentifierResolver
     }
 
     @Override
-    public Long resolveCurrentTenantIdentifier() {
+    public UUID resolveCurrentTenantIdentifier() {
         return tenantContext.current().orElse(NO_TENANT);
     }
 

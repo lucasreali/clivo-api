@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.billing;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -10,21 +12,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "payment")
 public class Payment extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "invoice_id", nullable = false, updatable = false)
@@ -42,7 +44,7 @@ public class Payment extends TenantScopedEntity {
     private Instant paidAt;
 
     @Column(name = "recorded_by", nullable = false, updatable = false)
-    private Long recordedBy;
+    private UUID recordedBy;
 
     @Column(name = "refunded_at")
     private Instant refundedAt;
@@ -53,7 +55,7 @@ public class Payment extends TenantScopedEntity {
     protected Payment() {
     }
 
-    Payment(Invoice invoice, PaymentDetails details, Long recordedBy) {
+    Payment(Invoice invoice, PaymentDetails details, UUID recordedBy) {
         this.invoice = invoice;
         this.amount = details.amount();
         this.method = details.method();
@@ -61,7 +63,7 @@ public class Payment extends TenantScopedEntity {
         this.recordedBy = recordedBy;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -69,7 +71,7 @@ public class Payment extends TenantScopedEntity {
         return refundedAt != null;
     }
 
-    public boolean identifiedBy(Long candidate) {
+    public boolean identifiedBy(UUID candidate) {
         return candidate.equals(id);
     }
 
@@ -94,6 +96,6 @@ public class Payment extends TenantScopedEntity {
         if (!isRefunded()) {
             return;
         }
-        throw new BusinessException("payment %d was already refunded".formatted(id));
+        throw new BusinessException("payment %s was already refunded".formatted(id));
     }
 }

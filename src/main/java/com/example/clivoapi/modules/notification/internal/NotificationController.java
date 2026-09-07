@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +40,7 @@ class NotificationController {
 
     @Operation(operationId = "listAppointmentNotifications", summary = "List an appointment's notifications")
     @GetMapping
-    List<NotificationView> forAppointment(@RequestParam Long appointmentId) {
+    List<NotificationView> forAppointment(@RequestParam UUID appointmentId) {
         return viewsOf(notifications.forAppointment(appointmentId));
     }
 
@@ -57,7 +58,7 @@ class NotificationController {
 
     @Operation(operationId = "registerNotificationReply", summary = "Register the customer's reply to a notification")
     @PostMapping("/{id}/reply")
-    NotificationView registerResponse(@PathVariable Long id, @RequestBody ReplyRequest request) {
+    NotificationView registerResponse(@PathVariable UUID id, @RequestBody ReplyRequest request) {
         return NotificationView.of(notifications.registerResponse(id, request.reply()));
     }
 

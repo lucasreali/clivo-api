@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ class InvoiceController {
 
     @Operation(operationId = "listInvoicesByCustomer", summary = "List a customer's invoices")
     @GetMapping
-    List<InvoiceView> byCustomer(@RequestParam Long customerId) {
+    List<InvoiceView> byCustomer(@RequestParam UUID customerId) {
         return billing.findByCustomer(customerId).stream().map(InvoiceView::of).toList();
     }
 
@@ -49,27 +50,27 @@ class InvoiceController {
 
     @Operation(operationId = "getInvoice", summary = "Read one invoice with its items and payments")
     @GetMapping("/{id}")
-    InvoiceView findOne(@PathVariable Long id) {
+    InvoiceView findOne(@PathVariable UUID id) {
         return InvoiceView.of(billing.findOne(id));
     }
 
     @Operation(operationId = "applyInvoiceDiscount", summary = "Apply a discount to an open invoice")
     @PostMapping("/{id}/discount")
-    InvoiceView applyDiscount(@PathVariable Long id, @Valid @RequestBody DiscountRequest request) {
+    InvoiceView applyDiscount(@PathVariable UUID id, @Valid @RequestBody DiscountRequest request) {
         return InvoiceView.of(billing.applyDiscount(id, request.toAmount(), request.toReason()));
     }
 
     @Operation(operationId = "settleInvoice", summary = "Settle an invoice in full or in part")
     @PostMapping("/{id}/payments")
     @ResponseStatus(HttpStatus.CREATED)
-    InvoiceView settle(@PathVariable Long id, @Valid @RequestBody PaymentRequest request) {
+    InvoiceView settle(@PathVariable UUID id, @Valid @RequestBody PaymentRequest request) {
         return InvoiceView.of(billing.settle(id, request.toDetails()));
     }
 
     @Operation(operationId = "refundInvoicePayment", summary = "Refund a payment already taken")
     @PostMapping("/{id}/payments/{paymentId}/refund")
     InvoiceView refund(
-            @PathVariable Long id, @PathVariable Long paymentId, @RequestBody RefundRequest request) {
+            @PathVariable UUID id, @PathVariable UUID paymentId, @RequestBody RefundRequest request) {
         return InvoiceView.of(billing.refund(id, paymentId, request.toReason()));
     }
 

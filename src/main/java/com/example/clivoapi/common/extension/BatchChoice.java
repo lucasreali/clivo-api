@@ -1,8 +1,9 @@
 package com.example.clivoapi.common.extension;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public record BatchChoice(Long batchId, String code, String warning) {
+public record BatchChoice(UUID batchId, String code, String warning) {
 
     public static BatchChoice accepted(BatchCandidate candidate) {
         return new BatchChoice(candidate.batchId(), candidate.code(), null);

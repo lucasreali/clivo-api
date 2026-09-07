@@ -4,6 +4,7 @@ import com.example.clivoapi.core.catalog.CatalogService;
 import com.example.clivoapi.core.catalog.Service;
 import com.example.clivoapi.core.customer.Customer;
 import com.example.clivoapi.core.customer.CustomerService;
+import java.util.UUID;
 
 class BillingParties {
 
@@ -15,11 +16,11 @@ class BillingParties {
         this.catalogue = catalogue;
     }
 
-    Customer customer(Long id) {
+    Customer customer(UUID id) {
         return customers.reference(id);
     }
 
-    Service service(Long id) {
+    Service service(UUID id) {
         return catalogue.reference(id);
     }
 }

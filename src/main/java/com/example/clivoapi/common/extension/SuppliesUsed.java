@@ -1,8 +1,9 @@
 package com.example.clivoapi.common.extension;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-public record SuppliesUsed(Long encounterId, Long productId, BigDecimal quantity) {
+public record SuppliesUsed(UUID encounterId, UUID productId, BigDecimal quantity) {
 
     public SuppliesUsed {
         if (encounterId == null || productId == null) {

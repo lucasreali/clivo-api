@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,31 +45,31 @@ class AppointmentController {
 
     @Operation(operationId = "getAppointment", summary = "Read one appointment")
     @GetMapping("/{id}")
-    AppointmentView findOne(@PathVariable Long id) {
+    AppointmentView findOne(@PathVariable UUID id) {
         return AppointmentView.of(scheduling.findOne(id));
     }
 
     @Operation(operationId = "rescheduleAppointment", summary = "Move an appointment to another time, within the allowed notice")
     @PutMapping("/{id}/schedule")
-    AppointmentView reschedule(@PathVariable Long id, @Valid @RequestBody RescheduleRequest request) {
+    AppointmentView reschedule(@PathVariable UUID id, @Valid @RequestBody RescheduleRequest request) {
         return AppointmentView.of(scheduling.reschedule(id, request.start()));
     }
 
     @Operation(operationId = "cancelAppointment", summary = "Cancel an appointment, stating the reason")
     @PostMapping("/{id}/cancellation")
-    AppointmentView cancel(@PathVariable Long id, @RequestBody ReasonRequest request) {
+    AppointmentView cancel(@PathVariable UUID id, @RequestBody ReasonRequest request) {
         return AppointmentView.of(scheduling.cancel(id, request.toReason()));
     }
 
     @Operation(operationId = "checkInAppointment", summary = "Register the customer's arrival")
     @PostMapping("/{id}/arrival")
-    AppointmentView checkIn(@PathVariable Long id) {
+    AppointmentView checkIn(@PathVariable UUID id) {
         return AppointmentView.of(scheduling.checkIn(id));
     }
 
     @Operation(operationId = "markAppointmentNoShow", summary = "Mark the customer as a no-show, stating the reason")
     @PostMapping("/{id}/absence")
-    AppointmentView markNoShow(@PathVariable Long id, @RequestBody ReasonRequest request) {
+    AppointmentView markNoShow(@PathVariable UUID id, @RequestBody ReasonRequest request) {
         return AppointmentView.of(scheduling.markNoShow(id, request.toReason()));
     }
 }

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,7 +37,7 @@ public class TenantResolutionFilter extends OncePerRequestFilter {
             return;
         }
         Object tenantId = session.getAttribute(TENANT_SESSION_ATTRIBUTE);
-        if (tenantId instanceof Long identifier) {
+        if (tenantId instanceof UUID identifier) {
             tenantContext.bind(identifier);
         }
     }

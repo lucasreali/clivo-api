@@ -29,6 +29,7 @@ import com.example.clivoapi.core.practitioner.PractitionerService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,10 +62,10 @@ public abstract class BillingFixture extends DatabaseTest {
     private AccessService access;
 
     private Tenant clinic;
-    private Long customerId;
-    private Long practitionerId;
-    private Long serviceId;
-    private Long templateId;
+    private UUID customerId;
+    private UUID practitionerId;
+    private UUID serviceId;
+    private UUID templateId;
 
     protected Tenant openClinic(String code) {
         clinic = createTenant(code);
@@ -88,20 +89,20 @@ public abstract class BillingFixture extends DatabaseTest {
         return clinic;
     }
 
-    protected Long customerId() {
+    protected UUID customerId() {
         return customerId;
     }
 
-    protected Long serviceId() {
+    protected UUID serviceId() {
         return serviceId;
     }
 
-    protected Long practitionerId() {
+    protected UUID practitionerId() {
         return practitionerId;
     }
 
-    protected Long completeAnEncounter() {
-        Long id = encounters
+    protected UUID completeAnEncounter() {
+        UUID id = encounters
                 .open(EncounterOpening.walkIn(customerId, practitionerId, serviceId, templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", "Dor no dente 26")));
@@ -127,12 +128,12 @@ public abstract class BillingFixture extends DatabaseTest {
                         identity, null, List.of(new SimpleGrantedAuthority(role.authority()))));
     }
 
-    private Long publishedTemplate() {
+    private UUID publishedTemplate() {
         TemplateContent content = new TemplateContent(List.of(new SectionContent(
                 "Complaint",
                 List.of(new FieldContent(
                         "complaint", "Complaint", "LONG_TEXT", null, false, List.of(), Map.of(), null)))));
-        Long draftId = templates.draft("Anamnesis", null, content).id();
+        UUID draftId = templates.draft("Anamnesis", null, content).id();
         return templates.publish(draftId).id();
     }
 

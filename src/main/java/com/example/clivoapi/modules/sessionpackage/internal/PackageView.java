@@ -3,11 +3,12 @@ package com.example.clivoapi.modules.sessionpackage.internal;
 import com.example.clivoapi.modules.sessionpackage.SessionPackageSnapshot;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 record PackageView(
-        Long id,
-        Long customerId,
-        Long serviceId,
+        UUID id,
+        UUID customerId,
+        UUID serviceId,
         String serviceName,
         int totalSessions,
         int usedSessions,

@@ -6,9 +6,10 @@ import com.example.clivoapi.core.customer.CustomerSnapshot;
 import com.example.clivoapi.core.customer.NationalId;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 record CustomerView(
-        Long id,
+        UUID id,
         String name,
         String nationalId,
         LocalDate birthDate,

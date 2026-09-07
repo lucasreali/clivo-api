@@ -5,6 +5,7 @@ import com.example.clivoapi.core.practitioner.internal.PractitionerRepository;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,26 +23,26 @@ public class PractitionerService {
         return practitioners.save(new Practitioner(details)).snapshot();
     }
 
-    public PractitionerSnapshot describe(Long id, PractitionerDetails details) {
+    public PractitionerSnapshot describe(UUID id, PractitionerDetails details) {
         Practitioner practitioner = practitionerOf(id);
         practitioner.describeAs(details);
         return practitioners.save(practitioner).snapshot();
     }
 
-    public PractitionerSnapshot deactivate(Long id) {
+    public PractitionerSnapshot deactivate(UUID id) {
         Practitioner practitioner = practitionerOf(id);
         practitioner.deactivate();
         return practitioners.save(practitioner).snapshot();
     }
 
-    public PractitionerSnapshot follow(Long id, WeeklySchedule schedule) {
+    public PractitionerSnapshot follow(UUID id, WeeklySchedule schedule) {
         Practitioner practitioner = practitionerOf(id);
         practitioner.follow(schedule);
         return practitioners.save(practitioner).snapshot();
     }
 
     @Transactional(readOnly = true)
-    public boolean worksAt(Long id, DayOfWeek day, LocalTime time) {
+    public boolean worksAt(UUID id, DayOfWeek day, LocalTime time) {
         return practitionerOf(id).worksAt(day, time);
     }
 
@@ -51,16 +52,16 @@ public class PractitionerService {
     }
 
     @Transactional(readOnly = true)
-    public PractitionerSnapshot findOne(Long id) {
+    public PractitionerSnapshot findOne(UUID id) {
         return practitionerOf(id).snapshot();
     }
 
     @Transactional(readOnly = true)
-    public Practitioner reference(Long id) {
+    public Practitioner reference(UUID id) {
         return practitionerOf(id);
     }
 
-    private Practitioner practitionerOf(Long id) {
+    private Practitioner practitionerOf(UUID id) {
         return practitioners.findById(id).orElseThrow(() -> new ResourceNotFoundException("Practitioner", id));
     }
 }

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.example.clivoapi.common.DatabaseTest;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -76,7 +77,7 @@ class AccessServiceTest extends DatabaseTest {
                 .withMessageContaining("already registered");
     }
 
-    private void deactivate(Long userId) {
+    private void deactivate(UUID userId) {
         jdbcTemplate.update("UPDATE app_user SET status = 'INACTIVE' WHERE id = ?", userId);
     }
 

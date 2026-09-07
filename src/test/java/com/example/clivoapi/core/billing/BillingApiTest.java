@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.clivoapi.common.money.Money;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ class BillingApiTest extends BillingFixture {
     @Autowired
     private MockMvc mockMvc;
 
-    private Long invoiceId;
+    private UUID invoiceId;
 
     @BeforeEach
     void openTheClinic() {
@@ -70,7 +71,7 @@ class BillingApiTest extends BillingFixture {
     @Test
     void aRefundPutsTheInvoiceBackInTheOpenState() throws Exception {
         PaymentDetails inFull = new PaymentDetails(Money.of(SERVICE_PRICE), PaymentMethod.CASH);
-        Long paymentId = billing.settle(invoiceId, inFull).payments().getFirst().id();
+        UUID paymentId = billing.settle(invoiceId, inFull).payments().getFirst().id();
 
         mockMvc.perform(post("/api/invoices/{id}/payments/{paymentId}/refund", invoiceId, paymentId)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -29,6 +29,7 @@ import com.example.clivoapi.core.practitioner.PractitionerService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,7 +74,7 @@ public abstract class InventoryFixture extends DatabaseTest {
         modules.activate(module);
     }
 
-    protected Long registerProduct(ProductDetails details) {
+    protected UUID registerProduct(ProductDetails details) {
         return inventory.register(details).id();
     }
 
@@ -89,20 +90,20 @@ public abstract class InventoryFixture extends DatabaseTest {
         SecurityContextHolder.clearContext();
     }
 
-    protected Long registerGauze(String minimum) {
+    protected UUID registerGauze(String minimum) {
         return inventory
                 .register(new ProductDetails("Gaze estéril", new MeasurementUnit("un"), Quantity.of(minimum), false))
                 .id();
     }
 
-    protected Long anOpenEncounter() {
-        Long customerId = customers.register(new CustomerDetails(
+    protected UUID anOpenEncounter() {
+        UUID customerId = customers.register(new CustomerDetails(
                         "Ana Prado", null, LocalDate.of(1990, 1, 1), new ContactDetails("41999990000", null), null))
                 .id();
-        Long practitionerId = practitioners
+        UUID practitionerId = practitioners
                 .register(new PractitionerDetails("Dra. Marina", null))
                 .id();
-        Long serviceId = catalogue
+        UUID serviceId = catalogue
                 .register(new ServiceDetails("Curativo", ServiceDuration.ofMinutes(30), Money.of("120.00")))
                 .id();
         return encounters
@@ -110,7 +111,7 @@ public abstract class InventoryFixture extends DatabaseTest {
                 .id();
     }
 
-    private Long publishedTemplate() {
+    private UUID publishedTemplate() {
         TemplateContent content = new TemplateContent(List.of(new SectionContent(
                 "Complaint",
                 List.of(new FieldContent("complaint", "Complaint", "LONG_TEXT", null, false, List.of(), Map.of(), null)))));

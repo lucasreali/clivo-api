@@ -5,6 +5,7 @@ import com.example.clivoapi.common.extension.ModuleActivationValidator;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.configuration.modules.internal.ModuleActivationRepository;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,13 @@ public class ModuleActivationService {
     private final ModuleRegistry registry;
     private final ModuleActivationRepository activations;
     private final ModuleActivationValidation validation;
-    private final AuditorAware<Long> auditor;
+    private final AuditorAware<UUID> auditor;
 
     ModuleActivationService(
             ModuleRegistry registry,
             ModuleActivationRepository activations,
             List<ModuleActivationValidator> validators,
-            AuditorAware<Long> auditor) {
+            AuditorAware<UUID> auditor) {
         this.registry = registry;
         this.activations = activations;
         this.validation = new ModuleActivationValidation(validators);

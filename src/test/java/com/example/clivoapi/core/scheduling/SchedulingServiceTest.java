@@ -7,6 +7,7 @@ import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ class SchedulingServiceTest extends SchedulingFixture {
 
     @Test
     void reschedulingMovesTheWholePeriod() {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
         LocalDateTime later = nextWeekAt(DayOfWeek.TUESDAY, "14:00");
 
         AppointmentSnapshot moved = scheduling.reschedule(id, later);
@@ -63,7 +64,7 @@ class SchedulingServiceTest extends SchedulingFixture {
     @Test
     void cancellingKeepsTheReasonAndFreesTheSlot() {
         LocalDateTime start = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long id = bookAt(start).id();
+        UUID id = bookAt(start).id();
 
         AppointmentSnapshot cancelled = scheduling.cancel(id, new CancellationReason("Cliente desistiu"));
 
@@ -74,7 +75,7 @@ class SchedulingServiceTest extends SchedulingFixture {
 
     @Test
     void cancellingWithoutReasonIsRefused() {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
 
         assertThatExceptionOfType(BusinessException.class)
                 .isThrownBy(() -> scheduling.cancel(id, new CancellationReason("")))
@@ -83,7 +84,7 @@ class SchedulingServiceTest extends SchedulingFixture {
 
     @Test
     void aCancelledAppointmentIsNotCancelledTwice() {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
         scheduling.cancel(id, new CancellationReason("Cliente desistiu"));
 
         assertThatExceptionOfType(BusinessException.class)
@@ -93,15 +94,17 @@ class SchedulingServiceTest extends SchedulingFixture {
 
     @Test
     void anUnknownAppointmentIsNotFound() {
+        UUID unknown = UUID.randomUUID();
+
         assertThatExceptionOfType(ResourceNotFoundException.class)
-                .isThrownBy(() -> scheduling.findOne(404L))
-                .withMessage("Appointment 404 not found");
+                .isThrownBy(() -> scheduling.findOne(unknown))
+                .withMessage("Appointment %s not found".formatted(unknown));
     }
 
     @Test
     void anAppointmentOverlapsADraftThatCrossesItsPeriod() {
         LocalDateTime start = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long id = bookAt(start).id();
+        UUID id = bookAt(start).id();
 
         transactions.executeWithoutResult(status -> {
             Appointment booked = book.reference(id);
@@ -113,7 +116,7 @@ class SchedulingServiceTest extends SchedulingFixture {
     @Test
     void aCancelledAppointmentNoLongerOverlapsAnything() {
         LocalDateTime start = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long id = bookAt(start).id();
+        UUID id = bookAt(start).id();
         scheduling.cancel(id, new CancellationReason("Cliente desistiu"));
 
         transactions.executeWithoutResult(status -> {

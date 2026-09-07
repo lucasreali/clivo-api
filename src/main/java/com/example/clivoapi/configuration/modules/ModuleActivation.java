@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tenant_module")
@@ -23,7 +24,7 @@ public class ModuleActivation extends TenantScopedEntity {
     private Instant enabledAt;
 
     @Column(name = "enabled_by")
-    private Long enabledBy;
+    private UUID enabledBy;
 
     protected ModuleActivation() {
     }
@@ -41,7 +42,7 @@ public class ModuleActivation extends TenantScopedEntity {
         return enabled;
     }
 
-    public void enable(Long userId) {
+    public void enable(UUID userId) {
         enabled = true;
         enabledAt = Instant.now();
         enabledBy = userId;

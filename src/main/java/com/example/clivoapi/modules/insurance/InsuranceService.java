@@ -7,6 +7,7 @@ import com.example.clivoapi.modules.insurance.internal.CustomerInsuranceReposito
 import com.example.clivoapi.modules.insurance.internal.InsurancePlanRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,19 +30,19 @@ public class InsuranceService {
         return plans.save(new InsurancePlan(details)).snapshot();
     }
 
-    public InsurancePlanSnapshot describe(Long id, PlanDetails details) {
+    public InsurancePlanSnapshot describe(UUID id, PlanDetails details) {
         InsurancePlan plan = planOf(id);
         plan.describeAs(details);
         return plans.save(plan).snapshot();
     }
 
-    public InsurancePlanSnapshot deactivate(Long id) {
+    public InsurancePlanSnapshot deactivate(UUID id) {
         InsurancePlan plan = planOf(id);
         plan.deactivate();
         return plans.save(plan).snapshot();
     }
 
-    public CustomerInsuranceSnapshot enrol(Long customerId, Long planId, MemberNumber memberNumber) {
+    public CustomerInsuranceSnapshot enrol(UUID customerId, UUID planId, MemberNumber memberNumber) {
         requireNotEnrolled(customerId, planId);
         CustomerInsurance membership =
                 new CustomerInsurance(customers.reference(customerId), planOf(planId), memberNumber);
@@ -54,27 +55,27 @@ public class InsuranceService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomerInsuranceSnapshot> membershipsOf(Long customerId) {
+    public List<CustomerInsuranceSnapshot> membershipsOf(UUID customerId) {
         return memberships.findByCustomerIdOrderByIdAsc(customerId).stream()
                 .map(CustomerInsurance::snapshot)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public Optional<CustomerInsurance> usableFor(Long customerId) {
+    public Optional<CustomerInsurance> usableFor(UUID customerId) {
         return memberships.findByCustomerIdOrderByIdAsc(customerId).stream()
                 .filter(CustomerInsurance::isUsable)
                 .findFirst();
     }
 
-    private void requireNotEnrolled(Long customerId, Long planId) {
+    private void requireNotEnrolled(UUID customerId, UUID planId) {
         if (memberships.findByCustomerIdAndPlanId(customerId, planId).isEmpty()) {
             return;
         }
         throw new BusinessException("this customer already carries a membership of that plan");
     }
 
-    private InsurancePlan planOf(Long id) {
+    private InsurancePlan planOf(UUID id) {
         return plans.findById(id).orElseThrow(() -> new ResourceNotFoundException("InsurancePlan", id));
     }
 }

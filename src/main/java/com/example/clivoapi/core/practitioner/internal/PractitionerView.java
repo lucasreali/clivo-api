@@ -2,8 +2,9 @@ package com.example.clivoapi.core.practitioner.internal;
 
 import com.example.clivoapi.core.practitioner.PractitionerSnapshot;
 import java.util.List;
+import java.util.UUID;
 
-record PractitionerView(Long id, String name, String licenseNumber, String status, List<PeriodView> availability) {
+record PractitionerView(UUID id, String name, String licenseNumber, String status, List<PeriodView> availability) {
 
     static PractitionerView of(PractitionerSnapshot practitioner) {
         return new PractitionerView(

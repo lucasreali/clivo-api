@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,14 +41,14 @@ class EncounterController {
 
     @Operation(operationId = "getEncounter", summary = "Read one encounter; clinical content depends on the caller's role")
     @GetMapping("/{id}")
-    EncounterView findOne(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
+    EncounterView findOne(@PathVariable UUID id, @AuthenticationPrincipal AuthenticatedUser viewer) {
         return EncounterView.of(encounters.findOne(id, roleOf(viewer)));
     }
 
     @Operation(operationId = "listCustomerEncounters", summary = "List a customer's encounters; clinical content depends on the caller's role")
     @GetMapping
     List<EncounterHistoryView> history(
-            @RequestParam Long customerId, @AuthenticationPrincipal AuthenticatedUser viewer) {
+            @RequestParam UUID customerId, @AuthenticationPrincipal AuthenticatedUser viewer) {
         return encounters.historyOf(customerId, roleOf(viewer)).stream()
                 .map(EncounterHistoryView::of)
                 .toList();
@@ -55,13 +56,13 @@ class EncounterController {
 
     @Operation(operationId = "fillEncounterRecord", summary = "Fill the encounter's record with the template's field values")
     @PutMapping("/{id}/record")
-    EncounterView fill(@PathVariable Long id, @RequestBody RecordFillingRequest request) {
+    EncounterView fill(@PathVariable UUID id, @RequestBody RecordFillingRequest request) {
         return EncounterView.of(encounters.fill(id, request.toValues()));
     }
 
     @Operation(operationId = "completeEncounter", summary = "Complete an encounter, closing its record and billing it")
     @PostMapping("/{id}/completion")
-    EncounterView complete(@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser viewer) {
+    EncounterView complete(@PathVariable UUID id, @AuthenticationPrincipal AuthenticatedUser viewer) {
         return EncounterView.of(encounters.complete(id, roleOf(viewer)));
     }
 

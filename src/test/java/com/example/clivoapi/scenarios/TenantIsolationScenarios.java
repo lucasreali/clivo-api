@@ -9,6 +9,7 @@ import com.example.clivoapi.core.billing.BillingService;
 import com.example.clivoapi.core.billing.ReportPeriod;
 import com.example.clivoapi.support.Clinic;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,7 +38,7 @@ class TenantIsolationScenarios extends ScenarioTest {
     @Test
     void ct02_theIdentifierOfAnotherClinicFindsNothing() {
         Clinic first = openClinic("TEST-CT02-A");
-        Long customerOfTheFirstClinic = first.customerId();
+        UUID customerOfTheFirstClinic = first.customerId();
         openClinic("TEST-CT02-B");
 
         assertThatExceptionOfType(ResourceNotFoundException.class)
@@ -47,7 +48,7 @@ class TenantIsolationScenarios extends ScenarioTest {
     @Test
     void ct03_theFinancialReportCountsOnlyTheInvoicesOfItsOwnClinic() {
         Clinic first = openClinic("TEST-CT03-A");
-        Long anamnesisOfTheFirst = anamnesisTemplate();
+        UUID anamnesisOfTheFirst = anamnesisTemplate();
         completeAnEncounter(first, anamnesisOfTheFirst);
         completeAnEncounter(first, anamnesisOfTheFirst);
         Clinic second = openClinic("TEST-CT03-B");

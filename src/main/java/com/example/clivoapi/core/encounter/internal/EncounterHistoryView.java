@@ -5,14 +5,15 @@ import com.example.clivoapi.core.encounter.EncounterParticipants;
 import com.example.clivoapi.core.encounter.EncounterSnapshot;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
+import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 record EncounterHistoryView(
-        Long id,
-        Long customerId,
-        Long practitionerId,
+        UUID id,
+        UUID customerId,
+        UUID practitionerId,
         String practitionerName,
-        Long serviceId,
+        UUID serviceId,
         String serviceName,
         Instant startedAt,
         Instant completedAt,

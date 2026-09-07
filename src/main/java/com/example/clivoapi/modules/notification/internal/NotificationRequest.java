@@ -4,8 +4,9 @@ import com.example.clivoapi.modules.notification.NotificationChannel;
 import com.example.clivoapi.modules.notification.Recipient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
-record NotificationRequest(@NotNull Long appointmentId, @NotBlank String channel, String recipient) {
+record NotificationRequest(@NotNull UUID appointmentId, @NotBlank String channel, String recipient) {
 
     NotificationChannel toChannel() {
         return NotificationChannel.of(channel);

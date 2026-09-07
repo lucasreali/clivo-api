@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.notification;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.core.scheduling.Appointment;
@@ -9,22 +11,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "notification")
 public class Notification extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "appointment_id", nullable = false, updatable = false)
@@ -59,7 +61,7 @@ public class Notification extends TenantScopedEntity {
         this.status = NotificationStatus.PENDING;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

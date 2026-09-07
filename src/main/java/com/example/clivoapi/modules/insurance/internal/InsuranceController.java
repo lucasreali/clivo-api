@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,13 +43,13 @@ class InsuranceController {
 
     @Operation(operationId = "describeInsurancePlan", summary = "Redescribe an insurance plan")
     @PutMapping("/api/insurance-plans/{id}")
-    PlanView describe(@PathVariable Long id, @Valid @RequestBody PlanRequest request) {
+    PlanView describe(@PathVariable UUID id, @Valid @RequestBody PlanRequest request) {
         return PlanView.of(insurance.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivateInsurancePlan", summary = "Deactivate an insurance plan")
     @PostMapping("/api/insurance-plans/{id}/deactivation")
-    PlanView deactivate(@PathVariable Long id) {
+    PlanView deactivate(@PathVariable UUID id) {
         return PlanView.of(insurance.deactivate(id));
     }
 
@@ -62,7 +63,7 @@ class InsuranceController {
 
     @Operation(operationId = "listCustomerInsuranceMemberships", summary = "List a customer's memberships")
     @GetMapping("/api/insurance-memberships")
-    List<MembershipView> membershipsOf(@RequestParam Long customerId) {
+    List<MembershipView> membershipsOf(@RequestParam UUID customerId) {
         return insurance.membershipsOf(customerId).stream().map(MembershipView::of).toList();
     }
 }

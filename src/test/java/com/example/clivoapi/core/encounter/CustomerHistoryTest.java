@@ -9,6 +9,7 @@ import com.example.clivoapi.configuration.parameter.ClinicParameterService;
 import com.example.clivoapi.core.access.Role;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ class CustomerHistoryTest extends EncounterFixture {
     @Autowired
     private ClinicParameterService parameters;
 
-    private Long templateId;
+    private UUID templateId;
 
     @BeforeEach
     void openTheClinic() {
@@ -30,8 +31,8 @@ class CustomerHistoryTest extends EncounterFixture {
 
     @Test
     void theHistoryComesBackNewestFirst() {
-        Long older = completedEncounterSaying("Primeira consulta");
-        Long newer = completedEncounterSaying("Retorno");
+        UUID older = completedEncounterSaying("Primeira consulta");
+        UUID newer = completedEncounterSaying("Retorno");
 
         List<EncounterSnapshot> history = encounters.historyOf(customerId(), Role.PRACTITIONER);
 
@@ -66,7 +67,7 @@ class CustomerHistoryTest extends EncounterFixture {
 
     @Test
     void readingOneEncounterByIdObeysTheSameScopeAsTheHistory() {
-        Long id = completedEncounterSaying("Dor no dente 26");
+        UUID id = completedEncounterSaying("Dor no dente 26");
 
         assertThat(encounters.findOne(id, Role.RECEPTION).clinicalRecord()).isEmpty();
         assertThat(encounters.findOne(id, Role.PRACTITIONER).clinicalRecord()).isPresent();
@@ -74,7 +75,7 @@ class CustomerHistoryTest extends EncounterFixture {
 
     @Test
     void completingAnEncounterAnswersReceptionWithoutTheClinicalContent() {
-        Long id = encounters
+        UUID id = encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", "Dor no dente 26")));
@@ -87,8 +88,8 @@ class CustomerHistoryTest extends EncounterFixture {
         return history.getFirst();
     }
 
-    private Long completedEncounterSaying(String complaint) {
-        Long id = encounters
+    private UUID completedEncounterSaying(String complaint) {
+        UUID id = encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
         encounters.fill(id, RecordValues.of(Map.of("complaint", complaint)));

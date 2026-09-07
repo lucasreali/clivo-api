@@ -2,6 +2,7 @@ package com.example.clivoapi.core.encounter;
 
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,7 @@ public class EncounterBook {
         this.encounters = encounters;
     }
 
-    public Encounter reference(Long id) {
+    public Encounter reference(UUID id) {
         return encounters.findById(id).orElseThrow(() -> new ResourceNotFoundException("Encounter", id));
     }
 }

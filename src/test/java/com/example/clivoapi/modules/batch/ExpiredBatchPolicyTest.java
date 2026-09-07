@@ -15,6 +15,7 @@ import com.example.clivoapi.modules.inventory.MeasurementUnit;
 import com.example.clivoapi.modules.inventory.ProductDetails;
 import com.example.clivoapi.modules.inventory.Quantity;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,7 +34,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
     @Test
     void aClinicThatBlocksExpiredBatchesRefusesTheSelection() {
         openClinicWithBatches("TEST-POLICY-BLOCK", "true");
-        Long anaesthetic = onlyAnExpiredBatch();
+        UUID anaesthetic = onlyAnExpiredBatch();
 
         assertThatThrownBy(() -> batches.selectFor(anaesthetic, ONE_DOSE))
                 .isInstanceOf(BusinessException.class)
@@ -43,7 +44,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
     @Test
     void aClinicThatOnlyWarnsSelectsTheExpiredBatchWithAnAlert() {
         openClinicWithBatches("TEST-POLICY-WARN", "false");
-        Long anaesthetic = onlyAnExpiredBatch();
+        UUID anaesthetic = onlyAnExpiredBatch();
 
         BatchChoice choice = batches.selectFor(anaesthetic, ONE_DOSE);
 
@@ -54,7 +55,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
     @Test
     void aFreshBatchIsChosenWithoutAnyAlertUnderEitherPolicy() {
         openClinicWithBatches("TEST-POLICY-FRESH", "true");
-        Long anaesthetic = onlyAnExpiredBatch();
+        UUID anaesthetic = onlyAnExpiredBatch();
         batches.receive(anaesthetic, batchOf("L-NEW", LocalDate.now().plusMonths(8)));
 
         BatchChoice choice = batches.selectFor(anaesthetic, ONE_DOSE);
@@ -66,7 +67,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
     @Test
     void theSameClinicChangesItsMindWithOneParameterRow() {
         openClinicWithBatches("TEST-POLICY-FLIP", "true");
-        Long anaesthetic = onlyAnExpiredBatch();
+        UUID anaesthetic = onlyAnExpiredBatch();
 
         assertThatThrownBy(() -> batches.selectFor(anaesthetic, ONE_DOSE)).isInstanceOf(BusinessException.class);
 
@@ -82,8 +83,8 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
         return clinic;
     }
 
-    private Long onlyAnExpiredBatch() {
-        Long anaesthetic =
+    private UUID onlyAnExpiredBatch() {
+        UUID anaesthetic =
                 registerProduct(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true));
         batches.receive(anaesthetic, batchOf("L-OLD", LocalDate.now().minusDays(2)));
         return anaesthetic;

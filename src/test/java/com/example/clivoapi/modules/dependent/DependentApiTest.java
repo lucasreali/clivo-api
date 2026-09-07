@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.clivoapi.common.tenant.Tenant;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -22,7 +23,7 @@ class DependentApiTest extends DependentFixture {
     @Test
     void aClinicWithTheModuleRegistersADependent() throws Exception {
         Tenant clinic = openClinicWithDependents("TEST-DEP-API-ON");
-        Long customerId = valueInTenant(clinic, () -> registerCustomer("Ana Prado"));
+        UUID customerId = valueInTenant(clinic, () -> registerCustomer("Ana Prado"));
         bindTenant(clinic);
 
         mockMvc.perform(newDependentOf(customerId))
@@ -36,15 +37,15 @@ class DependentApiTest extends DependentFixture {
     @Test
     void aClinicWithoutTheModuleDoesNotEvenSeeTheEndpoint() throws Exception {
         Tenant clinic = openClinic("TEST-DEP-API-OFF");
-        Long customerId = valueInTenant(clinic, () -> registerCustomer("Ana Prado"));
+        UUID customerId = valueInTenant(clinic, () -> registerCustomer("Ana Prado"));
         bindTenant(clinic);
 
-        mockMvc.perform(get("/api/customers/%d/dependents".formatted(customerId)))
+        mockMvc.perform(get("/api/customers/%s/dependents".formatted(customerId)))
                 .andExpect(status().isNotFound());
     }
 
-    private MockHttpServletRequestBuilder newDependentOf(Long customerId) {
-        return post("/api/customers/%d/dependents".formatted(customerId))
+    private MockHttpServletRequestBuilder newDependentOf(UUID customerId) {
+        return post("/api/customers/%s/dependents".formatted(customerId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                         """

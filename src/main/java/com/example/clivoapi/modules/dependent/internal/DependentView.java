@@ -4,10 +4,11 @@ import com.example.clivoapi.modules.dependent.DependentDetails;
 import com.example.clivoapi.modules.dependent.DependentSnapshot;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 record DependentView(
-        Long id,
-        Long customerId,
+        UUID id,
+        UUID customerId,
         String name,
         String type,
         String custodian,

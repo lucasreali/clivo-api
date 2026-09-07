@@ -3,15 +3,16 @@ package com.example.clivoapi.modules.inventory.internal;
 import com.example.clivoapi.modules.inventory.StockMovementSnapshot;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 record StockMovementView(
-        Long id,
-        Long productId,
+        UUID id,
+        UUID productId,
         String type,
         BigDecimal quantity,
         String reason,
-        Long encounterId,
-        Long recordedBy,
+        UUID encounterId,
+        UUID recordedBy,
         Instant recordedAt) {
 
     static StockMovementView of(StockMovementSnapshot movement) {

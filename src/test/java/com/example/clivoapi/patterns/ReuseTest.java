@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ class ReuseTest extends ClinicFixture {
         activate(BATCH);
         acceptQuarantineInTheParameterCatalogue();
         change(BLOCK_EXPIRED_BATCH, QUARANTINE);
-        Long anaesthetic = aBatchControlledProduct();
+        UUID anaesthetic = aBatchControlledProduct();
 
         receiveBatch(anaesthetic, "L-OLD", LocalDate.now().minusDays(2));
         assertThatExceptionOfType(BusinessException.class)
@@ -161,8 +162,8 @@ class ReuseTest extends ClinicFixture {
     @Test
     void aFieldTypeWrittenOutsideProductionCodeIsRenderedInTheSheet() {
         Clinic clinic = openClinic("TEST-REUSE-FACTORY");
-        Long templateId = publishTemplate("Wellbeing", sectionWith("Wellbeing", fieldOf("mood", EMOJI_SCALE)));
-        Long encounterId = openEncounter(clinic, templateId);
+        UUID templateId = publishTemplate("Wellbeing", sectionWith("Wellbeing", fieldOf("mood", EMOJI_SCALE)));
+        UUID encounterId = openEncounter(clinic, templateId);
 
         encounters.fill(encounterId, RecordValues.of(Map.of("mood", "great")));
 
@@ -184,13 +185,13 @@ class ReuseTest extends ClinicFixture {
                 new BlockReason("Reforma da sala")));
     }
 
-    private Long aBatchControlledProduct() {
+    private UUID aBatchControlledProduct() {
         return inventory
                 .register(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true))
                 .id();
     }
 
-    private void receiveBatch(Long productId, String code, LocalDate expiresOn) {
+    private void receiveBatch(UUID productId, String code, LocalDate expiresOn) {
         batches.receive(productId, new BatchDetails(new BatchCode(code), expiresOn, Quantity.of("10"), "Lab Alpha"));
     }
 

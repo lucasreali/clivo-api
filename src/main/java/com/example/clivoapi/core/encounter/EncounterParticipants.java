@@ -1,11 +1,13 @@
 package com.example.clivoapi.core.encounter;
 
+import java.util.UUID;
+
 public record EncounterParticipants(
-        Long appointmentId,
-        Long customerId,
+        UUID appointmentId,
+        UUID customerId,
         String customerName,
-        Long practitionerId,
+        UUID practitionerId,
         String practitionerName,
-        Long serviceId,
+        UUID serviceId,
         String serviceName) {
 }

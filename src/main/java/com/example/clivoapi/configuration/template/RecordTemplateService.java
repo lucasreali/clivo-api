@@ -6,6 +6,7 @@ import com.example.clivoapi.common.extension.ModuleActivationState;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.configuration.template.internal.RecordTemplateRepository;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,13 @@ public class RecordTemplateService {
         return templates.save(template).snapshot();
     }
 
-    public TemplateSnapshot redefine(Long id, TemplateContent content) {
+    public TemplateSnapshot redefine(UUID id, TemplateContent content) {
         RecordTemplate template = editableVersionOf(templateOf(id));
         template.replaceContent(content);
         return templates.save(template).snapshot();
     }
 
-    public TemplateSnapshot publish(Long id) {
+    public TemplateSnapshot publish(UUID id) {
         RecordTemplate template = templateOf(id);
         requireModulesActive(template);
         templates.findByNameAndStatus(template.name(), RecordTemplateStatus.PUBLISHED).forEach(RecordTemplate::retire);
@@ -47,7 +48,7 @@ public class RecordTemplateService {
     }
 
     @Transactional(readOnly = true)
-    public TemplateSnapshot findOne(Long id) {
+    public TemplateSnapshot findOne(UUID id) {
         return templateOf(id).snapshot();
     }
 
@@ -77,7 +78,7 @@ public class RecordTemplateService {
         throw new BusinessException("module %s is not active in this clinic".formatted(module));
     }
 
-    private RecordTemplate templateOf(Long id) {
+    private RecordTemplate templateOf(UUID id) {
         return templates.findById(id).orElseThrow(() -> new ResourceNotFoundException("Record template", id));
     }
 }

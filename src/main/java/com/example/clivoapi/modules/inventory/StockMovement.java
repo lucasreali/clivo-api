@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.inventory;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -7,31 +9,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "stock_movement")
 public class StockMovement extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false, updatable = false)
     private Product product;
 
     @Column(name = "batch_id", updatable = false)
-    private Long batchId;
+    private UUID batchId;
 
     @Column(name = "encounter_id", updatable = false)
-    private Long encounterId;
+    private UUID encounterId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "movement_type", nullable = false, updatable = false)
@@ -44,7 +46,7 @@ public class StockMovement extends TenantScopedEntity {
     private String reason;
 
     @Column(name = "recorded_by", nullable = false, updatable = false)
-    private Long recordedBy;
+    private UUID recordedBy;
 
     @Column(name = "recorded_at", nullable = false, updatable = false)
     private Instant recordedAt;
@@ -52,7 +54,7 @@ public class StockMovement extends TenantScopedEntity {
     protected StockMovement() {
     }
 
-    public StockMovement(Product product, StockEntry entry, Long recordedBy) {
+    public StockMovement(Product product, StockEntry entry, UUID recordedBy) {
         this.product = product;
         this.movementType = entry.type();
         this.quantity = entry.quantity();
@@ -61,7 +63,7 @@ public class StockMovement extends TenantScopedEntity {
         this.recordedAt = Instant.now();
     }
 
-    private StockMovement(Product product, Long encounterId, Quantity quantity, Long recordedBy) {
+    private StockMovement(Product product, UUID encounterId, Quantity quantity, UUID recordedBy) {
         this.product = product;
         this.encounterId = encounterId;
         this.movementType = StockMovementType.OUTBOUND;
@@ -70,17 +72,17 @@ public class StockMovement extends TenantScopedEntity {
         this.recordedAt = Instant.now();
     }
 
-    public static StockMovement dispensedIn(Product product, Long encounterId, Quantity quantity, Long recordedBy) {
+    public static StockMovement dispensedIn(Product product, UUID encounterId, Quantity quantity, UUID recordedBy) {
         return new StockMovement(product, encounterId, quantity, recordedBy);
     }
 
-    public static StockMovement discarded(Product product, Long batchId, StockEntry entry, Long recordedBy) {
+    public static StockMovement discarded(Product product, UUID batchId, StockEntry entry, UUID recordedBy) {
         StockMovement movement = new StockMovement(product, entry, recordedBy);
         movement.batchId = batchId;
         return movement;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

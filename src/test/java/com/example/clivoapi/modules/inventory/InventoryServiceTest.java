@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.clivoapi.common.exception.BusinessException;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class InventoryServiceTest extends InventoryFixture {
@@ -12,7 +13,7 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void anInboundMovementRaisesTheStockOnHand() {
         openClinicWithInventory("TEST-INV-INBOUND");
-        Long gauze = registerGauze("20");
+        UUID gauze = registerGauze("20");
 
         ProductSnapshot product = inventory.move(gauze, inboundOf("50", "compra mensal"));
 
@@ -23,7 +24,7 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void aProductUnderItsMinimumIsFlagged() {
         openClinicWithInventory("TEST-INV-MINIMUM");
-        Long gauze = registerGauze("20");
+        UUID gauze = registerGauze("20");
         inventory.move(gauze, inboundOf("15", "compra parcial"));
 
         assertThat(inventory.findOne(gauze).belowMinimum()).isTrue();
@@ -33,7 +34,7 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void anOutboundMovementBeyondTheStockOnHandIsRefused() {
         openClinicWithInventory("TEST-INV-SHORTAGE");
-        Long gauze = registerGauze("0");
+        UUID gauze = registerGauze("0");
         inventory.move(gauze, inboundOf("5", "compra inicial"));
 
         assertThatThrownBy(() -> inventory.move(gauze, outboundOf("9", "uso interno")))
@@ -44,7 +45,7 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void anAdjustmentReplacesTheStockOnHandAfterACount() {
         openClinicWithInventory("TEST-INV-ADJUST");
-        Long gauze = registerGauze("0");
+        UUID gauze = registerGauze("0");
         inventory.move(gauze, inboundOf("40", "compra mensal"));
 
         ProductSnapshot product = inventory.move(
@@ -57,7 +58,7 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void everyMovementKeepsItsAuthorAndItsReason() {
         openClinicWithInventory("TEST-INV-AUTHOR");
-        Long gauze = registerGauze("0");
+        UUID gauze = registerGauze("0");
         inventory.move(gauze, inboundOf("10", "compra mensal"));
 
         List<StockMovementSnapshot> history = inventory.historyOf(gauze);
@@ -77,9 +78,9 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void anEncounterTakesTheSuppliesItUsedOutOfStock() {
         openClinicWithInventory("TEST-INV-DISPENSE");
-        Long gauze = registerGauze("0");
+        UUID gauze = registerGauze("0");
         inventory.move(gauze, inboundOf("30", "compra mensal"));
-        Long encounterId = anOpenEncounter();
+        UUID encounterId = anOpenEncounter();
 
         encounters.useSupplies(encounterId, gauze, Quantity.of("4").amount());
 
@@ -90,9 +91,9 @@ class InventoryServiceTest extends InventoryFixture {
     @Test
     void aClinicWithoutTheModuleNeverTouchesItsStock() {
         openClinic("TEST-INV-OFF");
-        Long gauze = registerGauze("0");
+        UUID gauze = registerGauze("0");
         inventory.move(gauze, inboundOf("30", "compra mensal"));
-        Long encounterId = anOpenEncounter();
+        UUID encounterId = anOpenEncounter();
 
         encounters.useSupplies(encounterId, gauze, Quantity.of("4").amount());
 

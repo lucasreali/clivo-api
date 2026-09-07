@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 abstract class EncounterFixture extends DatabaseTest {
@@ -53,9 +54,9 @@ abstract class EncounterFixture extends DatabaseTest {
     private CatalogService catalogue;
 
     private Tenant clinic;
-    private Long customerId;
-    private Long practitionerId;
-    private Long serviceId;
+    private UUID customerId;
+    private UUID practitionerId;
+    private UUID serviceId;
 
     protected Tenant openClinic(String code) {
         clinic = createTenant(code);
@@ -73,32 +74,32 @@ abstract class EncounterFixture extends DatabaseTest {
         return clinic;
     }
 
-    protected EncounterSnapshot reopen(Long encounterId) {
+    protected EncounterSnapshot reopen(UUID encounterId) {
         return encounters.findOne(encounterId, Role.PRACTITIONER);
     }
 
-    protected EncounterSnapshot completeAsPractitioner(Long encounterId) {
+    protected EncounterSnapshot completeAsPractitioner(UUID encounterId) {
         return encounters.complete(encounterId, Role.PRACTITIONER);
     }
 
-    protected Long customerId() {
+    protected UUID customerId() {
         return customerId;
     }
 
-    protected Long practitionerId() {
+    protected UUID practitionerId() {
         return practitionerId;
     }
 
-    protected Long serviceId() {
+    protected UUID serviceId() {
         return serviceId;
     }
 
-    protected Long publishTemplate(String name, TemplateContent content) {
-        Long draftId = templates.draft(name, null, content).id();
+    protected UUID publishTemplate(String name, TemplateContent content) {
+        UUID draftId = templates.draft(name, null, content).id();
         return templates.publish(draftId).id();
     }
 
-    protected Long bookAppointment() {
+    protected UUID bookAppointment() {
         LocalDate monday = LocalDate.now().plusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         LocalDateTime start = LocalDateTime.of(monday, LocalTime.of(9, 0));
         return scheduling.schedule(new AppointmentBooking(customerId, practitionerId, serviceId, start)).id();

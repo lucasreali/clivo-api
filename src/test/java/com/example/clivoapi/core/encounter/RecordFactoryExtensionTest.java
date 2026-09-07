@@ -15,6 +15,7 @@ import com.example.clivoapi.patterns.factory.FieldDefinition;
 import com.example.clivoapi.patterns.factory.FieldFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -69,7 +70,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
 
     @Test
     void aFieldTypeDeclaredOutsideTheProductionCodeIsRendered() {
-        Long id = openWithMood();
+        UUID id = openWithMood();
 
         SheetField mood = onlyFieldOf(reopen(id));
 
@@ -79,7 +80,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
 
     @Test
     void theNewFieldTypeValidatesTheFilledValue() {
-        Long id = openWithMood();
+        UUID id = openWithMood();
         encounters.fill(id, RecordValues.of(Map.of("mood", "furious")));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -89,7 +90,7 @@ class RecordFactoryExtensionTest extends EncounterFixture {
 
     @Test
     void theNewFieldTypeAcceptsAValueItKnows() {
-        Long id = openWithMood();
+        UUID id = openWithMood();
         encounters.fill(id, RecordValues.of(Map.of("mood", "great")));
 
         assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
@@ -97,8 +98,8 @@ class RecordFactoryExtensionTest extends EncounterFixture {
 
     @Test
     void theBuiltInFieldTypesKeepWorkingBesideTheNewOne() {
-        Long templateId = publishTemplate("Wellbeing", moodAndNotes());
-        Long id = encounters
+        UUID templateId = publishTemplate("Wellbeing", moodAndNotes());
+        UUID id = encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();
 
@@ -107,8 +108,8 @@ class RecordFactoryExtensionTest extends EncounterFixture {
         assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
     }
 
-    private Long openWithMood() {
-        Long templateId = publishTemplate("Mood", complaintWith("mood", EMOJI_SCALE));
+    private UUID openWithMood() {
+        UUID templateId = publishTemplate("Mood", complaintWith("mood", EMOJI_SCALE));
         return encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();

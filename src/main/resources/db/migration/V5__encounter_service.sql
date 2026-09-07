@@ -1,4 +1,4 @@
-ALTER TABLE encounter ADD COLUMN service_id BIGINT REFERENCES service(id);
+ALTER TABLE encounter ADD COLUMN service_id UUID REFERENCES service(id);
 
 UPDATE encounter e
    SET service_id = a.service_id

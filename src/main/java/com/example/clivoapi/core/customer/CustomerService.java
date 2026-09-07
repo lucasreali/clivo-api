@@ -5,6 +5,7 @@ import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.core.customer.internal.CustomerRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,20 +24,20 @@ public class CustomerService {
         return customers.save(new Customer(details)).snapshot();
     }
 
-    public CustomerSnapshot describe(Long id, CustomerDetails details) {
+    public CustomerSnapshot describe(UUID id, CustomerDetails details) {
         Customer customer = customerOf(id);
         requireDocumentFree(details, customer.id());
         customer.describeAs(details);
         return customers.save(customer).snapshot();
     }
 
-    public CustomerSnapshot deactivate(Long id, DeactivationReason reason) {
+    public CustomerSnapshot deactivate(UUID id, DeactivationReason reason) {
         Customer customer = customerOf(id);
         customer.deactivate(reason);
         return customers.save(customer).snapshot();
     }
 
-    public CustomerSnapshot record(Long id, ConsentStatement statement) {
+    public CustomerSnapshot record(UUID id, ConsentStatement statement) {
         Customer customer = customerOf(id);
         customer.record(statement);
         return customers.save(customer).snapshot();
@@ -48,12 +49,12 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public CustomerSnapshot findOne(Long id) {
+    public CustomerSnapshot findOne(UUID id) {
         return customerOf(id).snapshot();
     }
 
     @Transactional(readOnly = true)
-    public Customer reference(Long id) {
+    public Customer reference(UUID id) {
         return customerOf(id);
     }
 
@@ -64,7 +65,7 @@ public class CustomerService {
                 .orElseGet(customers::findAllByOrderByNameAsc);
     }
 
-    private void requireDocumentFree(CustomerDetails details, Long owner) {
+    private void requireDocumentFree(CustomerDetails details, UUID owner) {
         details.document()
                 .flatMap(document -> customers.findByNationalIdValue(document.asText()))
                 .filter(existing -> !existing.id().equals(owner))
@@ -76,7 +77,7 @@ public class CustomerService {
                 "national id %s already belongs to another customer of this clinic".formatted(details.nationalId()));
     }
 
-    private Customer customerOf(Long id) {
+    private Customer customerOf(UUID id) {
         return customers.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer", id));
     }
 }

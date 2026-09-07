@@ -13,6 +13,7 @@ import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateContent;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +26,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void theSheetFollowsTheTemplateAndCarriesTheFilledValues() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
 
         EncounterSnapshot filled = encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao")));
 
@@ -38,7 +39,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aRequiredFieldLeftEmptyRefusesTheCompletion() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
                 .isInstanceOf(BusinessException.class)
@@ -47,7 +48,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aNumberOutsideItsRangeRefusesTheCompletion() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 900, "species", "Cao")));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -57,7 +58,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aChoiceOutsideTheDeclaredOptionsRefusesTheCompletion() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Dragao")));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -67,7 +68,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aTextLongerThanItsLimitRefusesTheCompletion() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "notes", "x".repeat(41))));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -77,7 +78,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aDateWrittenTheWrongWayRefusesTheCompletion() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "31/12/2026")));
 
         assertThatThrownBy(() -> completeAsPractitioner(id))
@@ -87,7 +88,7 @@ class RecordEngineTest extends EncounterFixture {
 
     @Test
     void aFullyFilledSheetIsAccepted() {
-        Long id = openWith(fullTemplate());
+        UUID id = openWith(fullTemplate());
         encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "2026-12-31")));
 
         assertThat(completeAsPractitioner(id).isCompleted()).isTrue();
@@ -104,8 +105,8 @@ class RecordEngineTest extends EncounterFixture {
                 .hasMessage("field mood (Mood) declares the unknown type EMOJI_SCALE");
     }
 
-    private Long openWith(TemplateContent content) {
-        Long templateId = publishTemplate("Consultation", content);
+    private UUID openWith(TemplateContent content) {
+        UUID templateId = publishTemplate("Consultation", content);
         return encounters.open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId)).id();
     }
 

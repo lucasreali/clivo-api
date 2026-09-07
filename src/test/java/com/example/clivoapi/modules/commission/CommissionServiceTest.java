@@ -9,6 +9,7 @@ import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.configuration.modules.ModuleActivationService;
 import com.example.clivoapi.core.billing.BillingFixture;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +37,7 @@ class CommissionServiceTest extends BillingFixture {
         openClinicWithCommission("TEST-COMM-EARN");
         chargeAt("30");
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         CommissionStatement statement = thisMonth();
         assertThat(statement.commissions()).hasSize(1);

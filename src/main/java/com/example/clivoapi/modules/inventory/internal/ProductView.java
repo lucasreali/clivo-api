@@ -4,9 +4,10 @@ import com.example.clivoapi.modules.inventory.MeasurementUnit;
 import com.example.clivoapi.modules.inventory.ProductDetails;
 import com.example.clivoapi.modules.inventory.ProductSnapshot;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 record ProductView(
-        Long id,
+        UUID id,
         String name,
         String unit,
         BigDecimal minStock,

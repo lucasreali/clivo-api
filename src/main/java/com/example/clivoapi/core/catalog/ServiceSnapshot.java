@@ -1,4 +1,6 @@
 package com.example.clivoapi.core.catalog;
 
-public record ServiceSnapshot(Long id, ServiceDetails details, ServiceStatus status) {
+import java.util.UUID;
+
+public record ServiceSnapshot(UUID id, ServiceDetails details, ServiceStatus status) {
 }

@@ -6,12 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class PaymentServiceTest extends BillingFixture {
 
-    private Long invoiceId;
+    private UUID invoiceId;
 
     @BeforeEach
     void openTheClinic() {
@@ -64,7 +65,7 @@ class PaymentServiceTest extends BillingFixture {
     @Test
     void aRefundPutsTheBalanceBack() {
         InvoiceSnapshot settled = pay(SERVICE_PRICE);
-        Long paymentId = onlyPaymentOf(settled).id();
+        UUID paymentId = onlyPaymentOf(settled).id();
 
         InvoiceSnapshot refunded =
                 billing.refund(invoiceId, paymentId, new RefundReason("Procedimento nao realizado"));
@@ -77,7 +78,7 @@ class PaymentServiceTest extends BillingFixture {
 
     @Test
     void aRefundWithoutAReasonIsRefused() {
-        Long paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
+        UUID paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
 
         assertThatThrownBy(() -> billing.refund(invoiceId, paymentId, new RefundReason(" ")))
                 .isInstanceOf(BusinessException.class)
@@ -86,22 +87,22 @@ class PaymentServiceTest extends BillingFixture {
 
     @Test
     void refundingTheSamePaymentTwiceIsRefused() {
-        Long paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
+        UUID paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
         billing.refund(invoiceId, paymentId, new RefundReason("Cobranca em duplicidade"));
 
         assertThatThrownBy(() -> billing.refund(invoiceId, paymentId, new RefundReason("De novo")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("payment %d was already refunded".formatted(paymentId));
+                .hasMessage("payment %s was already refunded".formatted(paymentId));
     }
 
     @Test
     void aPaymentOfAnotherInvoiceIsNotAcceptedHere() {
-        Long paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
-        Long otherInvoice = invoiceOfACompletedEncounter().id();
+        UUID paymentId = onlyPaymentOf(pay(SERVICE_PRICE)).id();
+        UUID otherInvoice = invoiceOfACompletedEncounter().id();
 
         assertThatThrownBy(() -> billing.refund(otherInvoice, paymentId, new RefundReason("Engano")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("payment %d does not belong to invoice %d".formatted(paymentId, otherInvoice));
+                .hasMessage("payment %s does not belong to invoice %s".formatted(paymentId, otherInvoice));
     }
 
     @Test

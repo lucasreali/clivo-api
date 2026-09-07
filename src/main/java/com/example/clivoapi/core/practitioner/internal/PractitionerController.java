@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,32 +46,32 @@ class PractitionerController {
 
     @Operation(operationId = "getPractitioner", summary = "Read one practitioner with their availability")
     @GetMapping("/{id}")
-    PractitionerView findOne(@PathVariable Long id) {
+    PractitionerView findOne(@PathVariable UUID id) {
         return PractitionerView.of(practitioners.findOne(id));
     }
 
     @Operation(operationId = "describePractitioner", summary = "Redescribe a practitioner")
     @PutMapping("/{id}")
-    PractitionerView describe(@PathVariable Long id, @Valid @RequestBody PractitionerRequest request) {
+    PractitionerView describe(@PathVariable UUID id, @Valid @RequestBody PractitionerRequest request) {
         return PractitionerView.of(practitioners.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivatePractitioner", summary = "Deactivate a practitioner, keeping their history")
     @PostMapping("/{id}/deactivation")
-    PractitionerView deactivate(@PathVariable Long id) {
+    PractitionerView deactivate(@PathVariable UUID id) {
         return PractitionerView.of(practitioners.deactivate(id));
     }
 
     @Operation(operationId = "setPractitionerAvailability", summary = "Replace the weekly availability a practitioner follows")
     @PutMapping("/{id}/availability")
-    PractitionerView follow(@PathVariable Long id, @Valid @RequestBody ScheduleRequest request) {
+    PractitionerView follow(@PathVariable UUID id, @Valid @RequestBody ScheduleRequest request) {
         return PractitionerView.of(practitioners.follow(id, request.toSchedule()));
     }
 
     @Operation(operationId = "getPractitionerAttendance", summary = "Answer whether a practitioner attends at a given weekday and time")
     @GetMapping("/{id}/attendance")
     AttendanceView worksAt(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam DayOfWeek weekday,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time) {
         return AttendanceView.of(weekday, time, practitioners.worksAt(id, weekday, time));

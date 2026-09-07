@@ -33,7 +33,7 @@ class CustomerApiTest extends DatabaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .replaceAll(".*\"id\":(\\d+).*", "$1");
+                .replaceAll(".*\"id\":\"([^\"]+)\".*", "$1");
 
         mockMvc.perform(get("/api/customers").param("name", "souza"))
                 .andExpect(jsonPath("$.length()").value(1));
@@ -54,7 +54,7 @@ class CustomerApiTest extends DatabaseTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .replaceAll(".*\"id\":(\\d+).*", "$1");
+                .replaceAll(".*\"id\":\"([^\"]+)\".*", "$1");
 
         mockMvc.perform(post("/api/customers/{id}/consents", id)
                         .contentType(MediaType.APPLICATION_JSON)

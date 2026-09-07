@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,32 +46,32 @@ class InventoryController {
 
     @Operation(operationId = "getProduct", summary = "Read one product with its current balance")
     @GetMapping("/{id}")
-    ProductView findOne(@PathVariable Long id) {
+    ProductView findOne(@PathVariable UUID id) {
         return ProductView.of(inventory.findOne(id));
     }
 
     @Operation(operationId = "describeProduct", summary = "Redescribe a product")
     @PutMapping("/{id}")
-    ProductView describe(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+    ProductView describe(@PathVariable UUID id, @Valid @RequestBody ProductRequest request) {
         return ProductView.of(inventory.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivateProduct", summary = "Deactivate a product, keeping its history")
     @PostMapping("/{id}/deactivation")
-    ProductView deactivate(@PathVariable Long id) {
+    ProductView deactivate(@PathVariable UUID id) {
         return ProductView.of(inventory.deactivate(id));
     }
 
     @Operation(operationId = "moveStock", summary = "Move stock in or out of a product")
     @PostMapping("/{id}/movements")
     @ResponseStatus(HttpStatus.CREATED)
-    ProductView move(@PathVariable Long id, @Valid @RequestBody StockEntryRequest request) {
+    ProductView move(@PathVariable UUID id, @Valid @RequestBody StockEntryRequest request) {
         return ProductView.of(inventory.move(id, request.toEntry()));
     }
 
     @Operation(operationId = "listStockMovements", summary = "List a product's stock movements")
     @GetMapping("/{id}/movements")
-    List<StockMovementView> historyOf(@PathVariable Long id) {
+    List<StockMovementView> historyOf(@PathVariable UUID id) {
         return inventory.historyOf(id).stream().map(StockMovementView::of).toList();
     }
 

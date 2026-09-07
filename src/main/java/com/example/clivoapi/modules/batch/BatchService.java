@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,19 +46,19 @@ public class BatchService {
     }
 
     @Transactional(readOnly = true)
-    public BatchChoice selectFor(Long productId, Quantity quantity) {
+    public BatchChoice selectFor(UUID productId, Quantity quantity) {
         Product product = batchControlled(productId);
         return currentPolicy().chooseFrom(candidatesOf(product, quantity));
     }
 
-    public BatchSnapshot receive(Long productId, BatchDetails details) {
+    public BatchSnapshot receive(UUID productId, BatchDetails details) {
         Product product = batchControlled(productId);
         Batch batch = batches.save(new Batch(product, details));
         inventory.move(productId, arrivalOf(details));
         return batch.snapshot();
     }
 
-    public BatchSnapshot discard(Long id, MovementReason reason) {
+    public BatchSnapshot discard(UUID id, MovementReason reason) {
         Batch batch = batchOf(id);
         batch.discard();
         inventory.discardFromBatch(batch.product().id(), batch.id(), discardOf(batch, reason));
@@ -65,7 +66,7 @@ public class BatchService {
     }
 
     @Transactional(readOnly = true)
-    public List<BatchSnapshot> of(Long productId) {
+    public List<BatchSnapshot> of(UUID productId) {
         return snapshotsOf(batches.findByProductIdOrderByExpiresOnAsc(productId));
     }
 
@@ -83,12 +84,12 @@ public class BatchService {
     }
 
     @Transactional(readOnly = true)
-    public BatchSnapshot findOne(Long id) {
+    public BatchSnapshot findOne(UUID id) {
         return batchOf(id).snapshot();
     }
 
     @Transactional(readOnly = true)
-    public List<Batch> usableFor(Long productId) {
+    public List<Batch> usableFor(UUID productId) {
         return batches.findByProductIdAndStatusOrderByExpiresOnAsc(productId, BatchStatus.AVAILABLE);
     }
 
@@ -123,7 +124,7 @@ public class BatchService {
         return new StockEntry(StockMovementType.DISCARD, batch.quantity(), reason);
     }
 
-    private Product batchControlled(Long productId) {
+    private Product batchControlled(UUID productId) {
         Product product = inventory.reference(productId);
         if (product.isBatchControlled()) {
             return product;
@@ -135,7 +136,7 @@ public class BatchService {
         return found.stream().map(Batch::snapshot).toList();
     }
 
-    private Batch batchOf(Long id) {
+    private Batch batchOf(UUID id) {
         return batches.findById(id).orElseThrow(() -> new ResourceNotFoundException("Batch", id));
     }
 }

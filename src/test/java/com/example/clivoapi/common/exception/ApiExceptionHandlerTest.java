@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 class ApiExceptionHandlerTest {
+
+    private static final UUID MISSING_CUSTOMER = UUID.randomUUID();
 
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new FailingController())
             .setControllerAdvice(new ApiExceptionHandler())
@@ -30,7 +33,7 @@ class ApiExceptionHandlerTest {
         mockMvc.perform(get("/failures/missing"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Customer 7 not found"));
+                .andExpect(jsonPath("$.message").value("Customer %s not found".formatted(MISSING_CUSTOMER)));
     }
 
     @RestController
@@ -43,7 +46,7 @@ class ApiExceptionHandlerTest {
 
         @GetMapping("/failures/missing")
         void refuseByMissingResource() {
-            throw new ResourceNotFoundException("Customer", 7L);
+            throw new ResourceNotFoundException("Customer", MISSING_CUSTOMER);
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.example.clivoapi.common.extension;
 
-public record RecordFilling(Long templateId, RecordValues values) {
+import java.util.UUID;
 
-    public static RecordFilling blank(Long templateId) {
+public record RecordFilling(UUID templateId, RecordValues values) {
+
+    public static RecordFilling blank(UUID templateId) {
         return new RecordFilling(templateId, RecordValues.empty());
     }
 }

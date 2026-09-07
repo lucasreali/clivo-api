@@ -4,14 +4,15 @@ import com.example.clivoapi.common.time.TimeWindow;
 import com.example.clivoapi.core.scheduling.AppointmentParticipants;
 import com.example.clivoapi.core.scheduling.AppointmentSnapshot;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 record AppointmentView(
-        Long id,
-        Long customerId,
+        UUID id,
+        UUID customerId,
         String customerName,
-        Long practitionerId,
+        UUID practitionerId,
         String practitionerName,
-        Long serviceId,
+        UUID serviceId,
         String serviceName,
         LocalDateTime start,
         LocalDateTime end,

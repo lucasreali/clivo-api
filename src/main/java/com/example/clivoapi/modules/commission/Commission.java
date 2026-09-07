@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.commission;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -11,25 +13,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "commission")
 public class Commission extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @Column(name = "encounter_id", nullable = false, updatable = false)
-    private Long encounterId;
+    private UUID encounterId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "practitioner_id", nullable = false, updatable = false)
@@ -55,7 +57,7 @@ public class Commission extends TenantScopedEntity {
     protected Commission() {
     }
 
-    public Commission(Long encounterId, PractitionerCommission earner, Money invoiceAmount, CommissionPeriod period) {
+    public Commission(UUID encounterId, PractitionerCommission earner, Money invoiceAmount, CommissionPeriod period) {
         this.encounterId = encounterId;
         this.practitioner = earner.practitioner();
         this.percentage = earner.rate();
@@ -64,7 +66,7 @@ public class Commission extends TenantScopedEntity {
         this.amount = calculate(invoiceAmount);
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -102,6 +104,6 @@ public class Commission extends TenantScopedEntity {
         if (isOpen()) {
             return;
         }
-        throw new BusinessException("commission %d belongs to a settlement already closed".formatted(id));
+        throw new BusinessException("commission %s belongs to a settlement already closed".formatted(id));
     }
 }

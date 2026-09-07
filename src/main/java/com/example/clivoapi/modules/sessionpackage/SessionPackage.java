@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.sessionpackage;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -13,8 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,14 +23,16 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "session_package")
 public class SessionPackage extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false, updatable = false)
@@ -73,7 +75,7 @@ public class SessionPackage extends TenantScopedEntity {
         this.status = SessionPackageStatus.ACTIVE;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -85,7 +87,7 @@ public class SessionPackage extends TenantScopedEntity {
         return status.isOpen() && remainingSessions() > 0 && !hasExpiredOn(LocalDate.now());
     }
 
-    public boolean covers(Long otherServiceId) {
+    public boolean covers(UUID otherServiceId) {
         return service.id().equals(otherServiceId);
     }
 
@@ -93,7 +95,7 @@ public class SessionPackage extends TenantScopedEntity {
         return expiresOn.isBefore(reference);
     }
 
-    public void consumeSession(Long encounterId) {
+    public void consumeSession(UUID encounterId) {
         requireActive();
         requireUnused(encounterId);
         usedSessions++;
@@ -132,17 +134,17 @@ public class SessionPackage extends TenantScopedEntity {
         status = SessionPackageStatus.EXHAUSTED;
     }
 
-    private void requireUnused(Long encounterId) {
+    private void requireUnused(UUID encounterId) {
         if (usages.stream().noneMatch(usage -> usage.records(encounterId))) {
             return;
         }
-        throw new BusinessException("encounter %d already consumed a session of this package".formatted(encounterId));
+        throw new BusinessException("encounter %s already consumed a session of this package".formatted(encounterId));
     }
 
     private void requireActive() {
         if (isActive()) {
             return;
         }
-        throw new BusinessException("package %d in status %s has no session left to use".formatted(id, status));
+        throw new BusinessException("package %s in status %s has no session left to use".formatted(id, status));
     }
 }

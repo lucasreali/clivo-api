@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,31 +30,31 @@ class DependentController {
     @Operation(operationId = "registerDependent", summary = "Register a dependent under a customer")
     @PostMapping("/api/customers/{customerId}/dependents")
     @ResponseStatus(HttpStatus.CREATED)
-    DependentView register(@PathVariable Long customerId, @Valid @RequestBody DependentRequest request) {
+    DependentView register(@PathVariable UUID customerId, @Valid @RequestBody DependentRequest request) {
         return DependentView.of(dependents.register(customerId, request.toDetails()));
     }
 
     @Operation(operationId = "listCustomerDependents", summary = "List the dependents a customer answers for")
     @GetMapping("/api/customers/{customerId}/dependents")
-    List<DependentView> caredForBy(@PathVariable Long customerId) {
+    List<DependentView> caredForBy(@PathVariable UUID customerId) {
         return dependents.caredForBy(customerId).stream().map(DependentView::of).toList();
     }
 
     @Operation(operationId = "getDependent", summary = "Read one dependent")
     @GetMapping("/api/dependents/{id}")
-    DependentView findOne(@PathVariable Long id) {
+    DependentView findOne(@PathVariable UUID id) {
         return DependentView.of(dependents.findOne(id));
     }
 
     @Operation(operationId = "describeDependent", summary = "Redescribe a dependent")
     @PutMapping("/api/dependents/{id}")
-    DependentView describe(@PathVariable Long id, @Valid @RequestBody DependentRequest request) {
+    DependentView describe(@PathVariable UUID id, @Valid @RequestBody DependentRequest request) {
         return DependentView.of(dependents.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivateDependent", summary = "Deactivate a dependent, keeping their history")
     @PostMapping("/api/dependents/{id}/deactivation")
-    DependentView deactivate(@PathVariable Long id) {
+    DependentView deactivate(@PathVariable UUID id) {
         return DependentView.of(dependents.deactivate(id));
     }
 }

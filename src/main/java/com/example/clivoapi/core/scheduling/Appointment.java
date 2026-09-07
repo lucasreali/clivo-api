@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.scheduling;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.AppointmentProposal;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -14,14 +16,14 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -32,8 +34,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Appointment extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
@@ -63,7 +65,7 @@ public class Appointment extends TenantScopedEntity {
 
     @CreatedBy
     @Column(name = "created_by", updatable = false)
-    private Long createdBy;
+    private UUID createdBy;
 
     protected Appointment() {
     }
@@ -76,7 +78,7 @@ public class Appointment extends TenantScopedEntity {
         this.status = AppointmentStatus.SCHEDULED;
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

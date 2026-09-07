@@ -1,10 +1,12 @@
 package com.example.clivoapi.core.scheduling;
 
+import java.util.UUID;
+
 public record AppointmentParticipants(
-        Long customerId,
+        UUID customerId,
         String customerName,
-        Long practitionerId,
+        UUID practitionerId,
         String practitionerName,
-        Long serviceId,
+        UUID serviceId,
         String serviceName) {
 }

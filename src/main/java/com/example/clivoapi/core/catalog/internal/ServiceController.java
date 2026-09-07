@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,19 +42,19 @@ class ServiceController {
 
     @Operation(operationId = "getService", summary = "Read one service")
     @GetMapping("/{id}")
-    ServiceView findOne(@PathVariable Long id) {
+    ServiceView findOne(@PathVariable UUID id) {
         return ServiceView.of(catalogue.findOne(id));
     }
 
     @Operation(operationId = "describeService", summary = "Redescribe a service")
     @PutMapping("/{id}")
-    ServiceView describe(@PathVariable Long id, @Valid @RequestBody ServiceRequest request) {
+    ServiceView describe(@PathVariable UUID id, @Valid @RequestBody ServiceRequest request) {
         return ServiceView.of(catalogue.describe(id, request.toDetails()));
     }
 
     @Operation(operationId = "deactivateService", summary = "Deactivate a service, keeping its history")
     @PostMapping("/{id}/deactivation")
-    ServiceView deactivate(@PathVariable Long id) {
+    ServiceView deactivate(@PathVariable UUID id) {
         return ServiceView.of(catalogue.deactivate(id));
     }
 }

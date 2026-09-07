@@ -10,12 +10,13 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 record InvoiceView(
-        Long id,
-        Long encounterId,
-        Long customerId,
+        UUID id,
+        UUID encounterId,
+        UUID customerId,
         String customerName,
         BigDecimal grossAmount,
         BigDecimal discount,
@@ -53,7 +54,7 @@ record InvoiceView(
         return money.amount();
     }
 
-    record LineView(Long serviceId, String description, BigDecimal quantity, BigDecimal unitPrice) {
+    record LineView(UUID serviceId, String description, BigDecimal quantity, BigDecimal unitPrice) {
 
         static LineView of(InvoiceLine line) {
             return new LineView(line.serviceId(), line.description(), line.quantity(), line.unitPrice().amount());
@@ -62,7 +63,7 @@ record InvoiceView(
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     record PaymentView(
-            Long id,
+            UUID id,
             BigDecimal amount,
             String method,
             Instant paidAt,

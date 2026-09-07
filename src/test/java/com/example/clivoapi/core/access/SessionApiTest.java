@@ -78,7 +78,7 @@ class SessionApiTest extends DatabaseTest {
     private MockHttpSession signIn(String clinic, String email, Tenant expected) throws Exception {
         return (MockHttpSession) mockMvc.perform(signInOf(clinic, email, PASSWORD))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clinicId").value(expected.id().intValue()))
+                .andExpect(jsonPath("$.clinicId").value(expected.id().toString()))
                 .andReturn()
                 .getRequest()
                 .getSession(false);

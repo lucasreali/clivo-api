@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.billing;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.BillableEncounter;
 import com.example.clivoapi.common.extension.CompletedEncounter;
@@ -17,8 +19,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -29,14 +29,16 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "invoice")
 public class Invoice extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "encounter_id", nullable = false, updatable = false)
@@ -98,7 +100,7 @@ public class Invoice extends TenantScopedEntity {
         this.items.add(new InvoiceItem(this, service));
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 
@@ -148,14 +150,14 @@ public class Invoice extends TenantScopedEntity {
                 completed.encounterId(), completed.customerId(), completed.serviceId(), grossAmount);
     }
 
-    public void settle(PaymentDetails details, Long recordedBy) {
+    public void settle(PaymentDetails details, UUID recordedBy) {
         requireOpen("paid");
         requireWithinOutstanding(details.amount());
         payments.add(new Payment(this, details, recordedBy));
         refreshStatus();
     }
 
-    public void refund(Long paymentId, RefundReason reason) {
+    public void refund(UUID paymentId, RefundReason reason) {
         paymentNumbered(paymentId).refund(reason);
         refreshStatus();
     }
@@ -188,12 +190,12 @@ public class Invoice extends TenantScopedEntity {
         return payments.stream().reduce(Money.zero(), (total, payment) -> payment.addTo(total), Money::plus);
     }
 
-    private Payment paymentNumbered(Long paymentId) {
+    private Payment paymentNumbered(UUID paymentId) {
         return payments.stream()
                 .filter(payment -> payment.identifiedBy(paymentId))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(
-                        "payment %d does not belong to invoice %d".formatted(paymentId, id)));
+                        "payment %s does not belong to invoice %s".formatted(paymentId, id)));
     }
 
     private void refreshStatus() {

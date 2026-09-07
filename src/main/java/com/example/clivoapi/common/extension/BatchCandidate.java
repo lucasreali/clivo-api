@@ -1,8 +1,9 @@
 package com.example.clivoapi.common.extension;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public record BatchCandidate(Long batchId, String code, LocalDate expiresOn, boolean expired) {
+public record BatchCandidate(UUID batchId, String code, LocalDate expiresOn, boolean expired) {
 
     public BatchCandidate {
         if (batchId == null || code == null || expiresOn == null) {

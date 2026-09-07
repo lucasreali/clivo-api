@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,19 +38,19 @@ class SessionPackageController {
 
     @Operation(operationId = "listCustomerSessionPackages", summary = "List a customer's packages")
     @GetMapping
-    List<PackageView> of(@RequestParam Long customerId) {
+    List<PackageView> of(@RequestParam UUID customerId) {
         return packages.of(customerId).stream().map(PackageView::of).toList();
     }
 
     @Operation(operationId = "getSessionPackage", summary = "Read one package with the sessions already used")
     @GetMapping("/{id}")
-    PackageView findOne(@PathVariable Long id) {
+    PackageView findOne(@PathVariable UUID id) {
         return PackageView.of(packages.findOne(id));
     }
 
     @Operation(operationId = "cancelSessionPackage", summary = "Cancel a package, releasing the sessions not used")
     @PostMapping("/{id}/cancellation")
-    PackageView cancel(@PathVariable Long id) {
+    PackageView cancel(@PathVariable UUID id) {
         return PackageView.of(packages.cancel(id));
     }
 }

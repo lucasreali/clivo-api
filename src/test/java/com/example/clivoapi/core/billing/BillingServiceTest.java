@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.Tenant;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ class BillingServiceTest extends BillingFixture {
 
     @Test
     void anOpenEncounterIsNotInvoicedYet() {
-        Long customerId = customerId();
+        UUID customerId = customerId();
 
         assertThat(billing.findByCustomer(customerId)).isEmpty();
     }

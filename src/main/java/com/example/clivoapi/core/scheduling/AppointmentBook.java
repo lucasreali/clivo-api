@@ -7,6 +7,7 @@ import com.example.clivoapi.core.scheduling.internal.AppointmentRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class AppointmentBook {
         this.appointments = appointments;
     }
 
-    public Appointment reference(Long id) {
+    public Appointment reference(UUID id) {
         return appointments.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment", id));
     }
 
@@ -41,7 +42,7 @@ public class AppointmentBook {
                 window.startsAt(), window.endsAt());
     }
 
-    private List<Appointment> around(TimeWindow period, Long practitionerId) {
+    private List<Appointment> around(TimeWindow period, UUID practitionerId) {
         return appointments.findByPractitionerIdAndPeriodStartsAtLessThanAndPeriodEndsAtGreaterThan(
                 practitionerId, period.endsAt(), period.startsAt());
     }

@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,7 +45,7 @@ class NotificationServiceTest extends SchedulingFixture {
     @Autowired
     private ClinicParameterService parameters;
 
-    private Long alwaysAvailable;
+    private UUID alwaysAvailable;
 
     @Test
     void aScheduledReminderStartsPendingDelivery() {
@@ -120,7 +121,7 @@ class NotificationServiceTest extends SchedulingFixture {
     }
 
     private NotificationSnapshot remindAbout(LocalDateTime start) {
-        Long appointmentId = scheduling
+        UUID appointmentId = scheduling
                 .schedule(new AppointmentBooking(customerId(), alwaysAvailable, serviceId(), start))
                 .id();
         return notifications.schedule(appointmentId, NotificationChannel.WHATSAPP, PHONE);

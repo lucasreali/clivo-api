@@ -10,6 +10,7 @@ import com.example.clivoapi.core.access.RoleAccess;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class EncounterService {
         this.supplies = new EncounterSupplies(dispensers);
     }
 
-    public void useSupplies(Long id, Long productId, BigDecimal quantity) {
+    public void useSupplies(UUID id, UUID productId, BigDecimal quantity) {
         supplies.dispense(encounterOf(id).consume(productId, quantity));
     }
 
@@ -47,13 +48,13 @@ public class EncounterService {
         return snapshotOf(encounters.save(assembler.assemble(opening)));
     }
 
-    public EncounterSnapshot fill(Long id, RecordValues values) {
+    public EncounterSnapshot fill(UUID id, RecordValues values) {
         Encounter encounter = encounterOf(id);
         encounter.fill(values);
         return snapshotOf(encounters.save(encounter));
     }
 
-    public EncounterSnapshot complete(Long id, Role viewer) {
+    public EncounterSnapshot complete(UUID id, Role viewer) {
         Encounter encounter = encounterOf(id);
         records.validate(encounter.filling());
         encounter.complete();
@@ -63,12 +64,12 @@ public class EncounterService {
     }
 
     @Transactional(readOnly = true)
-    public EncounterSnapshot findOne(Long id, Role viewer) {
+    public EncounterSnapshot findOne(UUID id, Role viewer) {
         return visibleTo(encounterOf(id), viewer);
     }
 
     @Transactional(readOnly = true)
-    public List<EncounterSnapshot> historyOf(Long customerId, Role viewer) {
+    public List<EncounterSnapshot> historyOf(UUID customerId, Role viewer) {
         List<Encounter> history = encounters.findByCustomerIdOrderByStartedAtDesc(customerId);
         if (roleAccess.allowsClinicalRecord(viewer)) {
             return history.stream().map(this::snapshotOf).toList();
@@ -87,7 +88,7 @@ public class EncounterService {
         return encounter.snapshotWith(records.assemble(encounter.filling()));
     }
 
-    private Encounter encounterOf(Long id) {
+    private Encounter encounterOf(UUID id) {
         return encounters.findById(id).orElseThrow(() -> new ResourceNotFoundException("Encounter", id));
     }
 }

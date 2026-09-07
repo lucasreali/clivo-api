@@ -4,15 +4,16 @@ import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.core.encounter.EncounterParticipants;
 import com.example.clivoapi.core.encounter.EncounterSnapshot;
 import java.time.Instant;
+import java.util.UUID;
 
 record EncounterView(
-        Long id,
-        Long appointmentId,
-        Long customerId,
+        UUID id,
+        UUID appointmentId,
+        UUID customerId,
         String customerName,
-        Long practitionerId,
+        UUID practitionerId,
         String practitionerName,
-        Long serviceId,
+        UUID serviceId,
         String serviceName,
         RecordSheet sheet,
         Instant startedAt,

@@ -11,12 +11,13 @@ import com.example.clivoapi.common.tenant.Tenant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EncounterServiceTest extends EncounterFixture {
 
-    private Long templateId;
+    private UUID templateId;
 
     @BeforeEach
     void openTheClinic() {
@@ -36,7 +37,7 @@ class EncounterServiceTest extends EncounterFixture {
 
     @Test
     void anEncounterOpenedFromAnAppointmentCarriesItsService() {
-        Long appointmentId = bookAppointment();
+        UUID appointmentId = bookAppointment();
 
         EncounterSnapshot encounter =
                 encounters.open(EncounterOpening.forAppointment(appointmentId, templateId));
@@ -82,7 +83,7 @@ class EncounterServiceTest extends EncounterFixture {
         encounters.fill(draft.id(), RecordValues.of(Map.of("complaint", "Dor no dente 26")));
         completeAsPractitioner(draft.id());
 
-        Long secondVersionId = templates.redefine(templateId, complaintWith("history", "LONG_TEXT")).id();
+        UUID secondVersionId = templates.redefine(templateId, complaintWith("history", "LONG_TEXT")).id();
         templates.publish(secondVersionId);
 
         RecordSheet reopened = reopen(draft.id()).sheet();

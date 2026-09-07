@@ -3,8 +3,9 @@ package com.example.clivoapi.core.catalog.internal;
 import com.example.clivoapi.core.catalog.ServiceDetails;
 import com.example.clivoapi.core.catalog.ServiceSnapshot;
 import java.math.BigDecimal;
+import java.util.UUID;
 
-record ServiceView(Long id, String name, short durationMinutes, BigDecimal price, String status) {
+record ServiceView(UUID id, String name, short durationMinutes, BigDecimal price, String status) {
 
     static ServiceView of(ServiceSnapshot service) {
         ServiceDetails details = service.details();

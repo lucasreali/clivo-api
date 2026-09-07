@@ -233,8 +233,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -301,8 +301,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -389,8 +389,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -457,8 +457,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -545,8 +545,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -640,8 +640,8 @@
           "name" : "recordId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -844,8 +844,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -912,8 +912,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -1420,8 +1420,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -1489,8 +1489,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -1577,8 +1577,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -1643,8 +1643,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -1731,8 +1731,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -1819,8 +1819,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -1907,8 +1907,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -1973,8 +1973,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -2061,8 +2061,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -2129,8 +2129,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -2277,8 +2277,8 @@
           "name" : "encounterId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -2358,8 +2358,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -2426,8 +2426,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -2494,8 +2494,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -2582,8 +2582,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -2869,8 +2869,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -2957,8 +2957,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -3025,8 +3025,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -3172,8 +3172,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -3240,8 +3240,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -3328,8 +3328,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -3416,16 +3416,16 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         }, {
           "in" : "path",
           "name" : "paymentId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -3692,8 +3692,8 @@
           "name" : "appointmentId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -3964,8 +3964,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -4333,8 +4333,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -4399,8 +4399,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -4487,8 +4487,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         }, {
           "in" : "query",
@@ -4570,8 +4570,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -4658,8 +4658,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -4726,8 +4726,8 @@
           "name" : "practitionerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -4962,8 +4962,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -5028,8 +5028,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -5116,8 +5116,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -5184,8 +5184,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -5253,8 +5253,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -5341,8 +5341,8 @@
           "name" : "productId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -5410,8 +5410,8 @@
           "name" : "productId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -5498,8 +5498,8 @@
           "name" : "productId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         }, {
           "in" : "query",
@@ -5712,8 +5712,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -5778,8 +5778,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -5866,8 +5866,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6090,8 +6090,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6290,8 +6290,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6356,8 +6356,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "requestBody" : {
@@ -6444,8 +6444,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6699,8 +6699,8 @@
           "name" : "customerId",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6847,8 +6847,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -6915,8 +6915,8 @@
           "name" : "id",
           "required" : true,
           "schema" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         } ],
         "responses" : {
@@ -7121,16 +7121,16 @@
         "type" : "object",
         "properties" : {
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "start" : {
             "type" : "string",
@@ -7143,8 +7143,8 @@
         "type" : "object",
         "properties" : {
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "customerName" : {
             "type" : "string"
@@ -7154,12 +7154,12 @@
             "format" : "date-time"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerName" : {
             "type" : "string"
@@ -7168,8 +7168,8 @@
             "type" : "string"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceName" : {
             "type" : "string"
@@ -7208,8 +7208,8 @@
             "enum" : [ "CREATE", "UPDATE", "DEACTIVATE", "ACCESS" ]
           },
           "author" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "newValue" : {
             "type" : "object",
@@ -7229,8 +7229,8 @@
         "type" : "object",
         "properties" : {
           "batchId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "code" : {
             "type" : "string"
@@ -7274,15 +7274,15 @@
             "format" : "date"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "manufacturer" : {
             "type" : "string"
           },
           "productId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "productName" : {
             "type" : "string"
@@ -7351,19 +7351,19 @@
             "type" : "number"
           },
           "encounterId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "percentage" : {
             "type" : "number"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerName" : {
             "type" : "string"
@@ -7437,8 +7437,8 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -7509,12 +7509,12 @@
             "type" : "string"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -7555,23 +7555,23 @@
             "format" : "date-time"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerName" : {
             "type" : "string"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceName" : {
             "type" : "string"
@@ -7592,24 +7592,24 @@
         "type" : "object",
         "properties" : {
           "appointmentId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "recordTemplateId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         },
         "required" : [ "recordTemplateId" ]
@@ -7618,34 +7618,34 @@
         "type" : "object",
         "properties" : {
           "appointmentId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "completedAt" : {
             "type" : "string",
             "format" : "date-time"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "customerName" : {
             "type" : "string"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerName" : {
             "type" : "string"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceName" : {
             "type" : "string"
@@ -7778,8 +7778,8 @@
             "type" : "string"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "customerName" : {
             "type" : "string"
@@ -7795,15 +7795,15 @@
             "format" : "date"
           },
           "encounterId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "grossAmount" : {
             "type" : "number"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "lines" : {
             "type" : "array",
@@ -7841,8 +7841,8 @@
             "type" : "number"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "unitPrice" : {
             "type" : "number"
@@ -7853,15 +7853,15 @@
         "type" : "object",
         "properties" : {
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "memberNumber" : {
             "type" : "string"
           },
           "planId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         },
         "required" : [ "customerId", "planId" ]
@@ -7870,12 +7870,12 @@
         "type" : "object",
         "properties" : {
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "memberNumber" : {
             "type" : "string"
@@ -7909,8 +7909,8 @@
         "type" : "object",
         "properties" : {
           "appointmentId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "channel" : {
             "type" : "string",
@@ -7926,8 +7926,8 @@
         "type" : "object",
         "properties" : {
           "appointmentId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "appointmentStart" : {
             "type" : "string",
@@ -7937,8 +7937,8 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "recipient" : {
             "type" : "string"
@@ -7959,8 +7959,8 @@
         "type" : "object",
         "properties" : {
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "expiresOn" : {
             "type" : "string",
@@ -7970,8 +7970,8 @@
             "type" : "number"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "totalSessions" : {
             "type" : "integer",
@@ -7987,16 +7987,16 @@
             "type" : "boolean"
           },
           "customerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "expiresOn" : {
             "type" : "string",
             "format" : "date"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "price" : {
             "type" : "number"
@@ -8006,8 +8006,8 @@
             "format" : "int32"
           },
           "serviceId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "serviceName" : {
             "type" : "string"
@@ -8071,8 +8071,8 @@
             "type" : "number"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "method" : {
             "type" : "string"
@@ -8140,8 +8140,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -8177,8 +8177,8 @@
             }
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "licenseNumber" : {
             "type" : "string"
@@ -8221,8 +8221,8 @@
             "type" : "boolean"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "minStock" : {
             "type" : "number"
@@ -8254,15 +8254,15 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "percentage" : {
             "type" : "number"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerName" : {
             "type" : "string"
@@ -8296,8 +8296,8 @@
             }
           },
           "templateId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "templateName" : {
             "type" : "string"
@@ -8331,8 +8331,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -8389,8 +8389,8 @@
             "format" : "date-time"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "reason" : {
             "type" : "string"
@@ -8413,12 +8413,12 @@
             "format" : "date-time"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "practitionerId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "reason" : {
             "type" : "string"
@@ -8496,8 +8496,8 @@
             "format" : "int32"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -8514,8 +8514,8 @@
         "type" : "object",
         "properties" : {
           "clinicId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"
@@ -8524,8 +8524,8 @@
             "type" : "string"
           },
           "userId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           }
         }
       },
@@ -8625,16 +8625,16 @@
         "type" : "object",
         "properties" : {
           "encounterId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "productId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "quantity" : {
             "type" : "number"
@@ -8647,8 +8647,8 @@
             "format" : "date-time"
           },
           "recordedBy" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "type" : {
             "type" : "string"
@@ -8659,8 +8659,8 @@
         "type" : "object",
         "properties" : {
           "productId" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "quantity" : {
             "type" : "number"
@@ -8702,8 +8702,8 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string",
+            "format" : "uuid"
           },
           "name" : {
             "type" : "string"

@@ -5,6 +5,7 @@ import com.example.clivoapi.common.extension.AppointmentValidator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class SchedulingService {
         return book.record(appointment).snapshot();
     }
 
-    public AppointmentSnapshot reschedule(Long id, LocalDateTime start) {
+    public AppointmentSnapshot reschedule(UUID id, LocalDateTime start) {
         Appointment appointment = book.reference(id);
         AppointmentProposal proposal = appointment.proposalToStartAt(start);
         validation.check(proposal);
@@ -36,19 +37,19 @@ public class SchedulingService {
         return book.record(appointment).snapshot();
     }
 
-    public AppointmentSnapshot cancel(Long id, CancellationReason reason) {
+    public AppointmentSnapshot cancel(UUID id, CancellationReason reason) {
         Appointment appointment = book.reference(id);
         appointment.cancel(reason);
         return book.record(appointment).snapshot();
     }
 
-    public AppointmentSnapshot checkIn(Long id) {
+    public AppointmentSnapshot checkIn(UUID id) {
         Appointment appointment = book.reference(id);
         appointment.checkIn();
         return book.record(appointment).snapshot();
     }
 
-    public AppointmentSnapshot markNoShow(Long id, CancellationReason reason) {
+    public AppointmentSnapshot markNoShow(UUID id, CancellationReason reason) {
         Appointment appointment = book.reference(id);
         appointment.markNoShow(reason);
         return book.record(appointment).snapshot();
@@ -60,12 +61,12 @@ public class SchedulingService {
     }
 
     @Transactional(readOnly = true)
-    public Appointment reference(Long id) {
+    public Appointment reference(UUID id) {
         return book.reference(id);
     }
 
     @Transactional(readOnly = true)
-    public AppointmentSnapshot findOne(Long id) {
+    public AppointmentSnapshot findOne(UUID id) {
         return book.reference(id).snapshot();
     }
 }

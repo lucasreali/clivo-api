@@ -4,6 +4,7 @@ import com.example.clivoapi.modules.commission.CommissionSnapshot;
 import com.example.clivoapi.modules.commission.CommissionStatement;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 record StatementView(String period, BigDecimal total, boolean closed, List<CommissionView> commissions) {
 
@@ -16,9 +17,9 @@ record StatementView(String period, BigDecimal total, boolean closed, List<Commi
     }
 
     record CommissionView(
-            Long id,
-            Long encounterId,
-            Long practitionerId,
+            UUID id,
+            UUID encounterId,
+            UUID practitionerId,
             String practitionerName,
             BigDecimal percentage,
             BigDecimal amount,

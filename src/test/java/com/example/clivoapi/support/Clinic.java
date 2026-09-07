@@ -1,10 +1,11 @@
 package com.example.clivoapi.support;
 
 import com.example.clivoapi.common.tenant.Tenant;
+import java.util.UUID;
 
-public record Clinic(Tenant tenant, Long customerId, Long practitionerId, Long serviceId) {
+public record Clinic(Tenant tenant, UUID customerId, UUID practitionerId, UUID serviceId) {
 
-    public Long id() {
+    public UUID id() {
         return tenant.id();
     }
 }

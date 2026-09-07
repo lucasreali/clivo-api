@@ -1,5 +1,7 @@
 package com.example.clivoapi.core.catalog;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import jakarta.persistence.AttributeOverride;
@@ -8,19 +10,19 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "service")
 public class Service extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -44,7 +46,7 @@ public class Service extends TenantScopedEntity {
         describeAs(details);
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

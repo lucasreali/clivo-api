@@ -1,21 +1,22 @@
 package com.example.clivoapi.common.extension;
 
 import com.example.clivoapi.common.time.TimeWindow;
+import java.util.UUID;
 
 public record AppointmentProposal(
-        Long appointmentId,
-        Long customerId,
-        Long practitionerId,
-        Long serviceId,
+        UUID appointmentId,
+        UUID customerId,
+        UUID practitionerId,
+        UUID serviceId,
         TimeWindow period) {
 
     public static AppointmentProposal booking(
-            Long customerId, Long practitionerId, Long serviceId, TimeWindow period) {
+            UUID customerId, UUID practitionerId, UUID serviceId, TimeWindow period) {
         return new AppointmentProposal(null, customerId, practitionerId, serviceId, period);
     }
 
     public static AppointmentProposal rescheduling(
-            Long appointmentId, Long customerId, Long practitionerId, Long serviceId, TimeWindow period) {
+            UUID appointmentId, UUID customerId, UUID practitionerId, UUID serviceId, TimeWindow period) {
         return new AppointmentProposal(appointmentId, customerId, practitionerId, serviceId, period);
     }
 
@@ -23,11 +24,11 @@ public record AppointmentProposal(
         return appointmentId != null;
     }
 
-    public boolean identifies(Long candidate) {
+    public boolean identifies(UUID candidate) {
         return appointmentId != null && appointmentId.equals(candidate);
     }
 
-    public boolean concerns(Long practitioner) {
+    public boolean concerns(UUID practitioner) {
         return practitionerId.equals(practitioner);
     }
 }

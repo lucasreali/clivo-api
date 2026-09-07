@@ -8,6 +8,7 @@ import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.Tenant;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,7 @@ class CatalogServiceTest extends DatabaseTest {
     @Test
     void theDurationOfTheServiceGivesTheEndOfTheSlot() {
         bindTenant(createTenant("TEST-CATALOG"));
-        Long id = catalogue.register(detailsOf("Limpeza", 45, "180.00")).id();
+        UUID id = catalogue.register(detailsOf("Limpeza", 45, "180.00")).id();
 
         ServiceSnapshot service = catalogue.findOne(id);
 
@@ -59,7 +60,7 @@ class CatalogServiceTest extends DatabaseTest {
     @Test
     void aDeactivatedServiceStaysInTheCatalogue() {
         bindTenant(createTenant("TEST-CATALOG"));
-        Long id = catalogue.register(detailsOf("Limpeza", 45, "180.00")).id();
+        UUID id = catalogue.register(detailsOf("Limpeza", 45, "180.00")).id();
 
         assertThat(catalogue.deactivate(id).status()).isEqualTo(ServiceStatus.INACTIVE);
         assertThat(catalogue.findAll()).hasSize(1);

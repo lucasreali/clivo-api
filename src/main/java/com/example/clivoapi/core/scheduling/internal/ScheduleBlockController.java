@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,7 +49,7 @@ class ScheduleBlockController {
     @Operation(operationId = "releaseScheduleBlock", summary = "Release a block")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void release(@PathVariable Long id) {
+    void release(@PathVariable UUID id) {
         blocks.release(id);
     }
 }

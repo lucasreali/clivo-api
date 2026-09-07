@@ -10,6 +10,7 @@ import com.example.clivoapi.configuration.modules.ModuleActivationService;
 import com.example.clivoapi.core.billing.BillingFixture;
 import com.example.clivoapi.core.billing.InvoiceCoverage;
 import com.example.clivoapi.core.billing.InvoiceSnapshot;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,7 +38,7 @@ class InsuranceServiceTest extends BillingFixture {
         openClinicWithInsurance("TEST-INS-BILL");
         enrol(registerPlan("Unimed", "70"));
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         InvoiceSnapshot invoice = billing.findByEncounter(encounterId);
         assertThat(invoice.coverage()).isEqualTo(InvoiceCoverage.INSURANCE);
@@ -51,7 +52,7 @@ class InsuranceServiceTest extends BillingFixture {
         openClinicWithInsurance("TEST-INS-NONE");
         registerPlan("Unimed", "70");
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(billing.findByEncounter(encounterId).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
         assertThat(billing.findByEncounter(encounterId).amounts().net()).isEqualTo(Money.of("180.00"));
@@ -64,7 +65,7 @@ class InsuranceServiceTest extends BillingFixture {
         enrol(plan);
         insurance.deactivate(plan.id());
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(billing.findByEncounter(encounterId).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
     }
@@ -74,7 +75,7 @@ class InsuranceServiceTest extends BillingFixture {
         openClinic("TEST-INS-OFF");
         enrol(registerPlan("Unimed", "70"));
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(billing.findByEncounter(encounterId).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
         assertThat(billing.findByEncounter(encounterId).amounts().net()).isEqualTo(Money.of("180.00"));

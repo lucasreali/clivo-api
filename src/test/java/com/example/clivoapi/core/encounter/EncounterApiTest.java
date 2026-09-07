@@ -10,6 +10,7 @@ import com.example.clivoapi.common.extension.ParameterCode;
 import com.example.clivoapi.common.extension.ParameterValue;
 import com.example.clivoapi.common.tenant.Tenant;
 import com.example.clivoapi.configuration.parameter.ClinicParameterService;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -32,12 +33,12 @@ class EncounterApiTest extends EncounterFixture {
         openClinic("TEST-API-VET");
         Tenant vet = clinic();
         parameters.change(ROLE_MODEL, ParameterValue.of("SINGLE"));
-        Long vetEncounter = openWith("species", "SHORT_TEXT");
+        UUID vetEncounter = openWith("species", "SHORT_TEXT");
 
         openClinic("TEST-API-DENTAL");
         Tenant dental = clinic();
         parameters.change(ROLE_MODEL, ParameterValue.of("SINGLE"));
-        Long dentalEncounter = openWith("tooth", "INTEGER");
+        UUID dentalEncounter = openWith("tooth", "INTEGER");
 
         bindTenant(vet);
         mockMvc.perform(get("/api/encounters/{id}", vetEncounter))
@@ -56,7 +57,7 @@ class EncounterApiTest extends EncounterFixture {
     @Test
     void theRecordIsFilledInAndCompletedThroughTheApi() throws Exception {
         openClinic("TEST-API-ENCOUNTER");
-        Long id = openWith("complaint", "LONG_TEXT");
+        UUID id = openWith("complaint", "LONG_TEXT");
 
         mockMvc.perform(put("/api/encounters/{id}/record", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +77,7 @@ class EncounterApiTest extends EncounterFixture {
 
         mockMvc.perform(post("/api/encounters")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"customerId\":%d,\"practitionerId\":%d}"
+                        .content("{\"customerId\":\"%s\",\"practitionerId\":\"%s\"}"
                                 .formatted(customerId(), practitionerId())))
                 .andExpect(status().isBadRequest());
     }
@@ -85,12 +86,12 @@ class EncounterApiTest extends EncounterFixture {
     void receptionSeesTheClinicalContentOnlyInTheClinicUnderTheSingleRoleModel() throws Exception {
         openClinic("TEST-API-SEGREGATED");
         Tenant segregated = clinic();
-        Long segregatedCustomer = customerId();
+        UUID segregatedCustomer = customerId();
         completeAnEncounter();
 
         openClinic("TEST-API-SINGLE");
         Tenant single = clinic();
-        Long singleCustomer = customerId();
+        UUID singleCustomer = customerId();
         completeAnEncounter();
         parameters.change(ROLE_MODEL, ParameterValue.of("SINGLE"));
 
@@ -107,7 +108,7 @@ class EncounterApiTest extends EncounterFixture {
     }
 
     private void completeAnEncounter() throws Exception {
-        Long id = openWith("complaint", "LONG_TEXT");
+        UUID id = openWith("complaint", "LONG_TEXT");
         mockMvc.perform(put("/api/encounters/{id}/record", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"values\":{\"complaint\":\"Dor no dente 26\"}}"))
@@ -115,8 +116,8 @@ class EncounterApiTest extends EncounterFixture {
         mockMvc.perform(post("/api/encounters/{id}/completion", id)).andExpect(status().isOk());
     }
 
-    private Long openWith(String fieldCode, String fieldType) {
-        Long templateId = publishTemplate("Consultation", complaintWith(fieldCode, fieldType));
+    private UUID openWith(String fieldCode, String fieldType) {
+        UUID templateId = publishTemplate("Consultation", complaintWith(fieldCode, fieldType));
         return encounters
                 .open(EncounterOpening.walkIn(customerId(), practitionerId(), serviceId(), templateId))
                 .id();

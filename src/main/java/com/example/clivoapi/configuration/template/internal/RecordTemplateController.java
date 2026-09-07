@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +35,7 @@ class RecordTemplateController {
 
     @Operation(operationId = "getRecordTemplate", summary = "Read one record template with its sections and fields")
     @GetMapping("/{id}")
-    RecordTemplateView findOne(@PathVariable Long id) {
+    RecordTemplateView findOne(@PathVariable UUID id) {
         return RecordTemplateView.of(templates.findOne(id));
     }
 
@@ -48,13 +49,13 @@ class RecordTemplateController {
 
     @Operation(operationId = "redefineRecordTemplate", summary = "Redefine a draft's content, leaving published versions untouched")
     @PutMapping("/{id}")
-    RecordTemplateView redefine(@PathVariable Long id, @Valid @RequestBody RecordTemplateRequest request) {
+    RecordTemplateView redefine(@PathVariable UUID id, @Valid @RequestBody RecordTemplateRequest request) {
         return RecordTemplateView.of(templates.redefine(id, request.content()));
     }
 
     @Operation(operationId = "publishRecordTemplate", summary = "Publish a template so encounters may use it")
     @PostMapping("/{id}/publication")
-    RecordTemplateView publish(@PathVariable Long id) {
+    RecordTemplateView publish(@PathVariable UUID id) {
         return RecordTemplateView.of(templates.publish(id));
     }
 }

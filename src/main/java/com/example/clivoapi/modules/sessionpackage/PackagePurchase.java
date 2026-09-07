@@ -3,9 +3,10 @@ package com.example.clivoapi.modules.sessionpackage;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.money.Money;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record PackagePurchase(
-        Long customerId, Long serviceId, SessionCount totalSessions, Money price, LocalDate expiresOn) {
+        UUID customerId, UUID serviceId, SessionCount totalSessions, Money price, LocalDate expiresOn) {
 
     public PackagePurchase {
         expiresOn = ahead(expiresOn);

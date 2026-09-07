@@ -6,9 +6,10 @@ import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateSnapshot;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 record RecordTemplateView(
-        Long id, String name, int version, String status, String requiresModule, List<SectionView> sections) {
+        UUID id, String name, int version, String status, String requiresModule, List<SectionView> sections) {
 
     static RecordTemplateView of(TemplateSnapshot snapshot) {
         return new RecordTemplateView(

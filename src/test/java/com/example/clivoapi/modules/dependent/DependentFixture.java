@@ -9,6 +9,7 @@ import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 abstract class DependentFixture extends DatabaseTest {
@@ -36,7 +37,7 @@ abstract class DependentFixture extends DatabaseTest {
         return clinic;
     }
 
-    protected Long registerCustomer(String name) {
+    protected UUID registerCustomer(String name) {
         return customers.register(new CustomerDetails(
                         name, null, LocalDate.of(1985, 3, 12), new ContactDetails("41999990000", null), null))
                 .id();

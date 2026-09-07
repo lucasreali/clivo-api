@@ -6,6 +6,7 @@ import com.example.clivoapi.common.extension.ParameterValue;
 import com.example.clivoapi.configuration.parameter.internal.ClinicParameterRepository;
 import com.example.clivoapi.configuration.parameter.internal.ParameterDefinitionRepository;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,12 @@ public class ClinicParameterService {
 
     private final ParameterDefinitionRepository definitions;
     private final ClinicParameterRepository parameters;
-    private final AuditorAware<Long> auditor;
+    private final AuditorAware<UUID> auditor;
 
     ClinicParameterService(
             ParameterDefinitionRepository definitions,
             ClinicParameterRepository parameters,
-            AuditorAware<Long> auditor) {
+            AuditorAware<UUID> auditor) {
         this.definitions = definitions;
         this.parameters = parameters;
         this.auditor = auditor;

@@ -3,11 +3,12 @@ package com.example.clivoapi.core.billing;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public record InvoiceSnapshot(
-        Long id,
-        Long encounterId,
-        Long customerId,
+        UUID id,
+        UUID encounterId,
+        UUID customerId,
         String customerName,
         InvoiceAmounts amounts,
         String discountReason,

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class SchedulingFixture extends DatabaseTest {
@@ -43,9 +44,9 @@ public abstract class SchedulingFixture extends DatabaseTest {
     @Autowired
     private CatalogService catalogue;
 
-    private Long customerId;
-    private Long practitionerId;
-    private Long serviceId;
+    private UUID customerId;
+    private UUID practitionerId;
+    private UUID serviceId;
 
     protected void openClinic(String code) {
         bindTenant(createTenant(code));
@@ -55,21 +56,21 @@ public abstract class SchedulingFixture extends DatabaseTest {
                 new ServiceDetails("Limpeza", ServiceDuration.ofMinutes(SERVICE_MINUTES), Money.of("180.00"))).id();
     }
 
-    protected Long registerPractitioner(String name) {
-        Long id = practitioners.register(new PractitionerDetails(name, null)).id();
+    protected UUID registerPractitioner(String name) {
+        UUID id = practitioners.register(new PractitionerDetails(name, null)).id();
         practitioners.follow(id, businessHours());
         return id;
     }
 
-    protected Long customerId() {
+    protected UUID customerId() {
         return customerId;
     }
 
-    protected Long practitionerId() {
+    protected UUID practitionerId() {
         return practitionerId;
     }
 
-    protected Long serviceId() {
+    protected UUID serviceId() {
         return serviceId;
     }
 

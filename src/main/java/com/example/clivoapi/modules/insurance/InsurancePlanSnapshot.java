@@ -1,4 +1,6 @@
 package com.example.clivoapi.modules.insurance;
 
-public record InsurancePlanSnapshot(Long id, PlanDetails details, InsurancePlanStatus status) {
+import java.util.UUID;
+
+public record InsurancePlanSnapshot(UUID id, PlanDetails details, InsurancePlanStatus status) {
 }

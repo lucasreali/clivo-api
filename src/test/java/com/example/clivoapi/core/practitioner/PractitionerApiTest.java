@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.clivoapi.common.DatabaseTest;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,19 @@ class PractitionerApiTest extends DatabaseTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private Long practitionerId;
+    private UUID practitionerId;
 
     @BeforeEach
     void registerPractitioner() throws Exception {
         bindTenant(createTenant("TEST-PRACT"));
-        practitionerId = Long.valueOf(mockMvc.perform(post("/api/practitioners")
+        practitionerId = UUID.fromString(mockMvc.perform(post("/api/practitioners")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Dr. Marina\",\"licenseNumber\":\"CRO-12345\"}"))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .replaceAll(".*\"id\":(\\d+).*", "$1"));
+                .replaceAll(".*\"id\":\"([^\"]+)\".*", "$1"));
     }
 
     @Test

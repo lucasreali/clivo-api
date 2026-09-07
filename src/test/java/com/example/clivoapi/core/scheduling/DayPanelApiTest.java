@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +29,17 @@ class DayPanelApiTest extends SchedulingFixture {
     @Test
     void thePanelListsTheDayInTimeOrder() throws Exception {
         LocalDateTime afternoon = nextWeekAt(DayOfWeek.MONDAY, "14:00");
-        Long later = bookAt(afternoon).id();
+        UUID later = bookAt(afternoon).id();
         LocalDateTime morning = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long earlier = bookAt(morning).id();
+        UUID earlier = bookAt(morning).id();
 
         mockMvc.perform(get("/api/appointments").param("day", morning.toLocalDate().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(earlier))
+                .andExpect(jsonPath("$[0].id").value(earlier.toString()))
                 .andExpect(jsonPath("$[0].status").value("SCHEDULED"))
                 .andExpect(jsonPath("$[0].practitionerName").value("Dr. Marina"))
-                .andExpect(jsonPath("$[1].id").value(later));
+                .andExpect(jsonPath("$[1].id").value(later.toString()));
     }
 
     @Test
@@ -53,7 +54,7 @@ class DayPanelApiTest extends SchedulingFixture {
 
     @Test
     void theArrivalPutsTheCustomerInTheWaitingLine() throws Exception {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
 
         mockMvc.perform(post("/api/appointments/{id}/arrival", id))
                 .andExpect(status().isOk())
@@ -63,7 +64,7 @@ class DayPanelApiTest extends SchedulingFixture {
 
     @Test
     void theAbsenceIsRegisteredWithItsReason() throws Exception {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
 
         mockMvc.perform(post("/api/appointments/{id}/absence", id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +76,7 @@ class DayPanelApiTest extends SchedulingFixture {
 
     @Test
     void anAppointmentThatAlreadyArrivedIsNotMarkedAbsent() throws Exception {
-        Long id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
+        UUID id = bookAt(nextWeekAt(DayOfWeek.MONDAY, "09:00")).id();
         scheduling.checkIn(id);
 
         mockMvc.perform(post("/api/appointments/{id}/absence", id)

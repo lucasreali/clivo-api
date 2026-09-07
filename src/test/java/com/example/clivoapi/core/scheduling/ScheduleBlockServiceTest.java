@@ -8,6 +8,7 @@ import com.example.clivoapi.common.time.TimeWindow;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class ScheduleBlockServiceTest extends SchedulingFixture {
     @Test
     void aBlockWithoutPractitionerReachesEveryoneInTheClinic() {
         LocalDateTime holiday = nextWeekAt(DayOfWeek.TUESDAY, "08:00");
-        Long otherPractitioner = registerPractitioner("Dr. Bruno");
+        UUID otherPractitioner = registerPractitioner("Dr. Bruno");
         blocks.register(new ScheduleBlockDetails(null, windowOf(holiday, 600), new BlockReason("Feriado")));
 
         assertThat(blocks.firstBlocking(practitionerId(), windowOf(holiday, 60))).isPresent();
@@ -51,7 +52,7 @@ class ScheduleBlockServiceTest extends SchedulingFixture {
     @Test
     void aBlockOfOnePractitionerLeavesTheOtherFree() {
         LocalDateTime morning = nextWeekAt(DayOfWeek.TUESDAY, "09:00");
-        Long otherPractitioner = registerPractitioner("Dr. Bruno");
+        UUID otherPractitioner = registerPractitioner("Dr. Bruno");
         blocks.register(new ScheduleBlockDetails(practitionerId(), windowOf(morning, 60), new BlockReason("Ferias")));
 
         assertThat(blocks.firstBlocking(practitionerId(), windowOf(morning, 30))).isPresent();
@@ -91,7 +92,7 @@ class ScheduleBlockServiceTest extends SchedulingFixture {
     @Test
     void aBlockIsReleasedAndStopsBeingListed() {
         LocalDateTime morning = nextWeekAt(DayOfWeek.MONDAY, "09:00");
-        Long id = blocks.register(
+        UUID id = blocks.register(
                 new ScheduleBlockDetails(null, windowOf(morning, 60), new BlockReason("Reuniao"))).id();
 
         blocks.release(id);

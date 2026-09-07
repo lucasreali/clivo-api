@@ -15,6 +15,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,7 +68,7 @@ class SchedulingScenarios extends ScenarioTest {
     void ct09_theReschedulingDeadlineIsTheOneTheClinicConfigured() {
         Clinic clinic = openClinic("TEST-CT09");
         LocalDateTime tomorrow = tomorrowAt("09:00");
-        Long appointmentId = bookAt(clinic, tomorrow).id();
+        UUID appointmentId = bookAt(clinic, tomorrow).id();
 
         change(RESCHEDULE_WINDOW_HOURS, LONGEST_WINDOW);
         assertThatExceptionOfType(BusinessException.class)

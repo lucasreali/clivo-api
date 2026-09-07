@@ -1,9 +1,10 @@
 package com.example.clivoapi.core.customer;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public record CustomerSnapshot(
-        Long id,
+        UUID id,
         CustomerDetails details,
         CustomerStatus status,
         String deactivationReason,

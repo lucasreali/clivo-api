@@ -15,6 +15,7 @@ import com.example.clivoapi.modules.inventory.MeasurementUnit;
 import com.example.clivoapi.modules.inventory.ProductDetails;
 import com.example.clivoapi.modules.inventory.Quantity;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,7 +37,7 @@ class BatchScenarios extends ScenarioTest {
 
     @Test
     void ct13_aClinicThatBlocksExpiredBatchesRefusesTheSelection() {
-        Long anaesthetic = openClinicWithAnExpiredBatch("TEST-CT13", "true");
+        UUID anaesthetic = openClinicWithAnExpiredBatch("TEST-CT13", "true");
 
         assertThatExceptionOfType(BusinessException.class)
                 .isThrownBy(() -> batches.selectFor(anaesthetic, ONE_DOSE))
@@ -45,7 +46,7 @@ class BatchScenarios extends ScenarioTest {
 
     @Test
     void ct14_aClinicThatOnlyWarnsSelectsTheExpiredBatchWithAnAlert() {
-        Long anaesthetic = openClinicWithAnExpiredBatch("TEST-CT14", "false");
+        UUID anaesthetic = openClinicWithAnExpiredBatch("TEST-CT14", "false");
 
         BatchChoice choice = batches.selectFor(anaesthetic, ONE_DOSE);
 
@@ -53,12 +54,12 @@ class BatchScenarios extends ScenarioTest {
         assertThat(choice.alert()).isPresent();
     }
 
-    private Long openClinicWithAnExpiredBatch(String code, String blockExpiredBatch) {
+    private UUID openClinicWithAnExpiredBatch(String code, String blockExpiredBatch) {
         openClinic(code);
         activate(INVENTORY);
         activate(BATCH);
         change(BLOCK_EXPIRED_BATCH, blockExpiredBatch);
-        Long anaesthetic = inventory
+        UUID anaesthetic = inventory
                 .register(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true))
                 .id();
         batches.receive(

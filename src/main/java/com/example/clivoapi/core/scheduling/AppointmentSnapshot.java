@@ -2,9 +2,10 @@ package com.example.clivoapi.core.scheduling;
 
 import com.example.clivoapi.common.time.TimeWindow;
 import java.util.Optional;
+import java.util.UUID;
 
 public record AppointmentSnapshot(
-        Long id,
+        UUID id,
         AppointmentParticipants participants,
         TimeWindow period,
         AppointmentStatus status,

@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -116,7 +117,7 @@ public abstract class ClinicFixture extends DatabaseTest {
         parameters.change(parameter, ParameterValue.of(value));
     }
 
-    protected Long registerCustomer(String name) {
+    protected UUID registerCustomer(String name) {
         return customers.register(new CustomerDetails(
                         name,
                         new NationalId(documentOf(name)),
@@ -126,20 +127,20 @@ public abstract class ClinicFixture extends DatabaseTest {
                 .id();
     }
 
-    protected Long registerPractitioner(String name) {
-        Long id = practitioners.register(new PractitionerDetails(name, null)).id();
+    protected UUID registerPractitioner(String name) {
+        UUID id = practitioners.register(new PractitionerDetails(name, null)).id();
         practitioners.follow(id, businessHours());
         return id;
     }
 
-    protected Long registerService() {
+    protected UUID registerService() {
         return catalogue
                 .register(new ServiceDetails(
                         "Limpeza", ServiceDuration.ofMinutes(SERVICE_MINUTES), Money.of("180.00")))
                 .id();
     }
 
-    protected Long publishTemplate(String name, TemplateContent content) {
+    protected UUID publishTemplate(String name, TemplateContent content) {
         return templates.publish(templates.draft(name, null, content).id()).id();
     }
 
@@ -156,7 +157,7 @@ public abstract class ClinicFixture extends DatabaseTest {
                 clinic.customerId(), clinic.practitionerId(), clinic.serviceId(), start));
     }
 
-    protected Long openEncounter(Clinic clinic, Long templateId) {
+    protected UUID openEncounter(Clinic clinic, UUID templateId) {
         return encounters
                 .open(EncounterOpening.walkIn(
                         clinic.customerId(), clinic.practitionerId(), clinic.serviceId(), templateId))

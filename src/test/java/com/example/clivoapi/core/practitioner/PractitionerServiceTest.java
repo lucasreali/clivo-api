@@ -8,6 +8,7 @@ import com.example.clivoapi.common.exception.BusinessException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ class PractitionerServiceTest extends DatabaseTest {
 
     @Test
     void theWeeklyScheduleAnswersWhetherThePractitionerWorksAtATime() {
-        Long id = practitioners.register(new PractitionerDetails("Dr. Marina", "CRO-12345")).id();
+        UUID id = practitioners.register(new PractitionerDetails("Dr. Marina", "CRO-12345")).id();
 
         practitioners.follow(id, scheduleOf(
                 periodOf(DayOfWeek.MONDAY, "08:00", "12:00"),
@@ -39,7 +40,7 @@ class PractitionerServiceTest extends DatabaseTest {
 
     @Test
     void theWeekOrderOfTheScheduleIsKeptWhateverTheOrderItArrivesIn() {
-        Long id = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
+        UUID id = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
 
         PractitionerSnapshot saved = practitioners.follow(id, scheduleOf(
                 periodOf(DayOfWeek.WEDNESDAY, "09:00", "17:00"),
@@ -70,7 +71,7 @@ class PractitionerServiceTest extends DatabaseTest {
 
     @Test
     void anInactivePractitionerWorksAtNoTime() {
-        Long id = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
+        UUID id = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
         practitioners.follow(id, scheduleOf(periodOf(DayOfWeek.MONDAY, "08:00", "12:00")));
 
         practitioners.deactivate(id);

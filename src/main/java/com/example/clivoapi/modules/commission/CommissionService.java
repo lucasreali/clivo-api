@@ -11,6 +11,7 @@ import com.example.clivoapi.modules.commission.internal.PractitionerCommissionRe
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class CommissionService {
         this.billing = billing;
     }
 
-    public PractitionerCommissionSnapshot chargeAt(Long practitionerId, CommissionRate rate) {
+    public PractitionerCommissionSnapshot chargeAt(UUID practitionerId, CommissionRate rate) {
         PractitionerCommission earner = earners
                 .findByPractitionerId(practitionerId)
                 .orElseGet(() -> new PractitionerCommission(practitioners.reference(practitionerId), rate));
@@ -66,7 +67,7 @@ public class CommissionService {
     }
 
     @Transactional(readOnly = true)
-    public CommissionSnapshot findOne(Long id) {
+    public CommissionSnapshot findOne(UUID id) {
         return commissions.findById(id)
                 .map(Commission::snapshot)
                 .orElseThrow(() -> new ResourceNotFoundException("Commission", id));

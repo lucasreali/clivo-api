@@ -1,5 +1,7 @@
 package com.example.clivoapi.configuration.template;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -8,8 +10,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -18,7 +18,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "record_template")
@@ -27,8 +29,8 @@ public class RecordTemplate extends TenantScopedEntity {
     private static final short FIRST_VERSION = 1;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -41,7 +43,7 @@ public class RecordTemplate extends TenantScopedEntity {
     private RecordTemplateStatus status;
 
     @Column(name = "cloned_from")
-    private Long clonedFrom;
+    private UUID clonedFrom;
 
     @Column(name = "requires_module")
     private String requiresModule;
@@ -64,7 +66,7 @@ public class RecordTemplate extends TenantScopedEntity {
         this.createdAt = Instant.now();
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

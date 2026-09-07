@@ -4,10 +4,11 @@ import com.example.clivoapi.modules.batch.BatchDetails;
 import com.example.clivoapi.modules.batch.BatchSnapshot;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 record BatchView(
-        Long id,
-        Long productId,
+        UUID id,
+        UUID productId,
         String productName,
         String code,
         LocalDate expiresOn,

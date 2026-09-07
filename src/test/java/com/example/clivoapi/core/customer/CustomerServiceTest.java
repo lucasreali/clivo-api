@@ -8,6 +8,7 @@ import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +48,7 @@ class CustomerServiceTest extends DatabaseTest {
     @Test
     void deactivationDemandsAReasonAndKeepsTheCustomer() {
         bindTenant(createTenant("TEST-CUSTOMER"));
-        Long id = customers.register(detailsOf("Ana Souza", DOCUMENT)).id();
+        UUID id = customers.register(detailsOf("Ana Souza", DOCUMENT)).id();
 
         assertThatExceptionOfType(BusinessException.class)
                 .isThrownBy(() -> customers.deactivate(id, new DeactivationReason(" ")))
@@ -63,7 +64,7 @@ class CustomerServiceTest extends DatabaseTest {
     @Test
     void theLatestConsentForAPurposeAnswersForTheCustomer() {
         bindTenant(createTenant("TEST-CUSTOMER"));
-        Long id = customers.register(detailsOf("Ana Souza", DOCUMENT)).id();
+        UUID id = customers.register(detailsOf("Ana Souza", DOCUMENT)).id();
 
         assertThat(customers.record(id, statementOf(true)).consented()).isTrue();
         assertThat(customers.record(id, statementOf(false)).consented()).isFalse();

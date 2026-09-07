@@ -1,5 +1,7 @@
 package com.example.clivoapi.modules.dependent;
 
+import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
+
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import com.example.clivoapi.core.customer.Customer;
 import jakarta.persistence.Column;
@@ -8,8 +10,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,7 +19,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,8 +32,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Dependent extends TenantScopedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator(style = VERSION_7)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false, updatable = false)
@@ -68,7 +70,7 @@ public class Dependent extends TenantScopedEntity {
         describeAs(details);
     }
 
-    public Long id() {
+    public UUID id() {
         return id;
     }
 

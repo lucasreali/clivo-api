@@ -13,6 +13,7 @@ import com.example.clivoapi.core.billing.InvoiceCoverage;
 import com.example.clivoapi.core.billing.InvoiceSnapshot;
 import com.example.clivoapi.core.billing.InvoiceStatus;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,7 +43,7 @@ class SessionPackageServiceTest extends BillingFixture {
         openClinicWithPackages("TEST-PKG-CONSUME");
         SessionPackageSnapshot sold = sellTenSessions();
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(packages.findOne(sold.id()).remainingSessions()).isEqualTo(9);
         InvoiceSnapshot invoice = billing.findByEncounter(encounterId);
@@ -55,11 +56,11 @@ class SessionPackageServiceTest extends BillingFixture {
     void anEncounterNeverConsumesMoreThanOneSession() {
         openClinicWithPackages("TEST-PKG-ONCE");
         SessionPackageSnapshot sold = sellTenSessions();
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThatThrownBy(() -> packages.consumeFor(completionOf(encounterId)))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("encounter %d already consumed a session of this package".formatted(encounterId));
+                .hasMessage("encounter %s already consumed a session of this package".formatted(encounterId));
         assertThat(packages.findOne(sold.id()).usedSessions()).isEqualTo(1);
     }
 
@@ -69,7 +70,7 @@ class SessionPackageServiceTest extends BillingFixture {
         SessionPackageSnapshot sold = sellOneSession();
 
         completeAnEncounter();
-        Long secondEncounter = completeAnEncounter();
+        UUID secondEncounter = completeAnEncounter();
 
         assertThat(packages.findOne(sold.id()).status()).isEqualTo(SessionPackageStatus.EXHAUSTED);
         assertThat(billing.findByEncounter(secondEncounter).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
@@ -81,7 +82,7 @@ class SessionPackageServiceTest extends BillingFixture {
         SessionPackageSnapshot sold = sellTenSessions();
         packages.cancel(sold.id());
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(billing.findByEncounter(encounterId).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
     }
@@ -91,7 +92,7 @@ class SessionPackageServiceTest extends BillingFixture {
         openClinic("TEST-PKG-OFF");
         sellTenSessions();
 
-        Long encounterId = completeAnEncounter();
+        UUID encounterId = completeAnEncounter();
 
         assertThat(billing.findByEncounter(encounterId).coverage()).isEqualTo(InvoiceCoverage.DIRECT);
     }
@@ -99,12 +100,12 @@ class SessionPackageServiceTest extends BillingFixture {
     @Test
     void aPackageAlreadyExpiredIsNotSold() {
         assertThatThrownBy(() -> new PackagePurchase(
-                        1L, 1L, new SessionCount(5), Money.of("500.00"), LocalDate.now().minusDays(1)))
+                        UUID.randomUUID(), UUID.randomUUID(), new SessionCount(5), Money.of("500.00"), LocalDate.now().minusDays(1)))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("a package cannot be sold already expired");
     }
 
-    private CompletedEncounter completionOf(Long encounterId) {
+    private CompletedEncounter completionOf(UUID encounterId) {
         return new CompletedEncounter(encounterId, customerId(), practitionerId(), serviceId());
     }
 

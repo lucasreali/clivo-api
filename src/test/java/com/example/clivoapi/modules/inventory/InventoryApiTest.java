@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -28,9 +29,9 @@ class InventoryApiTest extends InventoryFixture {
                 .andExpect(jsonPath("$.onHand").value(0))
                 .andExpect(jsonPath("$.belowMinimum").value(true));
 
-        Long productId = registerGauze("5");
+        UUID productId = registerGauze("5");
 
-        mockMvc.perform(post("/api/products/%d/movements".formatted(productId))
+        mockMvc.perform(post("/api/products/%s/movements".formatted(productId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"type\":\"INBOUND\",\"quantity\":12,\"reason\":\"compra mensal\"}"))
                 .andExpect(status().isCreated())

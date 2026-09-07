@@ -7,6 +7,7 @@ import com.example.clivoapi.common.SampleEntity;
 import com.example.clivoapi.common.tenant.Tenant;
 import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 class AuditableEntityTest extends DatabaseTest {
 
-    private static final Long SIGNED_IN_USER = 42L;
+    private static final UUID SIGNED_IN_USER = UUID.randomUUID();
 
     @BeforeEach
     void signIn() {
@@ -66,6 +67,6 @@ class AuditableEntityTest extends DatabaseTest {
                 "SELECT created_at, created_by, updated_at, updated_by FROM sample_entity WHERE id = ?", sample.id());
     }
 
-    private record TestAuditor(Long userId) implements AuditorIdentity {
+    private record TestAuditor(UUID userId) implements AuditorIdentity {
     }
 }

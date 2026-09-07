@@ -8,6 +8,7 @@ import com.example.clivoapi.core.customer.CustomerService;
 import com.example.clivoapi.modules.sessionpackage.internal.SessionPackageRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class SessionPackageService {
         return packages.save(parties.assemble(purchase)).snapshot();
     }
 
-    public SessionPackageSnapshot cancel(Long id) {
+    public SessionPackageSnapshot cancel(UUID id) {
         SessionPackage sold = packageOf(id);
         sold.cancel();
         return packages.save(sold).snapshot();
@@ -44,18 +45,18 @@ public class SessionPackageService {
     }
 
     @Transactional(readOnly = true)
-    public List<SessionPackageSnapshot> of(Long customerId) {
+    public List<SessionPackageSnapshot> of(UUID customerId) {
         return packages.findByCustomerIdOrderByExpiresOnAsc(customerId).stream()
                 .map(SessionPackage::snapshot)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public SessionPackageSnapshot findOne(Long id) {
+    public SessionPackageSnapshot findOne(UUID id) {
         return packageOf(id).snapshot();
     }
 
-    private SessionPackageSnapshot consume(SessionPackage sold, Long encounterId) {
+    private SessionPackageSnapshot consume(SessionPackage sold, UUID encounterId) {
         sold.consumeSession(encounterId);
         billing.coverByPackage(encounterId);
         return packages.save(sold).snapshot();
@@ -70,7 +71,7 @@ public class SessionPackageService {
                 .findFirst();
     }
 
-    private SessionPackage packageOf(Long id) {
+    private SessionPackage packageOf(UUID id) {
         return packages.findById(id).orElseThrow(() -> new ResourceNotFoundException("SessionPackage", id));
     }
 }

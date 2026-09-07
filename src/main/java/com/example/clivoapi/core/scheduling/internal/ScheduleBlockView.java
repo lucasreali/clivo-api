@@ -3,10 +3,11 @@ package com.example.clivoapi.core.scheduling.internal;
 import com.example.clivoapi.common.time.TimeWindow;
 import com.example.clivoapi.core.scheduling.ScheduleBlockSnapshot;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 record ScheduleBlockView(
-        Long id,
-        Long practitionerId,
+        UUID id,
+        UUID practitionerId,
         boolean clinicWide,
         LocalDateTime start,
         LocalDateTime end,
