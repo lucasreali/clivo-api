@@ -3,7 +3,7 @@ package com.example.clivoapi.core.access;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
 import com.example.clivoapi.common.tenant.TenantContext;
-import com.example.clivoapi.common.tenant.TenantRepository;
+import com.example.clivoapi.common.tenant.TenantDirectory;
 import com.example.clivoapi.core.access.internal.AppUserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccessService {
 
     private final AppUserRepository users;
-    private final TenantRepository clinics;
+    private final TenantDirectory clinics;
     private final PasswordHashing hashing;
     private final TenantContext tenantContext;
 
     AccessService(
             AppUserRepository users,
-            TenantRepository clinics,
+            TenantDirectory clinics,
             PasswordHashing hashing,
             TenantContext tenantContext) {
         this.users = users;
@@ -81,6 +81,6 @@ public class AccessService {
     }
 
     private Optional<Tenant> currentClinic() {
-        return tenantContext.current().flatMap(clinics::findById);
+        return clinics.current();
     }
 }
