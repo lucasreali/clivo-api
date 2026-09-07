@@ -1,10 +1,12 @@
 package com.example.clivoapi.core.customer;
 
+import com.example.clivoapi.common.text.TextField;
+
 public record ConsentStatement(ConsentPurpose purpose, boolean granted, String source) {
 
+    private static final TextField SOURCE = new TextField("a consent source", 30);
+
     public ConsentStatement {
-        if (source == null || source.isBlank()) {
-            throw new IllegalArgumentException("a consent needs the source it was collected from");
-        }
+        source = SOURCE.required(source);
     }
 }

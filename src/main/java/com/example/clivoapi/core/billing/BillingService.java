@@ -1,8 +1,12 @@
 package com.example.clivoapi.core.billing;
 
+import static java.util.stream.Collectors.toMap;
+
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.CompletedEncounter;
+import com.example.clivoapi.common.extension.EncounterCharge;
+import com.example.clivoapi.common.extension.EncounterCharges;
 import com.example.clivoapi.common.extension.InvoiceAdjuster;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.core.access.Role;
@@ -84,6 +88,13 @@ public class BillingService {
         return invoices.findByCustomerIdOrderByIdDesc(customerId).stream()
                 .map(Invoice::snapshot)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public EncounterCharges chargesOf(List<UUID> encounterIds) {
+        return new EncounterCharges(invoices.findByEncounterIdIn(encounterIds).stream()
+                .map(Invoice::charge)
+                .collect(toMap(EncounterCharge::encounterId, charge -> charge)));
     }
 
     @Transactional(readOnly = true)

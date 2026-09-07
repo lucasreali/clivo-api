@@ -102,7 +102,7 @@ class SessionPackageServiceTest extends BillingFixture {
         assertThatThrownBy(() -> new PackagePurchase(
                         UUID.randomUUID(), UUID.randomUUID(), new SessionCount(5), Money.of("500.00"), LocalDate.now().minusDays(1)))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("a package cannot be sold already expired");
+                .hasMessage("expiresOn: a package cannot be sold already expired");
     }
 
     private CompletedEncounter completionOf(UUID encounterId) {

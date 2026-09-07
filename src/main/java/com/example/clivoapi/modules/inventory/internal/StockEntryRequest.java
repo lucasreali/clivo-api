@@ -8,7 +8,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-record StockEntryRequest(@NotBlank String type, @NotNull BigDecimal quantity, String reason) {
+record StockEntryRequest(
+@NotBlank String type, @NotNull BigDecimal quantity, String reason) {
 
     StockEntry toEntry() {
         return new StockEntry(StockMovementType.of(type), new Quantity(quantity), new MovementReason(reason));

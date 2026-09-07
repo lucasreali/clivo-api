@@ -15,6 +15,7 @@ import com.example.clivoapi.core.customer.ContactDetails;
 import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
 import com.example.clivoapi.core.customer.NationalId;
+import com.example.clivoapi.core.customer.PhoneNumber;
 import com.example.clivoapi.core.practitioner.AvailabilityPeriod;
 import com.example.clivoapi.core.practitioner.PractitionerDetails;
 import com.example.clivoapi.core.practitioner.PractitionerService;
@@ -23,6 +24,7 @@ import com.example.clivoapi.core.practitioner.Weekday;
 import com.example.clivoapi.core.practitioner.WeeklySchedule;
 import com.example.clivoapi.core.scheduling.AppointmentBooking;
 import com.example.clivoapi.core.scheduling.SchedulingService;
+import com.example.clivoapi.support.GeneratedDocument;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,7 +63,7 @@ abstract class EncounterFixture extends DatabaseTest {
     protected Tenant openClinic(String code) {
         clinic = createTenant(code);
         bindTenant(clinic);
-        customerId = customers.register(customerNamed("Ana Prado", "12345678901")).id();
+        customerId = customers.register(customerNamed("Ana Prado", GeneratedDocument.nationalIdTextFor("Ana Prado"))).id();
         practitionerId = practitioners.register(new PractitionerDetails("Dr. Marina", null)).id();
         practitioners.follow(practitionerId, businessHours());
         serviceId = catalogue
@@ -72,6 +74,10 @@ abstract class EncounterFixture extends DatabaseTest {
 
     protected Tenant clinic() {
         return clinic;
+    }
+
+    protected UUID signIn(Role role) {
+        return signInAs(clinic, role).id();
     }
 
     protected EncounterSnapshot reopen(UUID encounterId) {
@@ -116,7 +122,7 @@ abstract class EncounterFixture extends DatabaseTest {
                 name,
                 new NationalId(document),
                 LocalDate.of(1990, 1, 1),
-                new ContactDetails("41999990000", null),
+                new ContactDetails(new PhoneNumber("41999990000"), null),
                 null);
     }
 

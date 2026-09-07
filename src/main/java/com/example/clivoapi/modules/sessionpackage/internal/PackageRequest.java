@@ -13,7 +13,7 @@ record PackageRequest(
         @NotNull UUID serviceId,
         int totalSessions,
         @NotNull BigDecimal price,
-        LocalDate expiresOn) {
+        @NotNull LocalDate expiresOn) {
 
     PackagePurchase toPurchase() {
         return new PackagePurchase(

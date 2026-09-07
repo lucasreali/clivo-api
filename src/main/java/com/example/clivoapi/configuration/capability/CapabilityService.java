@@ -1,6 +1,7 @@
 package com.example.clivoapi.configuration.capability;
 
 import com.example.clivoapi.common.extension.ModuleCode;
+import com.example.clivoapi.common.extension.ModuleGrantState;
 import com.example.clivoapi.configuration.modules.ModuleActivationService;
 import com.example.clivoapi.configuration.modules.ModuleDefinition;
 import com.example.clivoapi.configuration.parameter.ClinicParameterService;
@@ -17,15 +18,24 @@ public class CapabilityService {
 
     private final ModuleActivationService modules;
     private final ClinicParameterService parameters;
+    private final ModuleGrantState grants;
 
-    CapabilityService(ModuleActivationService modules, ClinicParameterService parameters) {
+    CapabilityService(
+            ModuleActivationService modules, ClinicParameterService parameters, ModuleGrantState grants) {
         this.modules = modules;
         this.parameters = parameters;
+        this.grants = grants;
     }
 
     public Capabilities current() {
-        List<ModuleDefinition> active = modules.activeDefinitions();
-        return new Capabilities(active, parametersWithin(codesOf(active)));
+        List<ModuleDefinition> reachable = reachableDefinitions();
+        return new Capabilities(reachable, parametersWithin(codesOf(reachable)));
+    }
+
+    private List<ModuleDefinition> reachableDefinitions() {
+        return modules.activeDefinitions().stream()
+                .filter(definition -> grants.isGrantedToCaller(definition.code()))
+                .toList();
     }
 
     private List<EffectiveParameter> parametersWithin(Set<ModuleCode> active) {

@@ -1,5 +1,6 @@
 package com.example.clivoapi.common.tenant;
 
+import com.example.clivoapi.common.document.TaxId;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.tenant.internal.TenantRepository;
@@ -19,8 +20,9 @@ public class TenantService {
     }
 
     public Tenant create(TenantRegistration registration) {
-        requireCodeAvailable(registration.code());
-        return tenants.save(new Tenant(registration));
+        Tenant clinic = new Tenant(registration);
+        requireTaxIdAvailable(registration.profile().registeredTaxId().orElse(null), clinic);
+        return tenants.save(clinic);
     }
 
     @Transactional(readOnly = true)
@@ -35,6 +37,7 @@ public class TenantService {
 
     public Tenant describe(UUID clinicId, TenantDetails details) {
         Tenant clinic = findOne(clinicId);
+        requireTaxIdAvailable(details.profile().registeredTaxId().orElse(null), clinic);
         clinic.describeAs(details);
         return tenants.save(clinic);
     }
@@ -51,10 +54,17 @@ public class TenantService {
         return tenants.save(clinic);
     }
 
-    private void requireCodeAvailable(String code) {
-        if (tenants.findByCode(code).isEmpty()) {
+    private void requireTaxIdAvailable(TaxId taxId, Tenant clinic) {
+        if (taxId == null) {
             return;
         }
-        throw new BusinessException("clinic code %s is already registered".formatted(code));
+        tenants.findByProfileTaxId(taxId)
+                .filter(holder -> !holder.id().equals(clinic.id()))
+                .ifPresent(holder -> refuseTaxIdOf(taxId, holder));
+    }
+
+    private void refuseTaxIdOf(TaxId taxId, Tenant holder) {
+        throw new BusinessException(
+                "taxId: %s already belongs to %s".formatted(taxId.asText(), holder.identity().name()));
     }
 }

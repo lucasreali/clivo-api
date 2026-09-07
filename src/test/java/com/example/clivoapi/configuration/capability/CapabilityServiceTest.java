@@ -7,6 +7,7 @@ import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.common.extension.ParameterCode;
 import com.example.clivoapi.common.extension.ParameterValue;
 import com.example.clivoapi.common.tenant.Tenant;
+import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.configuration.modules.ModuleActivationService;
 import com.example.clivoapi.configuration.parameter.ClinicParameterService;
 import com.example.clivoapi.configuration.parameter.EffectiveParameter;
@@ -84,6 +85,9 @@ class CapabilityServiceTest extends DatabaseTest {
     }
 
     private Capabilities capabilitiesOf(Tenant clinic) {
-        return valueInTenant(clinic, capabilities::current);
+        return valueInTenant(clinic, () -> {
+            signInAs(clinic, Role.MANAGER);
+            return capabilities.current();
+        });
     }
 }

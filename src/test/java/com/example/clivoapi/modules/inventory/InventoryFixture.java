@@ -20,6 +20,7 @@ import com.example.clivoapi.core.catalog.CatalogService;
 import com.example.clivoapi.core.catalog.ServiceDetails;
 import com.example.clivoapi.core.catalog.ServiceDuration;
 import com.example.clivoapi.core.customer.ContactDetails;
+import com.example.clivoapi.core.customer.PhoneNumber;
 import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
 import com.example.clivoapi.core.encounter.EncounterOpening;
@@ -98,7 +99,7 @@ public abstract class InventoryFixture extends DatabaseTest {
 
     protected UUID anOpenEncounter() {
         UUID customerId = customers.register(new CustomerDetails(
-                        "Ana Prado", null, LocalDate.of(1990, 1, 1), new ContactDetails("41999990000", null), null))
+                        "Ana Prado", null, LocalDate.of(1990, 1, 1), new ContactDetails(new PhoneNumber("41999990000"), null), null))
                 .id();
         UUID practitionerId = practitioners
                 .register(new PractitionerDetails("Dra. Marina", null))

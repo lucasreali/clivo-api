@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.clivoapi.common.DatabaseTest;
+import com.example.clivoapi.support.GeneratedDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +68,16 @@ class CustomerApiTest extends DatabaseTest {
         return post("/api/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                        {"name":"Ana Souza","nationalId":"123.456.789-01","birthDate":"1990-05-12",
-                         "phone":"41999990000","email":"ana@clivo.test",
-                         "postalCode":"80000000","street":"Rua das Flores, 100"}""");
+                        {"name":"Ana Souza","nationalId":"%s","birthDate":"1990-05-12",
+                         "phone":"(41) 99999-0000","email":"ana@clivo.test",
+                         "postalCode":"80000-000","street":"Rua das Flores, 100"}"""
+                        .formatted(punctuatedDocumentOfAnaSouza()));
+    }
+
+    private String punctuatedDocumentOfAnaSouza() {
+        String digits = GeneratedDocument.nationalIdTextFor("Ana Souza");
+        return "%s.%s.%s-%s"
+                .formatted(digits.substring(0, 3), digits.substring(3, 6), digits.substring(6, 9), digits.substring(9));
     }
 
     private MockHttpServletRequestBuilder deactivationOf(String id, String reason) {

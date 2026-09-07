@@ -16,8 +16,8 @@ public record PackagePurchase(
         if (expiresOn == null) {
             throw new BusinessException("a package is sold with an expiry date");
         }
-        if (expiresOn.isBefore(LocalDate.now())) {
-            throw new BusinessException("a package cannot be sold already expired");
+        if (!expiresOn.isAfter(LocalDate.now())) {
+            throw new BusinessException("expiresOn: a package cannot be sold already expired");
         }
         return expiresOn;
     }

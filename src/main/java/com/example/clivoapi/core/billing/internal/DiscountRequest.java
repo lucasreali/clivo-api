@@ -5,7 +5,8 @@ import com.example.clivoapi.core.billing.DiscountReason;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-record DiscountRequest(@NotNull BigDecimal amount, String reason) {
+record DiscountRequest(
+@NotNull BigDecimal amount, String reason) {
 
     Money toAmount() {
         return new Money(amount);

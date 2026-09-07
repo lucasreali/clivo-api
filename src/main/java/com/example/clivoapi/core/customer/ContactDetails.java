@@ -1,26 +1,26 @@
 package com.example.clivoapi.core.customer;
 
-import jakarta.persistence.Column;
+import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.core.access.EmailAddress;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import java.util.Optional;
 
 @Embeddable
-public record ContactDetails(
-        @Column(name = "phone", nullable = false, length = 20) String phone,
-        @Column(name = "email", length = 160) String email) {
+public record ContactDetails(@Embedded PhoneNumber phone, @Embedded EmailAddress email) {
 
     public ContactDetails {
         phone = requiredPhone(phone);
     }
 
-    public Optional<String> reachableByEmail() {
-        return Optional.ofNullable(email).filter(address -> !address.isBlank());
+    public Optional<EmailAddress> reachableByEmail() {
+        return Optional.ofNullable(email);
     }
 
-    private static String requiredPhone(String phone) {
-        if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("a phone number is required");
+    private static PhoneNumber requiredPhone(PhoneNumber phone) {
+        if (phone == null) {
+            throw new BusinessException("phone: a phone number is required");
         }
-        return phone.trim();
+        return phone;
     }
 }

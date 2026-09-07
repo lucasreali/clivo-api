@@ -6,7 +6,8 @@ import com.example.clivoapi.core.billing.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-record PaymentRequest(@NotNull BigDecimal amount, @NotNull PaymentMethod method) {
+record PaymentRequest(
+@NotNull BigDecimal amount, @NotNull PaymentMethod method) {
 
     PaymentDetails toDetails() {
         return new PaymentDetails(new Money(amount), method);

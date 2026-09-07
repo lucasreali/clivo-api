@@ -6,7 +6,6 @@ import com.example.clivoapi.core.encounter.EncounterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,13 +44,13 @@ class EncounterController {
         return EncounterView.of(encounters.findOne(id, roleOf(viewer)));
     }
 
-    @Operation(operationId = "listCustomerEncounters", summary = "List a customer's encounters; clinical content depends on the caller's role")
+    @Operation(
+            operationId = "listCustomerEncounters",
+            summary = "Read a customer's history; clinical content depends on the caller's role")
     @GetMapping
-    List<EncounterHistoryView> history(
+    CustomerHistoryView history(
             @RequestParam UUID customerId, @AuthenticationPrincipal AuthenticatedUser viewer) {
-        return encounters.historyOf(customerId, roleOf(viewer)).stream()
-                .map(EncounterHistoryView::of)
-                .toList();
+        return CustomerHistoryView.of(encounters.historyOf(customerId, roleOf(viewer)));
     }
 
     @Operation(operationId = "fillEncounterRecord", summary = "Fill the encounter's record with the template's field values")

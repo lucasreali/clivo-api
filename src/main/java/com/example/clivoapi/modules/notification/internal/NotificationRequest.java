@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
-record NotificationRequest(@NotNull UUID appointmentId, @NotBlank String channel, String recipient) {
+record NotificationRequest(
+@NotNull UUID appointmentId, @NotBlank String channel, String recipient) {
 
     NotificationChannel toChannel() {
         return NotificationChannel.of(channel);

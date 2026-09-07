@@ -7,6 +7,7 @@ import com.example.clivoapi.common.exception.ForbiddenOperationException;
 import com.example.clivoapi.common.tenant.Tenant;
 import com.example.clivoapi.common.tenant.TenantIdentity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,8 +36,8 @@ public class AppUser {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String email;
+    @Embedded
+    private EmailAddress email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -62,7 +63,7 @@ public class AppUser {
         requireClinicMatching(registration.role(), clinic);
         this.clinic = clinic;
         this.name = registration.name();
-        this.email = registration.email().asText();
+        this.email = registration.email();
         this.passwordHash = password.asText();
         this.role = registration.role();
         this.status = AppUserStatus.ACTIVE;
@@ -71,6 +72,10 @@ public class AppUser {
 
     public UUID id() {
         return id;
+    }
+
+    public String name() {
+        return name;
     }
 
     public boolean isActive() {
@@ -83,6 +88,22 @@ public class AppUser {
 
     public boolean canCreate(Role requested) {
         return isActive() && role.canCreate(requested);
+    }
+
+    public boolean canAssign(Role requested) {
+        return isActive() && role.canAssign(requested);
+    }
+
+    public boolean canLeaveManagement(ManagementQuorum management) {
+        return !role.manages() || !isActive() || management.hasAnotherManager();
+    }
+
+    public boolean managesTheClinic() {
+        return isActive() && role.manages();
+    }
+
+    public boolean keepsEveryModule() {
+        return role.manages();
     }
 
     public AppUser create(UserRegistration registration, PasswordHashing hashing) {
@@ -108,10 +129,16 @@ public class AppUser {
     }
 
     public UserSummary summary() {
-        return new UserSummary(id, name, new EmailAddress(email), role, isActive());
+        return new UserSummary(id, name, email, role, isActive());
     }
 
-    public void deactivate() {
+    public void changeRoleTo(Role requested, ManagementQuorum management) {
+        requireAbleToBecome(requested, management);
+        role = requested;
+    }
+
+    public void deactivate(ManagementQuorum management) {
+        requireAbleToLeaveManagement(management);
         status = AppUserStatus.INACTIVE;
     }
 
@@ -121,6 +148,20 @@ public class AppUser {
 
     private Optional<UUID> clinicId() {
         return Optional.ofNullable(clinic).map(Tenant::id);
+    }
+
+    private void requireAbleToBecome(Role requested, ManagementQuorum management) {
+        if (requested.manages()) {
+            return;
+        }
+        requireAbleToLeaveManagement(management);
+    }
+
+    private void requireAbleToLeaveManagement(ManagementQuorum management) {
+        if (canLeaveManagement(management)) {
+            return;
+        }
+        throw new BusinessException("the last manager of the clinic may not leave management");
     }
 
     private void requireAbleToCreate(Role requested) {

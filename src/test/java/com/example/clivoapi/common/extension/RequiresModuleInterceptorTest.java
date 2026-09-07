@@ -41,7 +41,7 @@ class RequiresModuleInterceptorTest {
     private MockMvc apiOfClinicWith(String activeModule) {
         Set<ModuleCode> active = Set.of(new ModuleCode(activeModule));
         return MockMvcBuilders.standaloneSetup(new ProductController(), new HealthController())
-                .addInterceptors(new RequiresModuleInterceptor(active::contains))
+                .addInterceptors(new RequiresModuleInterceptor(active::contains, module -> true))
                 .setControllerAdvice(new ApiExceptionHandler())
                 .build();
     }

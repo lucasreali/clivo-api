@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 record BatchRequest(
-        @NotBlank String code, LocalDate expiresOn, @NotNull BigDecimal quantity, String manufacturer) {
+        @NotBlank String code, @NotNull LocalDate expiresOn, @NotNull BigDecimal quantity, String manufacturer) {
 
     BatchDetails toDetails() {
         return new BatchDetails(new BatchCode(code), expiresOn, new Quantity(quantity), manufacturer);

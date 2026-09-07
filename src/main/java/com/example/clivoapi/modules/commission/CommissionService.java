@@ -3,6 +3,7 @@ package com.example.clivoapi.modules.commission;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.CompletedEncounter;
+import com.example.clivoapi.common.extension.FinancialAccess;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.core.billing.BillingService;
 import com.example.clivoapi.core.practitioner.PractitionerService;
@@ -23,19 +24,23 @@ public class CommissionService {
     private final PractitionerCommissionRepository earners;
     private final PractitionerService practitioners;
     private final BillingService billing;
+    private final FinancialAccess financialAccess;
 
     CommissionService(
             CommissionRepository commissions,
             PractitionerCommissionRepository earners,
             PractitionerService practitioners,
-            BillingService billing) {
+            BillingService billing,
+            FinancialAccess financialAccess) {
         this.commissions = commissions;
         this.earners = earners;
         this.practitioners = practitioners;
         this.billing = billing;
+        this.financialAccess = financialAccess;
     }
 
     public PractitionerCommissionSnapshot chargeAt(UUID practitionerId, CommissionRate rate) {
+        financialAccess.requireReporting();
         PractitionerCommission earner = earners
                 .findByPractitionerId(practitionerId)
                 .orElseGet(() -> new PractitionerCommission(practitioners.reference(practitionerId), rate));
@@ -50,6 +55,7 @@ public class CommissionService {
     }
 
     public CommissionStatement close(CommissionPeriod period) {
+        financialAccess.requireReporting();
         List<Commission> earned = within(period);
         requireSomethingToClose(earned, period);
         earned.forEach(Commission::close);
@@ -58,16 +64,19 @@ public class CommissionService {
 
     @Transactional(readOnly = true)
     public CommissionStatement statementOf(CommissionPeriod period) {
+        financialAccess.requireReporting();
         return statementOf(period, within(period));
     }
 
     @Transactional(readOnly = true)
     public List<PractitionerCommissionSnapshot> rates() {
+        financialAccess.requireReporting();
         return earners.findAll().stream().map(PractitionerCommission::snapshot).toList();
     }
 
     @Transactional(readOnly = true)
     public CommissionSnapshot findOne(UUID id) {
+        financialAccess.requireReporting();
         return commissions.findById(id)
                 .map(Commission::snapshot)
                 .orElseThrow(() -> new ResourceNotFoundException("Commission", id));

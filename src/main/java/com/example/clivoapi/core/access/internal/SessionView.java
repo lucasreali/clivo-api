@@ -16,10 +16,10 @@ record SessionView(UUID userId, String name, String role, ClinicView clinic) {
                 session.clinicIdentity().map(ClinicView::of).orElse(null));
     }
 
-    record ClinicView(UUID id, String code, String name) {
+    record ClinicView(UUID id, String name) {
 
         static ClinicView of(TenantIdentity clinic) {
-            return new ClinicView(clinic.id(), clinic.code(), clinic.name());
+            return new ClinicView(clinic.id(), clinic.name());
         }
     }
 }

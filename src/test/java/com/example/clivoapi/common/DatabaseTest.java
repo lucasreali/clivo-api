@@ -2,15 +2,27 @@ package com.example.clivoapi.common;
 
 import com.example.clivoapi.common.tenant.Tenant;
 import com.example.clivoapi.common.tenant.TenantContext;
+import com.example.clivoapi.core.access.AccessService;
+import com.example.clivoapi.core.access.AuthenticatedUser;
+import com.example.clivoapi.core.access.EmailAddress;
+import com.example.clivoapi.core.access.RawPassword;
+import com.example.clivoapi.core.access.Role;
+import com.example.clivoapi.core.access.UserRegistration;
+import com.example.clivoapi.core.access.UserSummary;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -26,8 +38,12 @@ public abstract class DatabaseTest {
     @Autowired
     private TenantContext tenantContext;
 
+    @Autowired
+    private AccessService accessService;
+
     @AfterEach
     void discardTestData() {
+        SecurityContextHolder.clearContext();
         tenantContext.clear();
         jdbcTemplate.update("DELETE FROM sample_entity");
         jdbcTemplate.update("DELETE FROM payment");
@@ -42,6 +58,7 @@ public abstract class DatabaseTest {
         jdbcTemplate.update("DELETE FROM stock_movement");
         jdbcTemplate.update("DELETE FROM batch");
         jdbcTemplate.update("DELETE FROM product");
+        jdbcTemplate.update("DELETE FROM attachment");
         jdbcTemplate.update("DELETE FROM encounter");
         jdbcTemplate.update("DELETE FROM template_field");
         jdbcTemplate.update("DELETE FROM template_section");
@@ -56,10 +73,33 @@ public abstract class DatabaseTest {
         jdbcTemplate.update("DELETE FROM availability");
         jdbcTemplate.update("DELETE FROM practitioner");
         jdbcTemplate.update("DELETE FROM dependent");
+        jdbcTemplate.update("DELETE FROM clinical_alert");
         jdbcTemplate.update("DELETE FROM consent");
         jdbcTemplate.update("DELETE FROM customer");
+        jdbcTemplate.update("DELETE FROM module_grant");
         jdbcTemplate.update("DELETE FROM app_user");
-        jdbcTemplate.update("DELETE FROM tenant WHERE code LIKE 'TEST-%'");
+        jdbcTemplate.update("DELETE FROM tenant WHERE name LIKE 'TEST-%'");
+    }
+
+    protected UserSummary signInAs(Tenant clinic, Role role) {
+        UserSummary user = accessService.registerIn(clinic, registrationOf(clinic, role));
+        authenticate(user.id(), clinic.id(), user.name(), role);
+        return user;
+    }
+
+    protected void authenticate(UUID userId, UUID clinicId, String name, Role role) {
+        AuthenticatedUser identity = new AuthenticatedUser(userId, clinicId, name, role);
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(
+                        identity, null, List.of(new SimpleGrantedAuthority(role.authority()))));
+    }
+
+    private UserRegistration registrationOf(Tenant clinic, Role role) {
+        return new UserRegistration(
+                role.name(),
+                new EmailAddress("%s-%s@clivo.test".formatted(role.name().toLowerCase(Locale.ROOT), UUID.randomUUID())),
+                new RawPassword("segredo123"),
+                role);
     }
 
     protected void bindTenant(Tenant tenant) {
@@ -82,9 +122,9 @@ public abstract class DatabaseTest {
         }
     }
 
-    protected Tenant createTenant(String code) {
+    protected Tenant createTenant(String name) {
         return inNewSession(entityManager -> {
-            Tenant tenant = new Tenant(code, code);
+            Tenant tenant = new Tenant(name);
             entityManager.persist(tenant);
             return tenant;
         });

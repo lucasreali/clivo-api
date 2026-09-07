@@ -5,6 +5,10 @@ server:
         http-only: true
         same-site: strict
 
+clivo:
+  attachments:
+    directory: ${ATTACHMENTS_DIRECTORY:${java.io.tmpdir}/clivo-attachments}
+
 springdoc:
   default-produces-media-type: application/json
   default-consumes-media-type: application/json

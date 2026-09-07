@@ -116,7 +116,7 @@ public class Customer extends TenantScopedEntity {
     }
 
     public CustomerSnapshot snapshot() {
-        return new CustomerSnapshot(id, details(), status, deactivationReason, hasValidConsent());
+        return new CustomerSnapshot(id, details(), status, deactivationReason, hasValidConsent(), createdAt);
     }
 
     public CustomerDetails details() {

@@ -26,6 +26,14 @@ public class RoleAccess {
         return currentPolicy().allowsClinicalRecord(role.asViewer());
     }
 
+    public void requireClinicalRecord(Role role) {
+        if (allowsClinicalRecord(role)) {
+            return;
+        }
+        throw new ForbiddenOperationException(
+                "the clinical record is restricted to the practitioners of this clinic");
+    }
+
     public void requireFinancialReport(Role role) {
         if (currentPolicy().allowsFinancialReport(role.asViewer())) {
             return;

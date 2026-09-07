@@ -1,13 +1,16 @@
 package com.example.clivoapi.core.customer;
 
+import com.example.clivoapi.common.text.TextField;
 import java.util.Locale;
 
 public record ConsentPurpose(String value) {
 
     private static final String DATA_PROCESSING = "DATA_PROCESSING";
 
+    private static final TextField PURPOSE = new TextField("a consent purpose", 60);
+
     public ConsentPurpose {
-        value = named(value);
+        value = PURPOSE.required(value).toUpperCase(Locale.ROOT);
     }
 
     public static ConsentPurpose dataProcessing() {
@@ -16,13 +19,6 @@ public record ConsentPurpose(String value) {
 
     public String asText() {
         return value;
-    }
-
-    private static String named(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("a consent purpose is required");
-        }
-        return value.trim().toUpperCase(Locale.ROOT);
     }
 
     @Override

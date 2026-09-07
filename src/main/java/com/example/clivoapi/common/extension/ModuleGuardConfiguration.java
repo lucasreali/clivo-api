@@ -8,13 +8,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 class ModuleGuardConfiguration implements WebMvcConfigurer {
 
     private final ModuleActivationState activationState;
+    private final ModuleGrantState grantState;
 
-    ModuleGuardConfiguration(ModuleActivationState activationState) {
+    ModuleGuardConfiguration(ModuleActivationState activationState, ModuleGrantState grantState) {
         this.activationState = activationState;
+        this.grantState = grantState;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RequiresModuleInterceptor(activationState));
+        registry.addInterceptor(new RequiresModuleInterceptor(activationState, grantState));
     }
 }

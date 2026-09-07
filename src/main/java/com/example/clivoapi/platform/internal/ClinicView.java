@@ -1,5 +1,6 @@
 package com.example.clivoapi.platform.internal;
 
+import com.example.clivoapi.common.document.TaxId;
 import com.example.clivoapi.common.tenant.TenantIdentity;
 import com.example.clivoapi.common.tenant.TenantLifecycle;
 import com.example.clivoapi.common.tenant.TenantProfile;
@@ -9,7 +10,6 @@ import java.util.UUID;
 
 record ClinicView(
         UUID id,
-        String code,
         String name,
         String legalName,
         String taxId,
@@ -26,10 +26,9 @@ record ClinicView(
             TenantIdentity identity, TenantProfile profile, TenantLifecycle lifecycle, Instant createdAt) {
         return new ClinicView(
                 identity.id(),
-                identity.code(),
                 identity.name(),
                 profile.legalName(),
-                profile.taxId(),
+                profile.registeredTaxId().map(TaxId::asText).orElse(null),
                 profile.segment(),
                 lifecycle.status().name(),
                 lifecycle.statusReason(),

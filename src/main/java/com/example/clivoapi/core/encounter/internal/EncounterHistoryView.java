@@ -1,10 +1,14 @@
 package com.example.clivoapi.core.encounter.internal;
 
+import com.example.clivoapi.common.extension.CoverageNote;
 import com.example.clivoapi.common.extension.RecordSheet;
+import com.example.clivoapi.core.encounter.AttachmentSnapshot;
 import com.example.clivoapi.core.encounter.EncounterParticipants;
 import com.example.clivoapi.core.encounter.EncounterSnapshot;
+import com.example.clivoapi.core.encounter.HistoryEntry;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,9 +22,13 @@ record EncounterHistoryView(
         Instant startedAt,
         Instant completedAt,
         String status,
-        RecordSheet sheet) {
+        ChargeView charge,
+        CoverageView insurance,
+        RecordSheet sheet,
+        List<AttachmentView> attachments) {
 
-    static EncounterHistoryView of(EncounterSnapshot encounter) {
+    static EncounterHistoryView of(HistoryEntry entry) {
+        EncounterSnapshot encounter = entry.encounter();
         EncounterParticipants participants = encounter.participants();
         return new EncounterHistoryView(
                 encounter.id(),
@@ -32,6 +40,21 @@ record EncounterHistoryView(
                 encounter.startedAt(),
                 encounter.completedAt(),
                 encounter.status().name(),
-                encounter.clinicalRecord().orElse(null));
+                ChargeView.of(entry.charge()),
+                entry.coveredBy().map(CoverageView::of).orElse(null),
+                encounter.clinicalRecord().orElse(null),
+                entry.files().map(EncounterHistoryView::viewsOf).orElse(null));
+    }
+
+    private static List<AttachmentView> viewsOf(List<AttachmentSnapshot> files) {
+        return files.stream().map(AttachmentView::of).toList();
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    record CoverageView(String plan, String memberNumber) {
+
+        static CoverageView of(CoverageNote note) {
+            return new CoverageView(note.plan(), note.memberNumber());
+        }
     }
 }

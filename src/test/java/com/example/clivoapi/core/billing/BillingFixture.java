@@ -21,11 +21,12 @@ import com.example.clivoapi.core.catalog.ServiceDuration;
 import com.example.clivoapi.core.customer.ContactDetails;
 import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
-import com.example.clivoapi.core.customer.NationalId;
+import com.example.clivoapi.core.customer.PhoneNumber;
 import com.example.clivoapi.core.encounter.EncounterOpening;
 import com.example.clivoapi.core.encounter.EncounterService;
 import com.example.clivoapi.core.practitioner.PractitionerDetails;
 import com.example.clivoapi.core.practitioner.PractitionerService;
+import com.example.clivoapi.support.GeneratedDocument;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -101,10 +102,14 @@ public abstract class BillingFixture extends DatabaseTest {
         return practitionerId;
     }
 
-    protected UUID completeAnEncounter() {
-        UUID id = encounters
+    protected UUID openAnEncounter() {
+        return encounters
                 .open(EncounterOpening.walkIn(customerId, practitionerId, serviceId, templateId))
                 .id();
+    }
+
+    protected UUID completeAnEncounter() {
+        UUID id = openAnEncounter();
         encounters.fill(id, RecordValues.of(Map.of("complaint", "Dor no dente 26")));
         return encounters.complete(id, Role.PRACTITIONER).id();
     }
@@ -140,9 +145,9 @@ public abstract class BillingFixture extends DatabaseTest {
     private CustomerDetails customerNamed(String name) {
         return new CustomerDetails(
                 name,
-                new NationalId("12345678901"),
+                GeneratedDocument.nationalIdFor(name),
                 LocalDate.of(1990, 1, 1),
-                new ContactDetails("41999990000", null),
+                new ContactDetails(new PhoneNumber("41999990000"), null),
                 null);
     }
 }

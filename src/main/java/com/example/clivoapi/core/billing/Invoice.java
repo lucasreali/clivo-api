@@ -4,7 +4,9 @@ import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
 
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.BillableEncounter;
+import com.example.clivoapi.common.extension.ChargeState;
 import com.example.clivoapi.common.extension.CompletedEncounter;
+import com.example.clivoapi.common.extension.EncounterCharge;
 import com.example.clivoapi.common.extension.InvoiceAdjustment;
 import com.example.clivoapi.common.money.Money;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
@@ -160,6 +162,25 @@ public class Invoice extends TenantScopedEntity {
     public void refund(UUID paymentId, RefundReason reason) {
         paymentNumbered(paymentId).refund(reason);
         refreshStatus();
+    }
+
+    public EncounterCharge charge() {
+        return new EncounterCharge(
+                encounter.id(), chargeState(), netAmount, paidTotal(), outstandingBalance(), coverageName());
+    }
+
+    private ChargeState chargeState() {
+        if (coverage.isThirdParty() && netAmount.isZero()) {
+            return ChargeState.COVERED;
+        }
+        if (outstandingBalance().isZero()) {
+            return ChargeState.PAID;
+        }
+        return ChargeState.OUTSTANDING;
+    }
+
+    private String coverageName() {
+        return coverage.isThirdParty() ? coverage.name() : null;
     }
 
     public InvoiceSnapshot snapshot() {

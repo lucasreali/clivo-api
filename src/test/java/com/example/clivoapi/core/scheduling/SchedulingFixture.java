@@ -10,12 +10,14 @@ import com.example.clivoapi.core.customer.ContactDetails;
 import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
 import com.example.clivoapi.core.customer.NationalId;
+import com.example.clivoapi.core.customer.PhoneNumber;
 import com.example.clivoapi.core.practitioner.AvailabilityPeriod;
 import com.example.clivoapi.core.practitioner.PractitionerDetails;
 import com.example.clivoapi.core.practitioner.PractitionerService;
 import com.example.clivoapi.core.practitioner.TimeRange;
 import com.example.clivoapi.core.practitioner.Weekday;
 import com.example.clivoapi.core.practitioner.WeeklySchedule;
+import com.example.clivoapi.support.GeneratedDocument;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,7 +52,7 @@ public abstract class SchedulingFixture extends DatabaseTest {
 
     protected void openClinic(String code) {
         bindTenant(createTenant(code));
-        customerId = customers.register(customerNamed("Ana Prado", "12345678901")).id();
+        customerId = customers.register(customerNamed("Ana Prado", GeneratedDocument.nationalIdTextFor("Ana Prado"))).id();
         practitionerId = registerPractitioner("Dr. Marina");
         serviceId = catalogue.register(
                 new ServiceDetails("Limpeza", ServiceDuration.ofMinutes(SERVICE_MINUTES), Money.of("180.00"))).id();
@@ -96,7 +98,7 @@ public abstract class SchedulingFixture extends DatabaseTest {
                 name,
                 new NationalId(document),
                 LocalDate.of(1990, 1, 1),
-                new ContactDetails("41999990000", null),
+                new ContactDetails(new PhoneNumber("41999990000"), null),
                 null);
     }
 

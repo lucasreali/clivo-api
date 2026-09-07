@@ -22,6 +22,14 @@ public enum Role {
         };
     }
 
+    public boolean canAssign(Role requested) {
+        return canCreate(requested);
+    }
+
+    public boolean manages() {
+        return this == MANAGER;
+    }
+
     public String authority() {
         return "ROLE_" + name();
     }

@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.example.clivoapi.common.DatabaseTest;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
+import com.example.clivoapi.core.access.EmailAddress;
+import com.example.clivoapi.support.GeneratedDocument;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class CustomerServiceTest extends DatabaseTest {
 
-    private static final String DOCUMENT = "12345678901";
+    private static final String DOCUMENT = GeneratedDocument.nationalIdTextFor("Ana Souza");
 
     @Autowired
     private CustomerService customers;
@@ -27,7 +29,7 @@ class CustomerServiceTest extends DatabaseTest {
 
         assertThat(registered.status()).isEqualTo(CustomerStatus.ACTIVE);
         assertThat(registered.details().document()).contains(new NationalId(DOCUMENT));
-        assertThat(registered.details().contact().phone()).isEqualTo("41999990000");
+        assertThat(registered.details().contact().phone()).isEqualTo(new PhoneNumber("41999990000"));
         assertThat(registered.consented()).isFalse();
     }
 
@@ -92,7 +94,7 @@ class CustomerServiceTest extends DatabaseTest {
                 name,
                 document == null ? null : new NationalId(document),
                 LocalDate.of(1990, 5, 12),
-                new ContactDetails("41999990000", "ana@clivo.test"),
-                new Address("80000000", "Rua das Flores, 100"));
+                new ContactDetails(new PhoneNumber("41999990000"), new EmailAddress("ana@clivo.test")),
+                new Address(new PostalCode("80000000"), "Rua das Flores, 100"));
     }
 }

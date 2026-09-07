@@ -98,13 +98,23 @@ class EncounterApiTest extends EncounterFixture {
         bindTenant(segregated);
         mockMvc.perform(get("/api/encounters").param("customerId", segregatedCustomer.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].practitionerName").value("Dr. Marina"))
-                .andExpect(jsonPath("$[0].sheet").doesNotExist());
+                .andExpect(jsonPath("$.encounters[0].practitionerName").value("Dr. Marina"))
+                .andExpect(jsonPath("$.encounters[0].sheet").doesNotExist())
+                .andExpect(jsonPath("$.encounters[0].attachments").doesNotExist())
+                .andExpect(jsonPath("$.encounters[0].insurance").doesNotExist())
+                .andExpect(jsonPath("$.alerts").doesNotExist())
+                .andExpect(jsonPath("$.customerSince").exists())
+                .andExpect(jsonPath("$.counts.total").value(1))
+                .andExpect(jsonPath("$.counts.byStatus.COMPLETED").value(1))
+                .andExpect(jsonPath("$.encounters[0].charge.state").value("OUTSTANDING"))
+                .andExpect(jsonPath("$.financials.outstanding").value(180.00));
 
         bindTenant(single);
         mockMvc.perform(get("/api/encounters").param("customerId", singleCustomer.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].sheet.sections[0].fields[0].value").value("Dor no dente 26"));
+                .andExpect(jsonPath("$.encounters[0].sheet.sections[0].fields[0].value").value("Dor no dente 26"))
+                .andExpect(jsonPath("$.encounters[0].attachments").isArray())
+                .andExpect(jsonPath("$.alerts").isArray());
     }
 
     private void completeAnEncounter() throws Exception {

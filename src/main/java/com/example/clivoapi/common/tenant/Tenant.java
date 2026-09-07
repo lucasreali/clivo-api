@@ -19,9 +19,6 @@ public class Tenant {
     @UuidGenerator(style = VERSION_7)
     private UUID id;
 
-    @Column(nullable = false, updatable = false, length = 20)
-    private String code;
-
     @Column(nullable = false, length = 120)
     private String name;
 
@@ -37,12 +34,11 @@ public class Tenant {
     protected Tenant() {
     }
 
-    public Tenant(String code, String name) {
-        this(new TenantRegistration(code, name, TenantProfile.unknown()));
+    public Tenant(String name) {
+        this(new TenantRegistration(name, TenantProfile.unknown()));
     }
 
     public Tenant(TenantRegistration registration) {
-        this.code = registration.code();
         this.name = registration.name();
         this.profile = registration.profile();
         this.lifecycle = TenantLifecycle.opened();
@@ -75,7 +71,7 @@ public class Tenant {
     }
 
     public TenantIdentity identity() {
-        return new TenantIdentity(id, code, name);
+        return new TenantIdentity(id, name);
     }
 
     public TenantSnapshot snapshot() {

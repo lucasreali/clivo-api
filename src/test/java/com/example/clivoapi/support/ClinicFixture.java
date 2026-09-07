@@ -13,7 +13,6 @@ import com.example.clivoapi.configuration.template.RecordTemplateService;
 import com.example.clivoapi.configuration.template.SectionContent;
 import com.example.clivoapi.configuration.template.TemplateContent;
 import com.example.clivoapi.core.access.AccessService;
-import com.example.clivoapi.core.access.AuthenticatedUser;
 import com.example.clivoapi.core.access.EmailAddress;
 import com.example.clivoapi.core.access.RawPassword;
 import com.example.clivoapi.core.access.Role;
@@ -23,9 +22,9 @@ import com.example.clivoapi.core.catalog.CatalogService;
 import com.example.clivoapi.core.catalog.ServiceDetails;
 import com.example.clivoapi.core.catalog.ServiceDuration;
 import com.example.clivoapi.core.customer.ContactDetails;
+import com.example.clivoapi.core.customer.PhoneNumber;
 import com.example.clivoapi.core.customer.CustomerDetails;
 import com.example.clivoapi.core.customer.CustomerService;
-import com.example.clivoapi.core.customer.NationalId;
 import com.example.clivoapi.core.encounter.EncounterOpening;
 import com.example.clivoapi.core.encounter.EncounterService;
 import com.example.clivoapi.core.practitioner.AvailabilityPeriod;
@@ -50,8 +49,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class ClinicFixture extends DatabaseTest {
@@ -94,8 +91,8 @@ public abstract class ClinicFixture extends DatabaseTest {
         SecurityContextHolder.clearContext();
     }
 
-    protected Clinic openClinic(String code) {
-        Tenant tenant = createTenant(code);
+    protected Clinic openClinic(String name) {
+        Tenant tenant = createTenant(name);
         bindTenant(tenant);
         signInAs(tenant, Role.MANAGER);
         return new Clinic(tenant, registerCustomer("Ana Prado"), registerPractitioner("Dra. Marina"), registerService());
@@ -121,9 +118,9 @@ public abstract class ClinicFixture extends DatabaseTest {
     protected UUID registerCustomer(String name) {
         return customers.register(new CustomerDetails(
                         name,
-                        new NationalId(documentOf(name)),
+                        GeneratedDocument.nationalIdFor(name),
                         LocalDate.of(1990, 1, 1),
-                        new ContactDetails("41999990000", null),
+                        new ContactDetails(new PhoneNumber("41999990000"), null),
                         null))
                 .id();
     }
@@ -170,12 +167,11 @@ public abstract class ClinicFixture extends DatabaseTest {
         return LocalDateTime.of(date, LocalTime.parse(time));
     }
 
-    private void signInAs(Tenant clinic, Role role) {
+    @Override
+    protected UserSummary signInAs(Tenant clinic, Role role) {
         UserSummary user = knownUser(role).orElseGet(() -> registerUser(clinic, role));
-        AuthenticatedUser identity = new AuthenticatedUser(user.id(), clinic.id(), user.name(), role);
-        SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken(
-                        identity, null, List.of(new SimpleGrantedAuthority(role.authority()))));
+        authenticate(user.id(), clinic.id(), user.name(), role);
+        return user;
     }
 
     private Optional<UserSummary> knownUser(Role role) {
@@ -193,11 +189,7 @@ public abstract class ClinicFixture extends DatabaseTest {
 
     private String emailOf(Tenant clinic, Role role) {
         return "%s@%s.test"
-                .formatted(role.name().toLowerCase(Locale.ROOT), clinic.identity().code().toLowerCase(Locale.ROOT));
-    }
-
-    private String documentOf(String name) {
-        return String.valueOf(10000000000L + Math.abs(name.hashCode() % 10000000));
+                .formatted(role.name().toLowerCase(Locale.ROOT), clinic.identity().name().toLowerCase(Locale.ROOT));
     }
 
     private WeeklySchedule businessHours() {

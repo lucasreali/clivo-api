@@ -6,7 +6,6 @@ import com.example.clivoapi.common.extension.RecordAssembly;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.StockDispenser;
 import com.example.clivoapi.core.access.Role;
-import com.example.clivoapi.core.access.RoleAccess;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,7 +20,8 @@ public class EncounterService {
     private final EncounterRepository encounters;
     private final EncounterAssembler assembler;
     private final RecordAssembly records;
-    private final RoleAccess roleAccess;
+    private final ClinicalDisclosure disclosure;
+    private final CustomerHistoryAssembler history;
     private final EncounterCompletion completion;
     private final EncounterSupplies supplies;
 
@@ -29,13 +29,15 @@ public class EncounterService {
             EncounterRepository encounters,
             EncounterAssembler assembler,
             RecordAssembly records,
-            RoleAccess roleAccess,
+            ClinicalDisclosure disclosure,
+            CustomerHistoryAssembler history,
             List<EncounterCompletionListener> listeners,
             List<StockDispenser> dispensers) {
         this.encounters = encounters;
         this.assembler = assembler;
         this.records = records;
-        this.roleAccess = roleAccess;
+        this.disclosure = disclosure;
+        this.history = history;
         this.completion = new EncounterCompletion(listeners);
         this.supplies = new EncounterSupplies(dispensers);
     }
@@ -45,13 +47,13 @@ public class EncounterService {
     }
 
     public EncounterSnapshot open(EncounterOpening opening) {
-        return snapshotOf(encounters.save(assembler.assemble(opening)));
+        return disclosure.fullyDisclose(encounters.save(assembler.assemble(opening)));
     }
 
     public EncounterSnapshot fill(UUID id, RecordValues values) {
         Encounter encounter = encounterOf(id);
         encounter.fill(values);
-        return snapshotOf(encounters.save(encounter));
+        return disclosure.fullyDisclose(encounters.save(encounter));
     }
 
     public EncounterSnapshot complete(UUID id, Role viewer) {
@@ -60,32 +62,17 @@ public class EncounterService {
         encounter.complete();
         Encounter completed = encounters.save(encounter);
         completion.announce(completed.completion());
-        return visibleTo(completed, viewer);
+        return disclosure.discloseTo(completed, viewer);
     }
 
     @Transactional(readOnly = true)
     public EncounterSnapshot findOne(UUID id, Role viewer) {
-        return visibleTo(encounterOf(id), viewer);
+        return disclosure.discloseTo(encounterOf(id), viewer);
     }
 
     @Transactional(readOnly = true)
-    public List<EncounterSnapshot> historyOf(UUID customerId, Role viewer) {
-        List<Encounter> history = encounters.findByCustomerIdOrderByStartedAtDesc(customerId);
-        if (roleAccess.allowsClinicalRecord(viewer)) {
-            return history.stream().map(this::snapshotOf).toList();
-        }
-        return history.stream().map(Encounter::summary).toList();
-    }
-
-    private EncounterSnapshot visibleTo(Encounter encounter, Role viewer) {
-        if (roleAccess.allowsClinicalRecord(viewer)) {
-            return snapshotOf(encounter);
-        }
-        return encounter.summary();
-    }
-
-    private EncounterSnapshot snapshotOf(Encounter encounter) {
-        return encounter.snapshotWith(records.assemble(encounter.filling()));
+    public CustomerHistory historyOf(UUID customerId, Role viewer) {
+        return history.assemble(customerId, viewer);
     }
 
     private Encounter encounterOf(UUID id) {

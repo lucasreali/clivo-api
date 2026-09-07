@@ -2,10 +2,12 @@ package com.example.clivoapi.core.access;
 
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.exception.ForbiddenOperationException;
+import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.tenant.Tenant;
 import com.example.clivoapi.common.tenant.TenantContext;
 import com.example.clivoapi.core.access.internal.AppUserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class AccessService {
     }
 
     public SignedInSession signIn(SignInAttempt attempt) {
-        AppUser user = users.findByEmail(attempt.email().asText()).orElseThrow(InvalidCredentialsException::new);
+        AppUser user = users.findByEmail(attempt.email()).orElseThrow(InvalidCredentialsException::new);
         requireMatchingPassword(user, attempt.password());
         return user.signIn();
     }
@@ -54,12 +56,64 @@ public class AccessService {
         return users.save(user).summary();
     }
 
+    public UserSummary changeRole(UUID userId, Role requested) {
+        requireAbleToAssign(requested);
+        AppUser user = userOfCurrentClinic(userId);
+        user.changeRoleTo(requested, management());
+        return users.save(user).summary();
+    }
+
+    public UserSummary deactivate(UUID userId) {
+        requireManaging();
+        AppUser user = userOfCurrentClinic(userId);
+        user.deactivate(management());
+        return users.save(user).summary();
+    }
+
     @Transactional(readOnly = true)
     public List<UserSummary> usersOfCurrentClinic() {
         return tenantContext.current().stream()
                 .flatMap(clinic -> users.findByClinicIdOrderByNameAsc(clinic).stream())
                 .map(AppUser::summary)
                 .toList();
+    }
+
+    private AppUser userOfCurrentClinic(UUID userId) {
+        return currentClinic()
+                .flatMap(clinic -> users.findByIdAndClinicId(userId, clinic))
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+    }
+
+    private ManagementQuorum management() {
+        return currentClinic()
+                .map(clinic -> users.countByClinicIdAndRoleAndStatus(clinic, Role.MANAGER, AppUserStatus.ACTIVE))
+                .map(ManagementQuorum::new)
+                .orElseGet(() -> new ManagementQuorum(0));
+    }
+
+    private Optional<UUID> currentClinic() {
+        return tenantContext.current();
+    }
+
+    private void requireAbleToAssign(Role requested) {
+        if (caller().canAssign(requested)) {
+            return;
+        }
+        throw new ForbiddenOperationException("a user may not assign the role %s".formatted(requested));
+    }
+
+    private void requireManaging() {
+        if (caller().managesTheClinic()) {
+            return;
+        }
+        throw new ForbiddenOperationException("only a manager changes the users of the clinic");
+    }
+
+    @Transactional(readOnly = true)
+    public AppUser signedIn() {
+        return auditor.getCurrentAuditor()
+                .flatMap(users::findById)
+                .orElseThrow(() -> new ForbiddenOperationException("this action requires a signed-in user"));
     }
 
     private AppUser caller() {
@@ -76,7 +130,7 @@ public class AccessService {
     }
 
     private void requireEmailAvailable(EmailAddress email) {
-        if (users.existsByEmail(email.asText())) {
+        if (users.existsByEmail(email)) {
             throw new BusinessException("email %s is already registered".formatted(email));
         }
     }

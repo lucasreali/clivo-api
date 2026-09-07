@@ -62,7 +62,7 @@ class DependentServiceTest extends DependentFixture {
     void aDependentWithoutNameIsRefused() {
         assertThatThrownBy(() -> new DependentDetails(" ", DependentType.ANIMAL, null, null))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("a dependent needs a name");
+                .hasMessage("a dependent name is required");
     }
 
     @Test

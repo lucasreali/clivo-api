@@ -30,6 +30,8 @@ class PlatformApiTest extends DatabaseTest {
 
     private static final String ADMINISTRATOR = "root@clivo.test";
 
+    private static final String TAX_ID = "11222333000181";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,27 +52,40 @@ class PlatformApiTest extends DatabaseTest {
     }
 
     @Test
-    void aClinicCodeIsRegisteredOnlyOnce() throws Exception {
+    void aClinicOpensWithoutAnyIdentifierOfItsOwn() throws Exception {
         MockHttpSession session = signInAsAdministrator();
-        provision(session, "TEST-TWICE", "carla@twice.test");
 
-        mockMvc.perform(newClinicOf("TEST-TWICE", "dora@twice.test").session(session))
-                .andExpect(status().isUnprocessableContent())
-                .andExpect(jsonPath("$.message").value("clinic code TEST-TWICE is already registered"));
+        mockMvc.perform(newClinicOf("TEST-PLAIN", "carla@plain.test").session(session))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.clinic.id").isNotEmpty())
+                .andExpect(jsonPath("$.clinic.code").doesNotExist());
     }
 
     @Test
-    void aClinicCodeSurvivesAnUpdateOfTheDetails() throws Exception {
+    void oneTaxIdBelongsToOneClinicOnly() throws Exception {
+        MockHttpSession session = signInAsAdministrator();
+        mockMvc.perform(newClinicOf("TEST-HOLDER", "carla@holder.test", TAX_ID).session(session))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.clinic.taxId").value(TAX_ID));
+
+        mockMvc.perform(newClinicOf("TEST-CLAIMER", "dora@claimer.test", TAX_ID).session(session))
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.message")
+                        .value("taxId: %s already belongs to TEST-HOLDER".formatted(TAX_ID)));
+    }
+
+    @Test
+    void theClinicIdentifierSurvivesAnUpdateOfTheDetails() throws Exception {
         MockHttpSession session = signInAsAdministrator();
         UUID clinicId = provision(session, "TEST-RENAME", "carla@rename.test");
 
         mockMvc.perform(put("/api/platform/tenants/%s".formatted(clinicId))
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Renamed\",\"code\":\"TEST-OTHER\"}"))
+                        .content("{\"name\":\"Renamed\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Renamed"))
-                .andExpect(jsonPath("$.code").value("TEST-RENAME"));
+                .andExpect(jsonPath("$.id").value(clinicId.toString()))
+                .andExpect(jsonPath("$.name").value("Renamed"));
     }
 
     @Test
@@ -85,6 +100,21 @@ class PlatformApiTest extends DatabaseTest {
         mockMvc.perform(get("/api/platform/tenants/%s/modules".formatted(clinicId)).session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.code=='inventory')].active").value(true));
+    }
+
+    @Test
+    void aModuleIsNeverActivatedBeforeTheOneItDependsOn() throws Exception {
+        MockHttpSession session = signInAsAdministrator();
+        UUID clinicId = provision(session, "TEST-DEPENDENCY", "carla@dependency.test");
+
+        mockMvc.perform(put("/api/platform/tenants/%s/modules/batch/activation".formatted(clinicId))
+                        .session(session))
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.message").value("module batch requires module inventory to be active"));
+
+        mockMvc.perform(get("/api/platform/tenants/%s/modules".formatted(clinicId)).session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.code=='batch')].requiresModule").value("inventory"));
     }
 
     @Test
@@ -158,23 +188,33 @@ class PlatformApiTest extends DatabaseTest {
                 .andExpect(jsonPath("$[0].email").value("carla@stays.test"));
     }
 
-    private UUID provision(MockHttpSession session, String code, String managerEmail) throws Exception {
-        mockMvc.perform(newClinicOf(code, managerEmail).session(session))
+    private UUID provision(MockHttpSession session, String name, String managerEmail) throws Exception {
+        mockMvc.perform(newClinicOf(name, managerEmail).session(session))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.clinic.code").value(code))
+                .andExpect(jsonPath("$.clinic.name").value(name))
                 .andExpect(jsonPath("$.manager.role").value("MANAGER"))
                 .andExpect(jsonPath("$.manager.email").value(managerEmail));
-        return jdbcTemplate.queryForObject("SELECT id FROM tenant WHERE code = ?", UUID.class, code);
+        return jdbcTemplate.queryForObject("SELECT id FROM tenant WHERE name = ?", UUID.class, name);
     }
 
-    private MockHttpServletRequestBuilder newClinicOf(String code, String managerEmail) {
+    private MockHttpServletRequestBuilder newClinicOf(String name, String managerEmail) {
         return post("/api/platform/tenants")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                         """
-                        {"code":"%s","name":"%s","managerName":"Carla",\
+                        {"name":"%s","managerName":"Carla",\
                         "managerEmail":"%s","managerPassword":"%s"}"""
-                                .formatted(code, code, managerEmail, PASSWORD));
+                                .formatted(name, managerEmail, PASSWORD));
+    }
+
+    private MockHttpServletRequestBuilder newClinicOf(String name, String managerEmail, String taxId) {
+        return post("/api/platform/tenants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        """
+                        {"name":"%s","taxId":"%s","managerName":"Carla",\
+                        "managerEmail":"%s","managerPassword":"%s"}"""
+                                .formatted(name, taxId, managerEmail, PASSWORD));
     }
 
     private MockHttpSession signInAsAdministrator() throws Exception {
