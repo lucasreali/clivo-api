@@ -1,6 +1,7 @@
 package com.example.clivoapi.patterns.factory;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.extension.ComponentDescriptor;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.SheetField;
@@ -50,6 +51,10 @@ public final class FieldDefinition {
         return values.valueOf(code());
     }
 
+    public Optional<String> setting(String name) {
+        return validation().map(rules -> rules.get(name)).map(Object::toString);
+    }
+
     public Optional<BigDecimal> rule(String name) {
         return validation()
                 .map(rules -> rules.get(name))
@@ -66,16 +71,27 @@ public final class FieldDefinition {
     }
 
     public SheetField renderedWith(RecordValues values) {
-        return renderedAs(fieldType(), values, options());
+        return rendered(fieldType(), options(), values, null);
     }
 
-    public SheetField renderedAs(String rendering, RecordValues values, List<String> options) {
-        return new SheetField(
-                code(), content.label(), rendering, content.required(), options, valueIn(values).orElse(null));
+    public SheetField renderedAs(ComponentDescriptor descriptor, RecordValues values) {
+        return rendered(descriptor.component(), descriptor.codes(), values, descriptor);
     }
 
     public BusinessException refusal(String problem) {
         return new BusinessException("field %s (%s) %s".formatted(code(), content.label(), problem));
+    }
+
+    private SheetField rendered(
+            String rendering, List<String> choices, RecordValues values, ComponentDescriptor descriptor) {
+        return new SheetField(
+                code(),
+                content.label(),
+                rendering,
+                content.required(),
+                choices,
+                valueIn(values).orElse(null),
+                descriptor);
     }
 
     private boolean isSatisfiedBy(RecordValues values) {

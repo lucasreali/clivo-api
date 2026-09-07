@@ -1,0 +1,93 @@
+CREATE TABLE component_chart (
+    id          UUID         PRIMARY KEY,
+    component   VARCHAR(30)  NOT NULL,
+    variant     VARCHAR(30)  NOT NULL,
+    groupings   JSONB        NOT NULL,
+    regions     JSONB        NOT NULL,
+    UNIQUE (component, variant)
+);
+
+CREATE TABLE component_mark (
+    id          UUID         PRIMARY KEY,
+    component   VARCHAR(30)  NOT NULL,
+    code        VARCHAR(30)  NOT NULL,
+    label       VARCHAR(80)  NOT NULL,
+    rendering   VARCHAR(40)  NOT NULL,
+    sort_order  SMALLINT     NOT NULL,
+    UNIQUE (component, code)
+);
+
+INSERT INTO component_chart (id, component, variant, groupings, regions) VALUES
+ ('28000000-0000-7000-8000-000000000001','ODONTOGRAM','permanent','["arch","quadrant"]','[
+     {"code":"11","label":"11","groups":{"arch":"upper","quadrant":"1"},"position":1,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"12","label":"12","groups":{"arch":"upper","quadrant":"1"},"position":2,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"13","label":"13","groups":{"arch":"upper","quadrant":"1"},"position":3,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"14","label":"14","groups":{"arch":"upper","quadrant":"1"},"position":4,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"15","label":"15","groups":{"arch":"upper","quadrant":"1"},"position":5,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"16","label":"16","groups":{"arch":"upper","quadrant":"1"},"position":6,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"17","label":"17","groups":{"arch":"upper","quadrant":"1"},"position":7,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"18","label":"18","groups":{"arch":"upper","quadrant":"1"},"position":8,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"21","label":"21","groups":{"arch":"upper","quadrant":"2"},"position":1,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"22","label":"22","groups":{"arch":"upper","quadrant":"2"},"position":2,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"23","label":"23","groups":{"arch":"upper","quadrant":"2"},"position":3,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"24","label":"24","groups":{"arch":"upper","quadrant":"2"},"position":4,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"25","label":"25","groups":{"arch":"upper","quadrant":"2"},"position":5,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"26","label":"26","groups":{"arch":"upper","quadrant":"2"},"position":6,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"27","label":"27","groups":{"arch":"upper","quadrant":"2"},"position":7,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"28","label":"28","groups":{"arch":"upper","quadrant":"2"},"position":8,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"31","label":"31","groups":{"arch":"lower","quadrant":"3"},"position":1,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"32","label":"32","groups":{"arch":"lower","quadrant":"3"},"position":2,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"33","label":"33","groups":{"arch":"lower","quadrant":"3"},"position":3,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"34","label":"34","groups":{"arch":"lower","quadrant":"3"},"position":4,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"35","label":"35","groups":{"arch":"lower","quadrant":"3"},"position":5,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"36","label":"36","groups":{"arch":"lower","quadrant":"3"},"position":6,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"37","label":"37","groups":{"arch":"lower","quadrant":"3"},"position":7,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"38","label":"38","groups":{"arch":"lower","quadrant":"3"},"position":8,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"41","label":"41","groups":{"arch":"lower","quadrant":"4"},"position":1,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"42","label":"42","groups":{"arch":"lower","quadrant":"4"},"position":2,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"43","label":"43","groups":{"arch":"lower","quadrant":"4"},"position":3,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"44","label":"44","groups":{"arch":"lower","quadrant":"4"},"position":4,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"45","label":"45","groups":{"arch":"lower","quadrant":"4"},"position":5,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"46","label":"46","groups":{"arch":"lower","quadrant":"4"},"position":6,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"47","label":"47","groups":{"arch":"lower","quadrant":"4"},"position":7,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"48","label":"48","groups":{"arch":"lower","quadrant":"4"},"position":8,"parts":["mesial","distal","vestibular","lingual","oclusal"]}
+ ]'),
+ ('28000000-0000-7000-8000-000000000002','ODONTOGRAM','deciduous','["arch","quadrant"]','[
+     {"code":"51","label":"51","groups":{"arch":"upper","quadrant":"5"},"position":1,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"52","label":"52","groups":{"arch":"upper","quadrant":"5"},"position":2,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"53","label":"53","groups":{"arch":"upper","quadrant":"5"},"position":3,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"54","label":"54","groups":{"arch":"upper","quadrant":"5"},"position":4,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"55","label":"55","groups":{"arch":"upper","quadrant":"5"},"position":5,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"61","label":"61","groups":{"arch":"upper","quadrant":"6"},"position":1,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"62","label":"62","groups":{"arch":"upper","quadrant":"6"},"position":2,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"63","label":"63","groups":{"arch":"upper","quadrant":"6"},"position":3,"parts":["mesial","distal","vestibular","palatina","incisal"]},
+     {"code":"64","label":"64","groups":{"arch":"upper","quadrant":"6"},"position":4,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"65","label":"65","groups":{"arch":"upper","quadrant":"6"},"position":5,"parts":["mesial","distal","vestibular","palatina","oclusal"]},
+     {"code":"71","label":"71","groups":{"arch":"lower","quadrant":"7"},"position":1,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"72","label":"72","groups":{"arch":"lower","quadrant":"7"},"position":2,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"73","label":"73","groups":{"arch":"lower","quadrant":"7"},"position":3,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"74","label":"74","groups":{"arch":"lower","quadrant":"7"},"position":4,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"75","label":"75","groups":{"arch":"lower","quadrant":"7"},"position":5,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"81","label":"81","groups":{"arch":"lower","quadrant":"8"},"position":1,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"82","label":"82","groups":{"arch":"lower","quadrant":"8"},"position":2,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"83","label":"83","groups":{"arch":"lower","quadrant":"8"},"position":3,"parts":["mesial","distal","vestibular","lingual","incisal"]},
+     {"code":"84","label":"84","groups":{"arch":"lower","quadrant":"8"},"position":4,"parts":["mesial","distal","vestibular","lingual","oclusal"]},
+     {"code":"85","label":"85","groups":{"arch":"lower","quadrant":"8"},"position":5,"parts":["mesial","distal","vestibular","lingual","oclusal"]}
+ ]');
+
+INSERT INTO component_mark (id, component, code, label, rendering, sort_order) VALUES
+ ('28000000-0000-7000-8000-000000000011','ODONTOGRAM','higido','Hígido','#2e7d32',1),
+ ('28000000-0000-7000-8000-000000000012','ODONTOGRAM','carie','Cárie','#c62828',2),
+ ('28000000-0000-7000-8000-000000000013','ODONTOGRAM','restaurado','Restaurado','#1565c0',3),
+ ('28000000-0000-7000-8000-000000000014','ODONTOGRAM','ausente','Ausente','#616161',4),
+ ('28000000-0000-7000-8000-000000000015','ODONTOGRAM','extracao_indicada','Extração indicada','#ad1457',5),
+ ('28000000-0000-7000-8000-000000000016','ODONTOGRAM','fratura','Fratura','#ef6c00',6),
+ ('28000000-0000-7000-8000-000000000017','ODONTOGRAM','canal','Tratamento de canal','#00838f',7),
+ ('28000000-0000-7000-8000-000000000018','ODONTOGRAM','coroa','Coroa','#f9a825',8),
+ ('28000000-0000-7000-8000-000000000019','ODONTOGRAM','implante','Implante','#6a1b9a',9),
+ ('28000000-0000-7000-8000-00000000001a','ODONTOGRAM','protese','Prótese','#4527a0',10),
+ ('28000000-0000-7000-8000-000000000031','BODY_MAP','dor','Dor','#c62828',1),
+ ('28000000-0000-7000-8000-000000000032','BODY_MAP','edema','Edema','#1565c0',2),
+ ('28000000-0000-7000-8000-000000000033','BODY_MAP','hematoma','Hematoma','#4527a0',3),
+ ('28000000-0000-7000-8000-000000000034','BODY_MAP','cicatriz','Cicatriz','#616161',4),
+ ('28000000-0000-7000-8000-000000000035','BODY_MAP','limitacao','Limitação de movimento','#ef6c00',5);

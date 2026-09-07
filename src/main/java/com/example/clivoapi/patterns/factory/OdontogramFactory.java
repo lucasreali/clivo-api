@@ -10,6 +10,12 @@ public class OdontogramFactory implements ComponentFactory {
 
     private static final ModuleCode MODULE = new ModuleCode("odontogram");
 
+    private final ChartCatalog catalogue;
+
+    OdontogramFactory(ChartCatalog catalogue) {
+        this.catalogue = catalogue;
+    }
+
     @Override
     public ModuleCode requiredModule() {
         return MODULE;
@@ -17,6 +23,6 @@ public class OdontogramFactory implements ComponentFactory {
 
     @Override
     public Field create(FieldDefinition definition) {
-        return new Odontogram(definition);
+        return new Odontogram(catalogue, definition);
     }
 }

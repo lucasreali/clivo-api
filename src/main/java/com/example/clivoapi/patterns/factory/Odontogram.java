@@ -2,18 +2,15 @@ package com.example.clivoapi.patterns.factory;
 
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.SheetField;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public final class Odontogram implements Field {
+final class Odontogram implements Field {
 
-    private static final List<String> PERMANENT_TEETH = permanentTeeth();
+    private static final String PERMANENT = "permanent";
 
     private final MarkedRegions teeth;
 
-    public Odontogram(FieldDefinition definition) {
-        this.teeth = new MarkedRegions(definition, PERMANENT_TEETH);
+    Odontogram(ChartCatalog catalogue, FieldDefinition definition) {
+        this.teeth = new MarkedRegions(definition, catalogue.chartOf(definition, PERMANENT));
     }
 
     @Override
@@ -24,13 +21,5 @@ public final class Odontogram implements Field {
     @Override
     public void check(RecordValues values) {
         teeth.check(values);
-    }
-
-    private static List<String> permanentTeeth() {
-        return IntStream.rangeClosed(1, 4).boxed().flatMap(Odontogram::quadrant).toList();
-    }
-
-    private static Stream<String> quadrant(int quadrant) {
-        return IntStream.rangeClosed(1, 8).mapToObj(tooth -> "%d%d".formatted(quadrant, tooth));
     }
 }

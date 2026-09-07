@@ -3,12 +3,12 @@ package com.example.clivoapi.patterns.factory;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.SheetField;
 
-public final class BodyMap implements Field {
+final class BodyMap implements Field {
 
     private final MarkedRegions regions;
 
-    public BodyMap(FieldDefinition definition) {
-        this.regions = new MarkedRegions(definition, definition.declaredOptions());
+    BodyMap(ChartCatalog catalogue, FieldDefinition definition) {
+        this.regions = new MarkedRegions(definition, catalogue.regionsOf(definition));
     }
 
     @Override

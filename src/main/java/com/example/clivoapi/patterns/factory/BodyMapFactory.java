@@ -10,6 +10,12 @@ public class BodyMapFactory implements ComponentFactory {
 
     private static final ModuleCode MODULE = new ModuleCode("bodymap");
 
+    private final ChartCatalog catalogue;
+
+    BodyMapFactory(ChartCatalog catalogue) {
+        this.catalogue = catalogue;
+    }
+
     @Override
     public ModuleCode requiredModule() {
         return MODULE;
@@ -17,6 +23,6 @@ public class BodyMapFactory implements ComponentFactory {
 
     @Override
     public Field create(FieldDefinition definition) {
-        return new BodyMap(definition);
+        return new BodyMap(catalogue, definition);
     }
 }
