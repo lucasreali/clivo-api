@@ -46,6 +46,7 @@ public abstract class DatabaseTest {
         jdbcTemplate.update("DELETE FROM template_field");
         jdbcTemplate.update("DELETE FROM template_section");
         jdbcTemplate.update("DELETE FROM record_template");
+        jdbcTemplate.update("DELETE FROM tenant_module_history");
         jdbcTemplate.update("DELETE FROM tenant_module");
         jdbcTemplate.update("DELETE FROM tenant_parameter");
         jdbcTemplate.update("DELETE FROM notification");

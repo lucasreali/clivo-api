@@ -1,4 +1,4 @@
-package com.example.clivoapi.core.billing.internal;
+package com.example.clivoapi.common.audit.internal;
 
 import com.example.clivoapi.common.audit.AuditTrail;
 import com.example.clivoapi.common.audit.AuditedRecord;

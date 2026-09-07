@@ -33,7 +33,7 @@ class SessionApiTest extends DatabaseTest {
         register(north, "ana@north.test", Role.RECEPTION);
         register(south, "bruno@south.test", Role.RECEPTION);
 
-        MockHttpSession session = signIn("TEST-NORTH", "ana@north.test", north);
+        MockHttpSession session = signIn("ana@north.test", north);
 
         mockMvc.perform(get("/api/users").session(session))
                 .andExpect(status().isOk())
@@ -50,7 +50,7 @@ class SessionApiTest extends DatabaseTest {
     void aWrongPasswordIsUnauthorized() throws Exception {
         register(createTenant("TEST-NORTH"), "ana@north.test", Role.RECEPTION);
 
-        mockMvc.perform(signInOf("TEST-NORTH", "ana@north.test", "wrong-guess"))
+        mockMvc.perform(signInOf("ana@north.test", "wrong-guess"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -60,10 +60,10 @@ class SessionApiTest extends DatabaseTest {
         register(north, "ana@north.test", Role.RECEPTION);
         register(north, "carla@north.test", Role.MANAGER);
 
-        mockMvc.perform(newUserOf("dora@north.test").session(signIn("TEST-NORTH", "ana@north.test", north)))
+        mockMvc.perform(newUserOf("dora@north.test").session(signIn("ana@north.test", north)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(newUserOf("dora@north.test").session(signIn("TEST-NORTH", "carla@north.test", north)))
+        mockMvc.perform(newUserOf("dora@north.test").session(signIn("carla@north.test", north)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("dora@north.test"));
     }
@@ -75,19 +75,19 @@ class SessionApiTest extends DatabaseTest {
                         .formatted(email, PASSWORD));
     }
 
-    private MockHttpSession signIn(String clinic, String email, Tenant expected) throws Exception {
-        return (MockHttpSession) mockMvc.perform(signInOf(clinic, email, PASSWORD))
+    private MockHttpSession signIn(String email, Tenant expected) throws Exception {
+        return (MockHttpSession) mockMvc.perform(signInOf(email, PASSWORD))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clinicId").value(expected.id().toString()))
+                .andExpect(jsonPath("$.clinic.id").value(expected.id().toString()))
                 .andReturn()
                 .getRequest()
                 .getSession(false);
     }
 
-    private MockHttpServletRequestBuilder signInOf(String clinic, String email, String password) {
+    private MockHttpServletRequestBuilder signInOf(String email, String password) {
         return post("/api/session")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"clinic\":\"%s\",\"email\":\"%s\",\"password\":\"%s\"}".formatted(clinic, email, password));
+                .content("{\"email\":\"%s\",\"password\":\"%s\"}".formatted(email, password));
     }
 
     private void register(Tenant clinic, String email, Role role) {

@@ -1,8 +1,8 @@
 package com.example.clivoapi.core.access.internal;
 
-import com.example.clivoapi.common.tenant.TenantResolutionFilter;
 import com.example.clivoapi.core.access.AccessService;
 import com.example.clivoapi.core.access.AuthenticatedUser;
+import com.example.clivoapi.core.access.SignedInSession;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,15 +50,15 @@ class SessionController {
             @Valid @RequestBody SignInRequest request,
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
-        AuthenticatedUser user = access.signIn(request.toAttempt());
-        open(user, httpRequest, httpResponse);
-        return SessionView.of(user);
+        SignedInSession session = access.signIn(request.toAttempt());
+        open(session, httpRequest, httpResponse);
+        return SessionView.of(session);
     }
 
     @Operation(operationId = "getCurrentSession", summary = "Describe the user behind the current session")
     @GetMapping
     SessionView current(@AuthenticationPrincipal AuthenticatedUser user) {
-        return SessionView.of(user);
+        return SessionView.of(access.sessionOf(user));
     }
 
     @Operation(operationId = "signOut", summary = "Close the current session")
@@ -69,17 +69,11 @@ class SessionController {
         SecurityContextHolder.clearContext();
     }
 
-    private void open(AuthenticatedUser user, HttpServletRequest request, HttpServletResponse response) {
+    private void open(SignedInSession session, HttpServletRequest request, HttpServletResponse response) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authenticationOf(user));
+        context.setAuthentication(authenticationOf(session.user()));
         SecurityContextHolder.setContext(context);
         contexts.saveContext(context, request, response);
-        bindClinicTo(request.getSession(true), user);
-    }
-
-    private void bindClinicTo(HttpSession session, AuthenticatedUser user) {
-        user.clinic().ifPresent(clinic ->
-                session.setAttribute(TenantResolutionFilter.TENANT_SESSION_ATTRIBUTE, clinic));
     }
 
     private Authentication authenticationOf(AuthenticatedUser user) {

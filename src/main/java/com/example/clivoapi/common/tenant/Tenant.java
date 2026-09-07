@@ -3,9 +3,8 @@ package com.example.clivoapi.common.tenant;
 import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
@@ -20,23 +19,17 @@ public class Tenant {
     @UuidGenerator(style = VERSION_7)
     private UUID id;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, length = 20)
     private String code;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 120)
     private String name;
 
-    @Column(name = "legal_name")
-    private String legalName;
+    @Embedded
+    private TenantProfile profile;
 
-    @Column(name = "tax_id")
-    private String taxId;
-
-    private String segment;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TenantStatus status;
+    @Embedded
+    private TenantLifecycle lifecycle;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -45,9 +38,14 @@ public class Tenant {
     }
 
     public Tenant(String code, String name) {
-        this.code = code;
-        this.name = name;
-        this.status = TenantStatus.ACTIVE;
+        this(new TenantRegistration(code, name, TenantProfile.unknown()));
+    }
+
+    public Tenant(TenantRegistration registration) {
+        this.code = registration.code();
+        this.name = registration.name();
+        this.profile = registration.profile();
+        this.lifecycle = TenantLifecycle.opened();
         this.createdAt = Instant.now();
     }
 
@@ -56,6 +54,31 @@ public class Tenant {
     }
 
     public boolean isActive() {
-        return status == TenantStatus.ACTIVE;
+        return lifecycle.isActive();
+    }
+
+    public void describeAs(TenantDetails details) {
+        this.name = details.name();
+        this.profile = details.profile();
+    }
+
+    public void activate() {
+        lifecycle = lifecycle.activated();
+    }
+
+    public void deactivate(String reason) {
+        lifecycle = lifecycle.suspended(reason);
+    }
+
+    public void close(String reason) {
+        lifecycle = lifecycle.closed(reason);
+    }
+
+    public TenantIdentity identity() {
+        return new TenantIdentity(id, code, name);
+    }
+
+    public TenantSnapshot snapshot() {
+        return new TenantSnapshot(identity(), profile, lifecycle, createdAt);
     }
 }

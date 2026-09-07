@@ -70,6 +70,64 @@ docker compose up -d postgres
 The default profile is `dev`, which points at `localhost:5432/clivo` and logs
 formatted SQL. Flyway applies `src/main/resources/db/migration` on startup.
 
+### The first platform administrator
+
+Nobody self-registers. Every account is created by someone already authorized to
+create it: a `PLATFORM_ADMIN` opens clinics and registers other platform
+administrators, and the `MANAGER` created with a clinic registers that clinic's
+staff. The chain therefore has to start outside the API, with one row inserted
+by an operator. It is deliberately not seeded by a migration — a migration would
+publish working credentials in this repository.
+
+Generate the password hash first. The application registers a
+`BCryptPasswordEncoder` with its default strength (10), so any BCrypt hash of
+the `$2a$`, `$2b$` or `$2y$` flavour is accepted:
+
+```bash
+htpasswd -bnBC 10 "" 'the-password-you-chose' | tr -d ':\n'
+```
+
+Without `htpasswd`, the same hash comes out of the BCrypt implementation that
+encoder delegates to, taken straight from the Gradle cache:
+
+```bash
+CRYPTO=$(find ~/.gradle/caches/modules-2 -name 'spring-security-crypto-*.jar' \
+    ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -1)
+
+jshell --class-path "$CRYPTO" -q - <<'EOF'
+import org.springframework.security.crypto.bcrypt.BCrypt;
+System.out.println(BCrypt.hashpw("the-password-you-chose", BCrypt.gensalt(10)));
+/exit
+EOF
+```
+
+Then insert the row. `tenant_id` is `NULL` — a platform administrator belongs to
+no clinic, and the `app_user` check constraint requires exactly that of the
+`PLATFORM_ADMIN` role:
+
+```sql
+INSERT INTO app_user (id, tenant_id, name, email, password_hash, user_role, status, created_at)
+VALUES (
+    uuidv7(),                       -- every record is identified by a UUIDv7
+    NULL,                           -- a platform administrator belongs to no clinic
+    'Platform Operator',
+    'operator@clivo.example',       -- lower case; the email is unique across the whole platform
+    '$2y$10$REPLACE_WITH_THE_HASH_GENERATED_ABOVE',
+    'PLATFORM_ADMIN',
+    'ACTIVE',
+    now()
+);
+```
+
+Run it against the application database, for example:
+
+```bash
+docker compose exec -T postgres psql -U clivo -d clivo < first-administrator.sql
+```
+
+That account signs in at `POST /api/session` with the email and password alone,
+and from there opens the first clinic at `POST /api/platform/tenants`.
+
 ### API documentation
 
 The OpenAPI document is generated from the code, never written by hand. Every
@@ -160,6 +218,7 @@ com.example.clivoapi
 ├── common          # open module: tenant, audit, exception, money, time, extension points
 ├── configuration   # module activation, clinic parameters, record templates, capabilities
 ├── core            # access, customer, practitioner, catalog, scheduling, encounter, billing
+├── platform        # onboarding and administration of the clinics themselves
 ├── patterns        # Chain, Abstract Factory and Strategy implementations
 └── modules         # optional features, activated per tenant
 ```
@@ -169,6 +228,8 @@ Dependencies are declared and enforced:
 - `common` is an open module and depends on nothing.
 - `configuration` and `core` may only see `common`.
 - `patterns` sees `common` plus named interfaces of `core` and `configuration`.
+- `platform` sees `common` plus `core :: access`, `configuration :: modules` and
+  `configuration :: parameter`. Nothing sees `platform`.
 - `modules` may see everything; nothing may see `modules`.
 
 Inside every module, only the root package is public API. Repositories,

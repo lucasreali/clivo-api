@@ -6,9 +6,9 @@ import com.example.clivoapi.core.access.SignInAttempt;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-record SignInRequest(String clinic, @NotBlank @Email String email, @NotBlank String password) {
+record SignInRequest(@NotBlank @Email String email, @NotBlank String password) {
 
     SignInAttempt toAttempt() {
-        return new SignInAttempt(clinic, new EmailAddress(email), new RawPassword(password));
+        return new SignInAttempt(new EmailAddress(email), new RawPassword(password));
     }
 }

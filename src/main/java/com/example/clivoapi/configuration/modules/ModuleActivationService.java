@@ -5,8 +5,6 @@ import com.example.clivoapi.common.extension.ModuleActivationValidator;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.configuration.modules.internal.ModuleActivationRepository;
 import java.util.List;
-import java.util.UUID;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,24 +15,24 @@ public class ModuleActivationService {
     private final ModuleRegistry registry;
     private final ModuleActivationRepository activations;
     private final ModuleActivationValidation validation;
-    private final AuditorAware<UUID> auditor;
+    private final ModuleActivationTrail trail;
 
     ModuleActivationService(
             ModuleRegistry registry,
             ModuleActivationRepository activations,
             List<ModuleActivationValidator> validators,
-            AuditorAware<UUID> auditor) {
+            ModuleActivationTrail trail) {
         this.registry = registry;
         this.activations = activations;
         this.validation = new ModuleActivationValidation(validators);
-        this.auditor = auditor;
+        this.trail = trail;
     }
 
     public void activate(ModuleCode module) {
         ModuleDefinition definition = registry.definitionOf(module);
         validation.check(ModuleActivationProposal.toActivate(module));
         ModuleActivation activation = activationOf(definition);
-        activation.enable(auditor.getCurrentAuditor().orElse(null));
+        trail.record(activation.enable(trail.author()));
         activations.save(activation);
     }
 
@@ -42,13 +40,18 @@ public class ModuleActivationService {
         ModuleDefinition definition = registry.definitionOf(module);
         validation.check(ModuleActivationProposal.toDeactivate(module));
         ModuleActivation activation = activationOf(definition);
-        activation.disable();
+        trail.record(activation.disable(trail.author()));
         activations.save(activation);
     }
 
     @Transactional(readOnly = true)
     public List<ModuleStatus> statusOfAll() {
         return registry.catalog().statusWithin(registry.activeModules());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ModuleActivationRecord> history() {
+        return trail.entries();
     }
 
     @Transactional(readOnly = true)

@@ -3,7 +3,9 @@ package com.example.clivoapi.core.access;
 import static org.hibernate.annotations.UuidGenerator.Style.VERSION_7;
 
 import com.example.clivoapi.common.exception.BusinessException;
+import com.example.clivoapi.common.exception.ForbiddenOperationException;
 import com.example.clivoapi.common.tenant.Tenant;
+import com.example.clivoapi.common.tenant.TenantIdentity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -79,13 +81,26 @@ public class AppUser {
         return role == expected;
     }
 
+    public boolean canCreate(Role requested) {
+        return isActive() && role.canCreate(requested);
+    }
+
+    public AppUser create(UserRegistration registration, PasswordHashing hashing) {
+        requireAbleToCreate(registration.role());
+        return new AppUser(clinic, registration, hashing.hash(registration.password()));
+    }
+
     public boolean signsInWith(RawPassword password, PasswordHashing hashing) {
         return isActive() && hashing.matches(password, new HashedPassword(passwordHash));
     }
 
-    public AuthenticatedUser signIn() {
+    public SignedInSession signIn() {
         lastLoginAt = Instant.now();
-        return identity();
+        return session();
+    }
+
+    public SignedInSession session() {
+        return new SignedInSession(identity(), clinicIdentity().orElse(null));
     }
 
     public AuthenticatedUser identity() {
@@ -100,8 +115,19 @@ public class AppUser {
         status = AppUserStatus.INACTIVE;
     }
 
+    private Optional<TenantIdentity> clinicIdentity() {
+        return Optional.ofNullable(clinic).map(Tenant::identity);
+    }
+
     private Optional<UUID> clinicId() {
         return Optional.ofNullable(clinic).map(Tenant::id);
+    }
+
+    private void requireAbleToCreate(Role requested) {
+        if (canCreate(requested)) {
+            return;
+        }
+        throw new ForbiddenOperationException("a %s may not create a %s".formatted(role, requested));
     }
 
     private void requireClinicMatching(Role role, Tenant clinic) {

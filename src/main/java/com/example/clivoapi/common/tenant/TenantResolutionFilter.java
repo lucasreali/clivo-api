@@ -4,16 +4,15 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.Optional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class TenantResolutionFilter extends OncePerRequestFilter {
-
-    public static final String TENANT_SESSION_ATTRIBUTE = "tenantId";
 
     private final TenantContext tenantContext;
 
@@ -24,7 +23,7 @@ public class TenantResolutionFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        bindTenantOf(request.getSession(false));
+        bindTenantOfAuthenticatedPrincipal();
         try {
             chain.doFilter(request, response);
         } finally {
@@ -32,13 +31,17 @@ public class TenantResolutionFilter extends OncePerRequestFilter {
         }
     }
 
-    private void bindTenantOf(HttpSession session) {
-        if (session == null) {
-            return;
-        }
-        Object tenantId = session.getAttribute(TENANT_SESSION_ATTRIBUTE);
-        if (tenantId instanceof UUID identifier) {
-            tenantContext.bind(identifier);
-        }
+    private void bindTenantOfAuthenticatedPrincipal() {
+        authenticatedPrincipal()
+                .flatMap(TenantBoundPrincipal::tenant)
+                .ifPresent(tenantContext::bind);
+    }
+
+    private Optional<TenantBoundPrincipal> authenticatedPrincipal() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .filter(Authentication::isAuthenticated)
+                .map(Authentication::getPrincipal)
+                .filter(TenantBoundPrincipal.class::isInstance)
+                .map(TenantBoundPrincipal.class::cast);
     }
 }

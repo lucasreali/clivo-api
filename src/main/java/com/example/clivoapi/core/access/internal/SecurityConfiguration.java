@@ -34,7 +34,7 @@ class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, SessionController.PATH).permitAll()
                         .requestMatchers(PUBLIC_PATHS).permitAll()
                         .requestMatchers(HttpMethod.POST, AppUserController.PATH)
-                        .hasAnyRole(Role.MANAGER.name(), Role.PLATFORM_ADMIN.name())
+                        .hasRole(Role.MANAGER.name())
                         .anyRequest().authenticated())
                 .exceptionHandling(handling ->
                         handling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

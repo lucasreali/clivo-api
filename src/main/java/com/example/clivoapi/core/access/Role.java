@@ -14,6 +14,14 @@ public enum Role {
         return this != PLATFORM_ADMIN;
     }
 
+    public boolean canCreate(Role requested) {
+        return switch (this) {
+            case PLATFORM_ADMIN -> requested == PLATFORM_ADMIN;
+            case MANAGER -> requested.belongsToClinic();
+            case RECEPTION, PRACTITIONER, ASSISTANT -> false;
+        };
+    }
+
     public String authority() {
         return "ROLE_" + name();
     }

@@ -1,5 +1,6 @@
 package com.example.clivoapi.configuration.modules;
 
+import com.example.clivoapi.common.extension.ActivationIntent;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
 import jakarta.persistence.Column;
@@ -42,15 +43,17 @@ public class ModuleActivation extends TenantScopedEntity {
         return enabled;
     }
 
-    public void enable(UUID userId) {
+    public ModuleActivationChange enable(UUID author) {
         enabled = true;
         enabledAt = Instant.now();
-        enabledBy = userId;
+        enabledBy = author;
+        return new ModuleActivationChange(module(), ActivationIntent.ACTIVATION, author);
     }
 
-    public void disable() {
+    public ModuleActivationChange disable(UUID author) {
         enabled = false;
         enabledAt = null;
         enabledBy = null;
+        return new ModuleActivationChange(module(), ActivationIntent.DEACTIVATION, author);
     }
 }

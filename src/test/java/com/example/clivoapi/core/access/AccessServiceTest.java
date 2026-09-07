@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.example.clivoapi.common.DatabaseTest;
 import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.tenant.Tenant;
+import com.example.clivoapi.common.tenant.TenantIdentity;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,20 +23,20 @@ class AccessServiceTest extends DatabaseTest {
         Tenant clinic = createTenant("TEST-ACCESS");
         access.registerIn(clinic, registrationOf("ana@clivo.test", Role.MANAGER));
 
-        AuthenticatedUser user = access.signIn(attemptOf("TEST-ACCESS", "ana@clivo.test", PASSWORD));
+        SignedInSession session = access.signIn(attemptOf("ana@clivo.test", PASSWORD));
 
-        assertThat(user.clinicId()).isEqualTo(clinic.id());
-        assertThat(user.hasRole(Role.MANAGER)).isTrue();
-        assertThat(user.name()).isEqualTo("Ana");
+        assertThat(session.clinicIdentity()).map(TenantIdentity::id).contains(clinic.id());
+        assertThat(session.user().hasRole(Role.MANAGER)).isTrue();
+        assertThat(session.user().name()).isEqualTo("Ana");
     }
 
     @Test
     void aPlatformAdministratorSignsInWithoutAClinic() {
         access.registerIn(null, registrationOf("root@clivo.test", Role.PLATFORM_ADMIN));
 
-        AuthenticatedUser user = access.signIn(attemptOf(null, "root@clivo.test", PASSWORD));
+        SignedInSession session = access.signIn(attemptOf("root@clivo.test", PASSWORD));
 
-        assertThat(user.clinic()).isEmpty();
+        assertThat(session.clinicIdentity()).isEmpty();
     }
 
     @Test
@@ -51,7 +52,7 @@ class AccessServiceTest extends DatabaseTest {
         access.registerIn(clinic, registrationOf("ana@clivo.test", Role.RECEPTION));
 
         assertThatExceptionOfType(InvalidCredentialsException.class)
-                .isThrownBy(() -> access.signIn(attemptOf("TEST-ACCESS", "ana@clivo.test", new RawPassword("wrong-guess"))));
+                .isThrownBy(() -> access.signIn(attemptOf("ana@clivo.test", new RawPassword("wrong-guess"))));
     }
 
     @Test
@@ -61,19 +62,17 @@ class AccessServiceTest extends DatabaseTest {
         deactivate(registered.id());
 
         assertThatExceptionOfType(InvalidCredentialsException.class)
-                .isThrownBy(() -> access.signIn(attemptOf("TEST-ACCESS", "ana@clivo.test", PASSWORD)));
+                .isThrownBy(() -> access.signIn(attemptOf("ana@clivo.test", PASSWORD)));
     }
 
     @Test
-    void anEmailIsUniqueWithinAClinicAndFreeAcrossClinics() {
+    void anEmailIdentifiesOneUserAcrossEveryClinic() {
         Tenant north = createTenant("TEST-NORTH");
         Tenant south = createTenant("TEST-SOUTH");
         access.registerIn(north, registrationOf("ana@clivo.test", Role.RECEPTION));
 
-        access.registerIn(south, registrationOf("ana@clivo.test", Role.RECEPTION));
-
         assertThatExceptionOfType(BusinessException.class)
-                .isThrownBy(() -> access.registerIn(north, registrationOf("ana@clivo.test", Role.ASSISTANT)))
+                .isThrownBy(() -> access.registerIn(south, registrationOf("ana@clivo.test", Role.RECEPTION)))
                 .withMessageContaining("already registered");
     }
 
@@ -85,7 +84,7 @@ class AccessServiceTest extends DatabaseTest {
         return new UserRegistration("Ana", new EmailAddress(email), PASSWORD, role);
     }
 
-    private SignInAttempt attemptOf(String clinic, String email, RawPassword password) {
-        return new SignInAttempt(clinic, new EmailAddress(email), password);
+    private SignInAttempt attemptOf(String email, RawPassword password) {
+        return new SignInAttempt(new EmailAddress(email), password);
     }
 }

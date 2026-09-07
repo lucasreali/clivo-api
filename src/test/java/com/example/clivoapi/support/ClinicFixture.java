@@ -44,6 +44,7 @@ import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -187,11 +188,12 @@ public abstract class ClinicFixture extends DatabaseTest {
         return access.registerIn(
                 clinic,
                 new UserRegistration(
-                        role.name(), new EmailAddress(emailOf(role)), new RawPassword("segredo123"), role));
+                        role.name(), new EmailAddress(emailOf(clinic, role)), new RawPassword("segredo123"), role));
     }
 
-    private String emailOf(Role role) {
-        return "%s@clivo.test".formatted(role.name().toLowerCase());
+    private String emailOf(Tenant clinic, Role role) {
+        return "%s@%s.test"
+                .formatted(role.name().toLowerCase(Locale.ROOT), clinic.identity().code().toLowerCase(Locale.ROOT));
     }
 
     private String documentOf(String name) {
