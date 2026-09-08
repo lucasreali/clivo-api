@@ -111,14 +111,17 @@ public class AccessService {
 
     @Transactional(readOnly = true)
     public AppUser signedIn() {
-        return auditor.getCurrentAuditor()
-                .flatMap(users::findById)
+        return whoeverIsSignedIn()
                 .orElseThrow(() -> new ForbiddenOperationException("this action requires a signed-in user"));
     }
 
+    @Transactional(readOnly = true)
+    public Optional<AppUser> whoeverIsSignedIn() {
+        return auditor.getCurrentAuditor().flatMap(users::findById);
+    }
+
     private AppUser caller() {
-        return auditor.getCurrentAuditor()
-                .flatMap(users::findById)
+        return whoeverIsSignedIn()
                 .orElseThrow(() -> new ForbiddenOperationException("only a signed-in user creates another user"));
     }
 

@@ -3355,6 +3355,92 @@
         "tags" : [ "Encounters" ]
       }
     },
+    "/api/encounters/{id}/record/comparison" : {
+      "get" : {
+        "operationId" : "compareEncounterRecord",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "in" : "query",
+          "name" : "asOf",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecordComparisonView"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Not Found"
+          },
+          "422" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Unprocessable Content"
+          }
+        },
+        "summary" : "Compare the encounter's marked regions with the state recorded as of an earlier instant",
+        "tags" : [ "Encounters" ]
+      }
+    },
     "/api/insurance-memberships" : {
       "get" : {
         "operationId" : "listCustomerInsuranceMemberships",
@@ -9490,10 +9576,6 @@
           "authorName" : {
             "type" : "string"
           },
-          "customerId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
           "id" : {
             "type" : "string",
             "format" : "uuid"
@@ -9924,6 +10006,10 @@
       "ComponentMark" : {
         "type" : "object",
         "properties" : {
+          "appliesTo" : {
+            "type" : "string",
+            "enum" : [ "REGION", "PART", "ANY" ]
+          },
           "code" : {
             "type" : "string"
           },
@@ -10070,43 +10156,24 @@
       "CustomerView" : {
         "type" : "object",
         "properties" : {
+          "alerts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AlertView"
+            }
+          },
           "birthDate" : {
             "type" : "string",
             "format" : "date"
           },
-          "consented" : {
-            "type" : "boolean"
-          },
-          "deactivationReason" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
+          "coverage" : {
+            "$ref" : "#/components/schemas/CoverageView"
           },
           "id" : {
             "type" : "string",
             "format" : "uuid"
           },
           "name" : {
-            "type" : "string"
-          },
-          "nationalId" : {
-            "type" : "string"
-          },
-          "phone" : {
-            "type" : "string"
-          },
-          "postalCode" : {
-            "type" : "string"
-          },
-          "registeredAt" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "status" : {
-            "type" : "string"
-          },
-          "street" : {
             "type" : "string"
           }
         }
@@ -10291,33 +10358,28 @@
             "type" : "string",
             "format" : "date-time"
           },
-          "customerId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "customerName" : {
-            "type" : "string"
+          "customer" : {
+            "$ref" : "#/components/schemas/CustomerView"
           },
           "id" : {
             "type" : "string",
             "format" : "uuid"
           },
-          "practitionerId" : {
+          "lastSavedAt" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "date-time"
           },
-          "practitionerName" : {
-            "type" : "string"
+          "practitioner" : {
+            "$ref" : "#/components/schemas/PractitionerView"
           },
-          "serviceId" : {
-            "type" : "string",
-            "format" : "uuid"
-          },
-          "serviceName" : {
-            "type" : "string"
+          "service" : {
+            "$ref" : "#/components/schemas/ServiceView"
           },
           "sheet" : {
             "$ref" : "#/components/schemas/RecordSheet"
+          },
+          "signedBy" : {
+            "$ref" : "#/components/schemas/SignatureView"
           },
           "startedAt" : {
             "type" : "string",
@@ -10353,6 +10415,20 @@
             "items" : {
               "$ref" : "#/components/schemas/FieldViolation"
             }
+          }
+        }
+      },
+      "FieldComparisonView" : {
+        "type" : "object",
+        "properties" : {
+          "changes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MarkingChangeView"
+            }
+          },
+          "fieldCode" : {
+            "type" : "string"
           }
         }
       },
@@ -10519,6 +10595,85 @@
           },
           "unitPrice" : {
             "type" : "number"
+          }
+        }
+      },
+      "MarkView" : {
+        "type" : "object",
+        "properties" : {
+          "mark" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "recordedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "MarkedRegionState" : {
+        "type" : "object",
+        "properties" : {
+          "mark" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "origin" : {
+            "$ref" : "#/components/schemas/MarkingOrigin"
+          },
+          "part" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          }
+        }
+      },
+      "MarkingChangeView" : {
+        "type" : "object",
+        "properties" : {
+          "change" : {
+            "type" : "string"
+          },
+          "from" : {
+            "$ref" : "#/components/schemas/MarkView"
+          },
+          "part" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "to" : {
+            "$ref" : "#/components/schemas/MarkView"
+          }
+        }
+      },
+      "MarkingOrigin" : {
+        "type" : "object",
+        "properties" : {
+          "encounterId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "practitionerName" : {
+            "type" : "string"
+          },
+          "recordedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "since" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "source" : {
+            "type" : "string",
+            "enum" : [ "SESSION", "HISTORY" ]
           }
         }
       },
@@ -11079,12 +11234,29 @@
           }
         }
       },
+      "RecordComparisonView" : {
+        "type" : "object",
+        "properties" : {
+          "asOf" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FieldComparisonView"
+            }
+          }
+        }
+      },
       "RecordFillingRequest" : {
         "type" : "object",
         "properties" : {
           "values" : {
             "type" : "object",
-            "additionalProperties" : { }
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/RecordValue"
+            }
           }
         }
       },
@@ -11160,10 +11332,43 @@
           }
         }
       },
+      "RecordValue" : {
+        "description" : "One value of a record field. A plain field holds text or a number; a field that carries a ComponentDescriptor holds the list of markings drawn on its regions. Read `SheetField.fieldType` and the presence of `SheetField.descriptor` to know which shape applies.",
+        "oneOf" : [ {
+          "type" : "string"
+        }, {
+          "type" : "number"
+        }, {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/components/schemas/RegionMarking"
+          }
+        } ]
+      },
       "RefundRequest" : {
         "type" : "object",
         "properties" : {
           "reason" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RegionMarking" : {
+        "type" : "object",
+        "properties" : {
+          "mark" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "parts" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "region" : {
             "type" : "string"
           }
         }
@@ -11359,6 +11564,12 @@
           "label" : {
             "type" : "string"
           },
+          "markings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/MarkedRegionState"
+            }
+          },
           "options" : {
             "type" : "array",
             "items" : {
@@ -11368,7 +11579,9 @@
           "required" : {
             "type" : "boolean"
           },
-          "value" : { }
+          "value" : {
+            "$ref" : "#/components/schemas/RecordValue"
+          }
         }
       },
       "SheetSection" : {
@@ -11399,6 +11612,18 @@
           }
         },
         "required" : [ "email", "password" ]
+      },
+      "SignatureView" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "userId" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }
       },
       "StatementView" : {
         "type" : "object",

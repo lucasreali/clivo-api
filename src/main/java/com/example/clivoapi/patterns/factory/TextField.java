@@ -20,9 +20,14 @@ public final class TextField implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        definition.valueIn(values).ifPresent(this::checkText);
+    }
+
+    @Override
     public void check(RecordValues values) {
         definition.requirePresenceIn(values);
-        definition.valueIn(values).ifPresent(this::checkText);
+        accept(values);
     }
 
     private void checkText(Object value) {

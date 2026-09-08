@@ -6,6 +6,7 @@ import com.example.clivoapi.core.encounter.EncounterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -57,6 +58,17 @@ class EncounterController {
     @PutMapping("/{id}/record")
     EncounterView fill(@PathVariable UUID id, @RequestBody RecordFillingRequest request) {
         return EncounterView.of(encounters.fill(id, request.toValues()));
+    }
+
+    @Operation(
+            operationId = "compareEncounterRecord",
+            summary = "Compare the encounter's marked regions with the state recorded as of an earlier instant")
+    @GetMapping("/{id}/record/comparison")
+    RecordComparisonView compare(
+            @PathVariable UUID id,
+            @RequestParam Instant asOf,
+            @AuthenticationPrincipal AuthenticatedUser viewer) {
+        return RecordComparisonView.of(encounters.compare(id, asOf, roleOf(viewer)));
     }
 
     @Operation(operationId = "completeEncounter", summary = "Complete an encounter, closing its record and billing it")

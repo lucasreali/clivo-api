@@ -8,4 +8,7 @@ public interface Field {
     SheetField fill(RecordValues values);
 
     void check(RecordValues values);
+
+    default void accept(RecordValues values) {
+    }
 }

@@ -30,9 +30,9 @@ class EncounterServiceTest extends EncounterFixture {
         EncounterSnapshot encounter = openWalkIn();
 
         assertThat(encounter.status()).isEqualTo(EncounterStatus.DRAFT);
-        assertThat(encounter.participants().customerId()).isEqualTo(customerId());
-        assertThat(encounter.participants().practitionerId()).isEqualTo(practitionerId());
-        assertThat(encounter.completedAt()).isNull();
+        assertThat(encounter.participants().customer().id()).isEqualTo(customerId());
+        assertThat(encounter.participants().practitioner().id()).isEqualTo(practitionerId());
+        assertThat(encounter.timing().completedAt()).isNull();
     }
 
     @Test
@@ -43,8 +43,8 @@ class EncounterServiceTest extends EncounterFixture {
                 encounters.open(EncounterOpening.forAppointment(appointmentId, templateId));
 
         assertThat(encounter.participants().appointmentId()).isEqualTo(appointmentId);
-        assertThat(encounter.participants().serviceName()).isEqualTo("Limpeza");
-        assertThat(encounter.participants().customerId()).isEqualTo(customerId());
+        assertThat(encounter.participants().service().name()).isEqualTo("Limpeza");
+        assertThat(encounter.participants().customer().id()).isEqualTo(customerId());
     }
 
     @Test
@@ -64,7 +64,7 @@ class EncounterServiceTest extends EncounterFixture {
         EncounterSnapshot completed = completeAsPractitioner(draft.id());
 
         assertThat(completed.isCompleted()).isTrue();
-        assertThat(completed.completedAt()).isNotNull();
+        assertThat(completed.timing().completedAt()).isNotNull();
     }
 
     @Test

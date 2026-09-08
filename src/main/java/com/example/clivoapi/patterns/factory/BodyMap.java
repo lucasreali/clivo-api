@@ -17,6 +17,11 @@ final class BodyMap implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        regions.accept(values);
+    }
+
+    @Override
     public void check(RecordValues values) {
         regions.check(values);
     }

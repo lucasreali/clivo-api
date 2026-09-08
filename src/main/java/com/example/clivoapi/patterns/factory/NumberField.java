@@ -22,9 +22,14 @@ public final class NumberField implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        definition.valueIn(values).ifPresent(this::checkNumber);
+    }
+
+    @Override
     public void check(RecordValues values) {
         definition.requirePresenceIn(values);
-        definition.valueIn(values).ifPresent(this::checkNumber);
+        accept(values);
     }
 
     private void checkNumber(Object value) {

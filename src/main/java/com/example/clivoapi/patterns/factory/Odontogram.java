@@ -19,6 +19,11 @@ final class Odontogram implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        teeth.accept(values);
+    }
+
+    @Override
     public void check(RecordValues values) {
         teeth.check(values);
     }

@@ -32,10 +32,15 @@ public class RecordEngine implements RecordAssembly {
     }
 
     @Override
-    public void validate(RecordFilling filling) {
-        TemplateSnapshot template = templates.findOne(filling.templateId());
+    public void accept(RecordFilling filling) {
         RecordValues values = filling.values();
-        fieldsOf(template).forEach(field -> field.check(values));
+        fieldsOf(filling).forEach(field -> field.accept(values));
+    }
+
+    @Override
+    public void validate(RecordFilling filling) {
+        RecordValues values = filling.values();
+        fieldsOf(filling).forEach(field -> field.check(values));
     }
 
     private List<SheetSection> sheetSections(TemplateSnapshot template, RecordValues values) {
@@ -54,8 +59,8 @@ public class RecordEngine implements RecordAssembly {
                 .toList();
     }
 
-    private List<Field> fieldsOf(TemplateSnapshot template) {
-        return sectionsOf(template).stream()
+    private List<Field> fieldsOf(RecordFilling filling) {
+        return sectionsOf(templates.findOne(filling.templateId())).stream()
                 .flatMap(section -> catalogue.fieldsOf(section).stream())
                 .toList();
     }

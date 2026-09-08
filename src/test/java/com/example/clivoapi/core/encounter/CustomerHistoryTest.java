@@ -66,8 +66,8 @@ class CustomerHistoryTest extends EncounterFixture {
         assertThat(onlyEntryOf(history).encounter().clinicalRecord()).isEmpty();
         assertThat(onlyEntryOf(history).files()).isEmpty();
         assertThat(history.standingAlerts()).isEmpty();
-        assertThat(onlyEntryOf(history).encounter().participants().practitionerName()).isEqualTo("Dr. Marina");
-        assertThat(onlyEntryOf(history).encounter().completedAt()).isNotNull();
+        assertThat(onlyEntryOf(history).encounter().participants().practitioner().name()).isEqualTo("Dr. Marina");
+        assertThat(onlyEntryOf(history).encounter().timing().completedAt()).isNotNull();
     }
 
     @Test

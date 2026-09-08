@@ -4,5 +4,7 @@ public interface RecordAssembly {
 
     RecordSheet assemble(RecordFilling filling);
 
+    void accept(RecordFilling filling);
+
     void validate(RecordFilling filling);
 }

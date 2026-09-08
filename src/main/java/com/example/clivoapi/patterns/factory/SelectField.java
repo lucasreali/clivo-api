@@ -18,9 +18,14 @@ public final class SelectField implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        definition.valueIn(values).ifPresent(this::checkChoice);
+    }
+
+    @Override
     public void check(RecordValues values) {
         definition.requirePresenceIn(values);
-        definition.valueIn(values).ifPresent(this::checkChoice);
+        accept(values);
     }
 
     private void checkChoice(Object value) {

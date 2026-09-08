@@ -7,6 +7,7 @@ import com.example.clivoapi.common.exception.BusinessException;
 import com.example.clivoapi.common.extension.ComponentDescriptor;
 import com.example.clivoapi.common.extension.ComponentMark;
 import com.example.clivoapi.common.extension.ComponentRegion;
+import com.example.clivoapi.common.extension.MarkedRegionState;
 import com.example.clivoapi.common.extension.ModuleCode;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.SheetField;
@@ -17,6 +18,7 @@ import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.encounter.EncounterSnapshot;
 import com.example.clivoapi.support.Clinic;
 import com.example.clivoapi.support.ClinicFixture;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +36,7 @@ class SpecialComponentTest extends ClinicFixture {
 
     private static final String LABEL = "Dental chart";
 
-    private static final String SEALANT = "selante";
+    private static final String SEALANT = "faceta";
 
     @AfterEach
     void narrowTheVocabularyBack() {
@@ -92,38 +94,98 @@ class SpecialComponentTest extends ClinicFixture {
 
         assertThat(teeth.vocabulary())
                 .extracting(ComponentMark::code)
-                .contains("higido", "carie", "restaurado", "ausente");
+                .contains("higido", "carie", "restaurado", "ausente", "selante");
         assertThat(teeth.vocabulary()).allSatisfy(mark -> assertThat(mark.rendering()).isNotBlank());
+        assertThat(teeth.vocabulary()).allSatisfy(mark -> assertThat(mark.appliesTo()).isNotNull());
     }
 
     @Test
-    void aToothOutsideTheChartRefusesTheCompletion() {
+    void aToothOutsideTheChartIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-TOOTH", ODONTOGRAM, permanentChart());
-        fill(id, marking("99", null, "carie"));
 
-        assertThatThrownBy(() -> complete(id))
+        assertThatThrownBy(() -> fill(id, marking("99", "oclusal", "carie")))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field chart (Dental chart) does not know the region 99");
     }
 
     @Test
-    void aFaceThatDoesNotBelongToTheToothRefusesTheCompletion() {
+    void aFaceThatDoesNotBelongToTheToothIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-FACE", ODONTOGRAM, permanentChart());
-        fill(id, marking("11", "oclusal", "carie"));
 
-        assertThatThrownBy(() -> complete(id))
+        assertThatThrownBy(() -> fill(id, marking("11", "oclusal", "carie")))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field chart (Dental chart) does not know the part oclusal of the region 11");
     }
 
     @Test
-    void aConditionOutsideTheVocabularyRefusesTheCompletion() {
+    void aConditionOutsideTheVocabularyIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-WORD", ODONTOGRAM, permanentChart());
-        fill(id, marking("26", "oclusal", "cariado"));
 
-        assertThatThrownBy(() -> complete(id))
+        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", "cariado")))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field chart (Dental chart) does not know the mark cariado");
+    }
+
+    @Test
+    void aWholeToothConditionIsRefusedOnASingleFace() {
+        UUID id = openWith("TEST-CHART-TARGET", ODONTOGRAM, permanentChart());
+
+        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", "ausente")))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("field chart (Dental chart) marks 26 with ausente, "
+                        + "which applies to the region as a whole, with no part");
+    }
+
+    @Test
+    void aFaceConditionIsRefusedOnTheWholeTooth() {
+        UUID id = openWith("TEST-CHART-FACEONLY", ODONTOGRAM, permanentChart());
+
+        assertThatThrownBy(() -> fill(id, markingOn("26", List.of(), "carie")))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("field chart (Dental chart) marks 26 with carie, "
+                        + "which applies to at least one part of the region");
+    }
+
+    @Test
+    void aConditionThatFitsEitherTargetIsAcceptedOnBoth() {
+        UUID id = openWith("TEST-CHART-ANY", ODONTOGRAM, permanentChart());
+
+        fill(id, markingOn("26", List.of(), "fratura"), marking("27", "oclusal", "fratura"));
+
+        assertThat(complete(id).isCompleted()).isTrue();
+    }
+
+    @Test
+    void oneMarkingCoversSeveralFacesOfTheSameTooth() {
+        UUID id = openWith("TEST-CHART-MULTI", ODONTOGRAM, permanentChart());
+
+        fill(id, markingOn("36", List.of("oclusal", "lingual"), "carie"));
+
+        assertThat(chartOf(id).markings())
+                .extracting(MarkedRegionState::part)
+                .containsExactly("oclusal", "lingual");
+    }
+
+    @Test
+    void theSameFaceCannotBeMarkedTwiceInOneSession() {
+        UUID id = openWith("TEST-CHART-TWICE", ODONTOGRAM, permanentChart());
+
+        assertThatThrownBy(() ->
+                        fill(id, marking("26", "oclusal", "carie"), marking("26", "oclusal", "restaurado")))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("field chart (Dental chart) marks the part oclusal of the region 26 twice");
+    }
+
+    @Test
+    void aNoteRidesAlongWithTheMarkingThatCarriesIt() {
+        UUID id = openWith("TEST-CHART-NOTE", ODONTOGRAM, permanentChart());
+
+        fill(id, noted(marking("26", "oclusal", "restaurado"), "Cárie ativa removida e restaurada"));
+
+        assertThat(chartOf(id).markings())
+                .singleElement()
+                .extracting(MarkedRegionState::note)
+                .isEqualTo("Cárie ativa removida e restaurada");
     }
 
     @Test
@@ -137,13 +199,13 @@ class SpecialComponentTest extends ClinicFixture {
     @Test
     void aConditionAddedToTheCatalogueIsAcceptedWithoutTouchingTheCode() {
         UUID id = openWith("TEST-CHART-CLINIC", ODONTOGRAM, permanentChart());
-        fill(id, marking("26", "oclusal", SEALANT));
-
-        assertThatThrownBy(() -> complete(id))
+        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", SEALANT)))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) does not know the mark selante");
+                .hasMessage("field chart (Dental chart) does not know the mark faceta");
 
         widenTheVocabulary();
+        fill(id, marking("26", "oclusal", SEALANT));
+
         assertThat(complete(id).isCompleted()).isTrue();
     }
 
@@ -162,6 +224,7 @@ class SpecialComponentTest extends ClinicFixture {
         assertThat(recorded.sheet().templateVersion()).isEqualTo(1);
         assertThat(chartOf(id).descriptor().regions()).hasSize(32);
         assertThat(chartOf(id).value()).isEqualTo(List.of(marking("26", "oclusal", "carie")));
+        assertThat(chartOf(id).markings()).hasSize(1);
     }
 
     @Test
@@ -192,7 +255,7 @@ class SpecialComponentTest extends ClinicFixture {
     }
 
     @SafeVarargs
-    private void fill(UUID encounterId, Map<String, String>... markings) {
+    private void fill(UUID encounterId, Map<String, Object>... markings) {
         encounters.fill(encounterId, RecordValues.of(Map.of(CHART, List.of(markings))));
     }
 
@@ -216,16 +279,26 @@ class SpecialComponentTest extends ClinicFixture {
         return descriptor.regionNamed(code).orElseThrow();
     }
 
-    private Map<String, String> marking(String region, String part, String mark) {
+    private Map<String, Object> marking(String region, String part, String mark) {
         return Optional.ofNullable(part)
-                .map(face -> Map.of("region", region, "part", face, "mark", mark))
+                .map(face -> markingOn(region, List.of(face), mark))
                 .orElseGet(() -> Map.of("region", region, "mark", mark));
+    }
+
+    private Map<String, Object> markingOn(String region, List<String> parts, String mark) {
+        return Map.of("region", region, "parts", parts, "mark", mark);
+    }
+
+    private Map<String, Object> noted(Map<String, Object> marking, String note) {
+        Map<String, Object> written = new LinkedHashMap<>(marking);
+        written.put("note", note);
+        return written;
     }
 
     private void widenTheVocabulary() {
         jdbcTemplate.update(
-                "INSERT INTO component_mark (id, component, code, label, rendering, sort_order) "
-                        + "VALUES (gen_random_uuid(), 'ODONTOGRAM', ?, 'Selante', '#00695c', 11)",
+                "INSERT INTO component_mark (id, component, code, label, rendering, sort_order, applies_to) "
+                        + "VALUES (gen_random_uuid(), 'ODONTOGRAM', ?, 'Faceta', '#00695c', 12, 'PART')",
                 SEALANT);
     }
 

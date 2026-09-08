@@ -19,9 +19,14 @@ public final class DateField implements Field {
     }
 
     @Override
+    public void accept(RecordValues values) {
+        definition.valueIn(values).ifPresent(this::checkDate);
+    }
+
+    @Override
     public void check(RecordValues values) {
         definition.requirePresenceIn(values);
-        definition.valueIn(values).ifPresent(this::checkDate);
+        accept(values);
     }
 
     private void checkDate(Object value) {

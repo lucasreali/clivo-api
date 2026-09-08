@@ -9,6 +9,7 @@ import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.SuppliesUsed;
 import com.example.clivoapi.common.tenant.TenantScopedEntity;
+import com.example.clivoapi.core.access.AppUser;
 import com.example.clivoapi.core.catalog.Service;
 import com.example.clivoapi.core.customer.Customer;
 import com.example.clivoapi.core.practitioner.Practitioner;
@@ -65,8 +66,15 @@ public class Encounter extends TenantScopedEntity {
     @Column(name = "started_at", nullable = false, updatable = false)
     private Instant startedAt;
 
+    @Column(name = "last_saved_at")
+    private Instant lastSavedAt;
+
     @Column(name = "completed_at")
     private Instant completedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "signed_by")
+    private AppUser signedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -99,6 +107,18 @@ public class Encounter extends TenantScopedEntity {
         return id;
     }
 
+    public UUID customerId() {
+        return customer.id();
+    }
+
+    public String practitionerName() {
+        return practitioner.name();
+    }
+
+    public Instant recordedAt() {
+        return Optional.ofNullable(completedAt).orElse(startedAt);
+    }
+
     public RecordFilling filling() {
         return new RecordFilling(recordTemplateId, RecordValues.of(fieldValues));
     }
@@ -106,12 +126,14 @@ public class Encounter extends TenantScopedEntity {
     public void fill(RecordValues values) {
         requireOpen("filled in");
         fieldValues = values.asMap();
+        lastSavedAt = Instant.now();
     }
 
-    public void complete() {
+    public void complete(AppUser signer) {
         requireOpen("completed");
         status = EncounterStatus.COMPLETED;
         completedAt = Instant.now();
+        signedBy = signer;
     }
 
     public boolean isCompleted() {
@@ -127,23 +149,31 @@ public class Encounter extends TenantScopedEntity {
         return new CompletedEncounter(id, customer.id(), practitioner.id(), service.id());
     }
 
-    public EncounterSnapshot snapshotWith(RecordSheet sheet) {
-        return new EncounterSnapshot(id, participants(), sheet, startedAt, completedAt, status);
+    public EncounterSnapshot snapshotWith(RecordSheet sheet, ClinicalContext context) {
+        return new EncounterSnapshot(id, participants(), context, sheet, timing(), signature(), status);
     }
 
     public EncounterSnapshot summary() {
-        return snapshotWith(null);
+        return snapshotWith(null, ClinicalContext.undisclosed());
     }
 
     private EncounterParticipants participants() {
         return new EncounterParticipants(
                 appointmentId().orElse(null),
-                customer.id(),
-                customer.name(),
-                practitioner.id(),
-                practitioner.name(),
-                service.id(),
-                service.name());
+                new AttendedCustomer(customer.id(), customer.name(), customer.details().birthDate()),
+                new AttendingPractitioner(
+                        practitioner.id(), practitioner.name(), practitioner.snapshot().details().licenseNumber()),
+                new ProvidedService(service.id(), service.name()));
+    }
+
+    private EncounterTiming timing() {
+        return new EncounterTiming(startedAt, lastSavedAt, completedAt);
+    }
+
+    private Signature signature() {
+        return Optional.ofNullable(signedBy)
+                .map(signer -> new Signature(signer.id(), signer.name()))
+                .orElse(null);
     }
 
     private Optional<UUID> appointmentId() {

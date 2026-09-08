@@ -3,11 +3,14 @@ package com.example.clivoapi.core.encounter;
 import com.example.clivoapi.common.exception.ResourceNotFoundException;
 import com.example.clivoapi.common.extension.EncounterCompletionListener;
 import com.example.clivoapi.common.extension.RecordAssembly;
+import com.example.clivoapi.common.extension.RecordFilling;
 import com.example.clivoapi.common.extension.RecordValues;
 import com.example.clivoapi.common.extension.StockDispenser;
+import com.example.clivoapi.core.access.AccessService;
 import com.example.clivoapi.core.access.Role;
 import com.example.clivoapi.core.encounter.internal.EncounterRepository;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -32,13 +35,14 @@ public class EncounterService {
             ClinicalDisclosure disclosure,
             CustomerHistoryAssembler history,
             List<EncounterCompletionListener> listeners,
-            List<StockDispenser> dispensers) {
+            List<StockDispenser> dispensers,
+            AccessService access) {
         this.encounters = encounters;
         this.assembler = assembler;
         this.records = records;
         this.disclosure = disclosure;
         this.history = history;
-        this.completion = new EncounterCompletion(listeners);
+        this.completion = new EncounterCompletion(listeners, access);
         this.supplies = new EncounterSupplies(dispensers);
     }
 
@@ -52,6 +56,7 @@ public class EncounterService {
 
     public EncounterSnapshot fill(UUID id, RecordValues values) {
         Encounter encounter = encounterOf(id);
+        records.accept(new RecordFilling(encounter.filling().templateId(), values));
         encounter.fill(values);
         return disclosure.fullyDisclose(encounters.save(encounter));
     }
@@ -59,7 +64,7 @@ public class EncounterService {
     public EncounterSnapshot complete(UUID id, Role viewer) {
         Encounter encounter = encounterOf(id);
         records.validate(encounter.filling());
-        encounter.complete();
+        encounter.complete(completion.signer().orElse(null));
         Encounter completed = encounters.save(encounter);
         completion.announce(completed.completion());
         return disclosure.discloseTo(completed, viewer);
@@ -68,6 +73,11 @@ public class EncounterService {
     @Transactional(readOnly = true)
     public EncounterSnapshot findOne(UUID id, Role viewer) {
         return disclosure.discloseTo(encounterOf(id), viewer);
+    }
+
+    @Transactional(readOnly = true)
+    public RecordComparison compare(UUID id, Instant asOf, Role viewer) {
+        return disclosure.compare(encounterOf(id), asOf, viewer);
     }
 
     @Transactional(readOnly = true)

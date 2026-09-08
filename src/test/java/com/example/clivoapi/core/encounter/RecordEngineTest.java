@@ -47,41 +47,37 @@ class RecordEngineTest extends EncounterFixture {
     }
 
     @Test
-    void aNumberOutsideItsRangeRefusesTheCompletion() {
+    void aNumberOutsideItsRangeIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith(fullTemplate());
-        encounters.fill(id, RecordValues.of(Map.of("weight", 900, "species", "Cao")));
 
-        assertThatThrownBy(() -> completeAsPractitioner(id))
+        assertThatThrownBy(() -> encounters.fill(id, RecordValues.of(Map.of("weight", 900, "species", "Cao"))))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field weight (Weight) accepts no value above 300");
     }
 
     @Test
-    void aChoiceOutsideTheDeclaredOptionsRefusesTheCompletion() {
+    void aChoiceOutsideTheDeclaredOptionsIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith(fullTemplate());
-        encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Dragao")));
 
-        assertThatThrownBy(() -> completeAsPractitioner(id))
+        assertThatThrownBy(() -> encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Dragao"))))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field species (Species) accepts only one of [Cao, Gato]");
     }
 
     @Test
-    void aTextLongerThanItsLimitRefusesTheCompletion() {
+    void aTextLongerThanItsLimitIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith(fullTemplate());
-        encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "notes", "x".repeat(41))));
 
-        assertThatThrownBy(() -> completeAsPractitioner(id))
+        assertThatThrownBy(() -> encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "notes", "x".repeat(41)))))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field notes (Notes) accepts at most 40 characters");
     }
 
     @Test
-    void aDateWrittenTheWrongWayRefusesTheCompletion() {
+    void aDateWrittenTheWrongWayIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith(fullTemplate());
-        encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "31/12/2026")));
 
-        assertThatThrownBy(() -> completeAsPractitioner(id))
+        assertThatThrownBy(() -> encounters.fill(id, RecordValues.of(Map.of("weight", 12.5, "species", "Cao", "seenOn", "31/12/2026"))))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field seenOn (Seen on) expects a date written as yyyy-MM-dd");
     }

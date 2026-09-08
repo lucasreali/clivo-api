@@ -20,7 +20,7 @@ public record ComponentDescriptor(
         return regions.stream().filter(region -> region.code().equals(code)).findFirst();
     }
 
-    public boolean accepts(String mark) {
-        return vocabulary.stream().map(ComponentMark::code).anyMatch(mark::equals);
+    public Optional<ComponentMark> markNamed(String code) {
+        return vocabulary.stream().filter(mark -> mark.code().equals(code)).findFirst();
     }
 }

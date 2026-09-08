@@ -91,7 +91,8 @@ public final class FieldDefinition {
                 content.required(),
                 choices,
                 valueIn(values).orElse(null),
-                descriptor);
+                descriptor,
+                null);
     }
 
     private boolean isSatisfiedBy(RecordValues values) {

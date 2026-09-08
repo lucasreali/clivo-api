@@ -65,7 +65,7 @@ public class CustomerHistoryAssembler {
             UUID customerId,
             Role viewer) {
         return new HistoryEntry(
-                disclosure.discloseTo(encounter, viewer),
+                disclosure.listedFor(encounter, viewer),
                 charge,
                 insuranceBehind(charge, customerId).orElse(null),
                 files.map(kept -> kept.of(charge.encounterId())).orElse(null));
