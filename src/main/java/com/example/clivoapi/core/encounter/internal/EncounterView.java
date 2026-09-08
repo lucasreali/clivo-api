@@ -1,6 +1,5 @@
 package com.example.clivoapi.core.encounter.internal;
 
-import com.example.clivoapi.common.extension.CoverageNote;
 import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.core.clinical.ClinicalAlertSnapshot;
 import com.example.clivoapi.core.encounter.AttendedCustomer;
@@ -22,9 +21,9 @@ record EncounterView(
         UUID id,
         UUID appointmentId,
         String status,
-        CustomerView customer,
-        PractitionerView practitioner,
-        ServiceView service,
+        AttendedCustomerView customer,
+        AttendingPractitionerView practitioner,
+        ProvidedServiceView service,
         Instant startedAt,
         Instant lastSavedAt,
         Instant completedAt,
@@ -38,9 +37,9 @@ record EncounterView(
                 encounter.id(),
                 participants.appointmentId(),
                 encounter.status().name(),
-                CustomerView.of(participants.customer(), encounter.context()),
-                PractitionerView.of(participants.practitioner()),
-                ServiceView.of(participants.service()),
+                AttendedCustomerView.of(participants.customer(), encounter.context()),
+                AttendingPractitionerView.of(participants.practitioner()),
+                ProvidedServiceView.of(participants.service()),
                 timing.startedAt(),
                 timing.lastSavedAt(),
                 timing.completedAt(),
@@ -49,35 +48,35 @@ record EncounterView(
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    record CustomerView(
-            UUID id, String name, LocalDate birthDate, CoverageView coverage, List<AlertView> alerts) {
+    record AttendedCustomerView(
+            UUID id, String name, LocalDate birthDate, CoverageView coverage, List<StandingAlertView> alerts) {
 
-        static CustomerView of(AttendedCustomer customer, ClinicalContext context) {
-            return new CustomerView(
+        static AttendedCustomerView of(AttendedCustomer customer, ClinicalContext context) {
+            return new AttendedCustomerView(
                     customer.id(),
                     customer.name(),
                     customer.birthDate(),
                     context.covering().map(CoverageView::of).orElse(null),
-                    context.standingAlerts().map(CustomerView::viewsOf).orElse(null));
+                    context.standingAlerts().map(AttendedCustomerView::viewsOf).orElse(null));
         }
 
-        private static List<AlertView> viewsOf(List<ClinicalAlertSnapshot> alerts) {
-            return alerts.stream().map(AlertView::of).toList();
+        private static List<StandingAlertView> viewsOf(List<ClinicalAlertSnapshot> alerts) {
+            return alerts.stream().map(StandingAlertView::of).toList();
         }
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    record PractitionerView(UUID id, String name, String license) {
+    record AttendingPractitionerView(UUID id, String name, String license) {
 
-        static PractitionerView of(AttendingPractitioner practitioner) {
-            return new PractitionerView(practitioner.id(), practitioner.name(), practitioner.license());
+        static AttendingPractitionerView of(AttendingPractitioner practitioner) {
+            return new AttendingPractitionerView(practitioner.id(), practitioner.name(), practitioner.license());
         }
     }
 
-    record ServiceView(UUID id, String name) {
+    record ProvidedServiceView(UUID id, String name) {
 
-        static ServiceView of(ProvidedService service) {
-            return new ServiceView(service.id(), service.name());
+        static ProvidedServiceView of(ProvidedService service) {
+            return new ProvidedServiceView(service.id(), service.name());
         }
     }
 
@@ -88,18 +87,4 @@ record EncounterView(
         }
     }
 
-    record CoverageView(String plan, String memberNumber) {
-
-        static CoverageView of(CoverageNote note) {
-            return new CoverageView(note.plan(), note.memberNumber());
-        }
-    }
-
-    record AlertView(UUID id, String note, UUID authorId, String authorName, Instant recordedAt) {
-
-        static AlertView of(ClinicalAlertSnapshot alert) {
-            return new AlertView(
-                    alert.id(), alert.note(), alert.authorId(), alert.authorName(), alert.recordedAt());
-        }
-    }
 }

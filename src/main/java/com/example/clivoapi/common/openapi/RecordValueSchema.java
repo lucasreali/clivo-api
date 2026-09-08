@@ -21,6 +21,8 @@ class RecordValueSchema implements OpenApiCustomizer {
 
     private static final String MARKING = "RegionMarking";
 
+    private static final List<String> MARKING_DEMANDS = List.of("region", "mark");
+
     private static final String SHEET_FIELD = "SheetField";
 
     private static final String FILLING_REQUEST = "RecordFillingRequest";
@@ -30,6 +32,12 @@ class RecordValueSchema implements OpenApiCustomizer {
             One value of a record field. A plain field holds text or a number; a field that carries a \
             ComponentDescriptor holds the list of markings drawn on its regions. Read `SheetField.fieldType` \
             and the presence of `SheetField.descriptor` to know which shape applies.""";
+
+    private static final String MARKINGS =
+            """
+            Every marking recorded on this field in this encounter. A region and part may appear at most \
+            once across the whole list; a repeat is refused when the draft is saved, not only on \
+            completion.""";
 
     @Override
     public void customise(OpenAPI api) {
@@ -47,7 +55,10 @@ class RecordValueSchema implements OpenApiCustomizer {
     }
 
     private Schema<?> asObject(Schema<?> schema) {
-        return new ObjectSchema().properties(schema.getProperties()).description(schema.getDescription());
+        return new ObjectSchema()
+                .properties(schema.getProperties())
+                .description(schema.getDescription())
+                .required(MARKING_DEMANDS);
     }
 
     private Schema<?> recordValue() {
@@ -57,7 +68,7 @@ class RecordValueSchema implements OpenApiCustomizer {
     }
 
     private Schema<?> markingList() {
-        return new ArraySchema().items(new Schema<>().$ref(reference(MARKING)));
+        return new ArraySchema().items(new Schema<>().$ref(reference(MARKING))).description(MARKINGS);
     }
 
     private void typeFieldValue(Schema<?> sheetField) {

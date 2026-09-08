@@ -9557,6 +9557,17 @@
   },
   "components" : {
     "schemas" : {
+      "ActiveModuleView" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
       "AlertRequest" : {
         "type" : "object",
         "properties" : {
@@ -9575,6 +9586,10 @@
           },
           "authorName" : {
             "type" : "string"
+          },
+          "customerId" : {
+            "type" : "string",
+            "format" : "uuid"
           },
           "id" : {
             "type" : "string",
@@ -9703,6 +9718,46 @@
           },
           "works" : {
             "type" : "boolean"
+          }
+        }
+      },
+      "AttendedCustomerView" : {
+        "type" : "object",
+        "properties" : {
+          "alerts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StandingAlertView"
+            }
+          },
+          "birthDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "coverage" : {
+            "$ref" : "#/components/schemas/CoverageView"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AttendingPractitionerView" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "license" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
           }
         }
       },
@@ -9839,13 +9894,13 @@
           "modules" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/ModuleView"
+              "$ref" : "#/components/schemas/ActiveModuleView"
             }
           },
           "parameters" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/ParameterView"
+              "$ref" : "#/components/schemas/EffectiveParameterView"
             }
           }
         }
@@ -10005,9 +10060,11 @@
       },
       "ComponentMark" : {
         "type" : "object",
+        "description" : "One condition a special component accepts, with the colour the legend draws it in.",
         "properties" : {
           "appliesTo" : {
             "type" : "string",
+            "description" : "What this condition may be marked on. REGION demands `parts` be empty                                 (a whole tooth is absent, crowned, implanted); PART demands at least one                                 part (a caries sits on a face); ANY accepts either.",
             "enum" : [ "REGION", "PART", "ANY" ]
           },
           "code" : {
@@ -10017,7 +10074,8 @@
             "type" : "string"
           },
           "rendering" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Colour the legend draws this condition in, as a CSS hex value."
           }
         }
       },
@@ -10098,7 +10156,7 @@
           "alerts" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/AlertView"
+              "$ref" : "#/components/schemas/StandingAlertView"
             }
           },
           "counts" : {
@@ -10156,24 +10214,43 @@
       "CustomerView" : {
         "type" : "object",
         "properties" : {
-          "alerts" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AlertView"
-            }
-          },
           "birthDate" : {
             "type" : "string",
             "format" : "date"
           },
-          "coverage" : {
-            "$ref" : "#/components/schemas/CoverageView"
+          "consented" : {
+            "type" : "boolean"
+          },
+          "deactivationReason" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string",
             "format" : "uuid"
           },
           "name" : {
+            "type" : "string"
+          },
+          "nationalId" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "postalCode" : {
+            "type" : "string"
+          },
+          "registeredAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "street" : {
             "type" : "string"
           }
         }
@@ -10268,6 +10345,17 @@
         },
         "required" : [ "amount" ]
       },
+      "EffectiveParameterView" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
       "EncounterHistoryView" : {
         "type" : "object",
         "properties" : {
@@ -10359,7 +10447,7 @@
             "format" : "date-time"
           },
           "customer" : {
-            "$ref" : "#/components/schemas/CustomerView"
+            "$ref" : "#/components/schemas/AttendedCustomerView"
           },
           "id" : {
             "type" : "string",
@@ -10370,10 +10458,10 @@
             "format" : "date-time"
           },
           "practitioner" : {
-            "$ref" : "#/components/schemas/PractitionerView"
+            "$ref" : "#/components/schemas/AttendingPractitionerView"
           },
           "service" : {
-            "$ref" : "#/components/schemas/ServiceView"
+            "$ref" : "#/components/schemas/ProvidedServiceView"
           },
           "sheet" : {
             "$ref" : "#/components/schemas/RecordSheet"
@@ -10710,17 +10798,6 @@
           },
           "plan" : {
             "$ref" : "#/components/schemas/PlanView"
-          }
-        }
-      },
-      "ModuleView" : {
-        "type" : "object",
-        "properties" : {
-          "code" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
           }
         }
       },
@@ -11187,6 +11264,18 @@
           }
         }
       },
+      "ProvidedServiceView" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
       "ProvisionedClinicView" : {
         "type" : "object",
         "properties" : {
@@ -11340,6 +11429,7 @@
           "type" : "number"
         }, {
           "type" : "array",
+          "description" : "Every marking recorded on this field in this encounter. A region and part may appear at most once across the whole list; a repeat is refused when the draft is saved, not only on completion.",
           "items" : {
             "$ref" : "#/components/schemas/RegionMarking"
           }
@@ -11355,23 +11445,31 @@
       },
       "RegionMarking" : {
         "type" : "object",
+        "description" : "One condition recorded on one region of a special component. Within a single field value, no region and part may be marked twice: `{\"region\":\"26\",\"parts\":[\"oclusal\"]}` and a second marking of `26`/`oclusal` are refused together, whatever their marks. Two markings on different parts of the same region are accepted.",
         "properties" : {
           "mark" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Code of the condition, from ComponentDescriptor.vocabulary[].code."
           },
           "note" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Free note the practitioner wrote about this marking.",
+            "maxLength" : 400
           },
           "parts" : {
             "type" : "array",
+            "description" : "Parts of the region this condition covers, each from the region's own `parts`. Empty or absent marks the region as a whole. The vocabulary entry decides which is allowed: `appliesTo` REGION demands it be empty, PART demands at least one, ANY accepts both. Several parts in one marking are one clinical fact sharing one note; \"every part\" is the explicit full list, never a wildcard.",
             "items" : {
-              "type" : "string"
+              "type" : "string",
+              "description" : "Parts of the region this condition covers, each from the region's own `parts`. Empty or absent marks the region as a whole. The vocabulary entry decides which is allowed: `appliesTo` REGION demands it be empty, PART demands at least one, ANY accepts both. Several parts in one marking are one clinical fact sharing one note; \"every part\" is the explicit full list, never a wildcard."
             }
           },
           "region" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Code of the marked region, from ComponentDescriptor.regions[].code."
           }
-        }
+        },
+        "required" : [ "mark", "region" ]
       },
       "ReplyRequest" : {
         "type" : "object",
@@ -11535,7 +11633,7 @@
         "type" : "object",
         "properties" : {
           "clinic" : {
-            "$ref" : "#/components/schemas/ClinicView"
+            "$ref" : "#/components/schemas/SignedInClinicView"
           },
           "name" : {
             "type" : "string"
@@ -11622,6 +11720,41 @@
           "userId" : {
             "type" : "string",
             "format" : "uuid"
+          }
+        }
+      },
+      "SignedInClinicView" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "StandingAlertView" : {
+        "type" : "object",
+        "properties" : {
+          "authorId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "authorName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "recordedAt" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         }
       },

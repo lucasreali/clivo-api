@@ -1,6 +1,5 @@
 package com.example.clivoapi.core.encounter.internal;
 
-import com.example.clivoapi.common.extension.CoverageNote;
 import com.example.clivoapi.common.extension.RecordSheet;
 import com.example.clivoapi.core.encounter.AttachmentSnapshot;
 import com.example.clivoapi.core.encounter.EncounterParticipants;
@@ -50,11 +49,4 @@ record EncounterHistoryView(
         return files.stream().map(AttachmentView::of).toList();
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    record CoverageView(String plan, String memberNumber) {
-
-        static CoverageView of(CoverageNote note) {
-            return new CoverageView(note.plan(), note.memberNumber());
-        }
-    }
 }

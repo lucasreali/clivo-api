@@ -20,7 +20,7 @@ record CustomerHistoryView(
         List<EncounterHistoryView> encounters,
         CountsView counts,
         SummaryView financials,
-        List<AlertView> alerts) {
+        List<StandingAlertView> alerts) {
 
     static CustomerHistoryView of(CustomerHistory history) {
         return new CustomerHistoryView(
@@ -32,8 +32,8 @@ record CustomerHistoryView(
                 history.standingAlerts().map(CustomerHistoryView::viewsOf).orElse(null));
     }
 
-    private static List<AlertView> viewsOf(List<ClinicalAlertSnapshot> alerts) {
-        return alerts.stream().map(AlertView::of).toList();
+    private static List<StandingAlertView> viewsOf(List<ClinicalAlertSnapshot> alerts) {
+        return alerts.stream().map(StandingAlertView::of).toList();
     }
 
     record CountsView(int total, Map<String, Integer> byStatus) {
@@ -55,11 +55,4 @@ record CustomerHistoryView(
         }
     }
 
-    record AlertView(UUID id, String note, UUID authorId, String authorName, Instant recordedAt) {
-
-        static AlertView of(ClinicalAlertSnapshot alert) {
-            return new AlertView(
-                    alert.id(), alert.note(), alert.authorId(), alert.authorName(), alert.recordedAt());
-        }
-    }
 }

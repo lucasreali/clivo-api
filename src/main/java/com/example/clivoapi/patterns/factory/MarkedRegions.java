@@ -14,8 +14,6 @@ import java.util.Set;
 
 final class MarkedRegions {
 
-    private static final int NOTE_LIMIT = 400;
-
     private final FieldDefinition definition;
     private final ComponentDescriptor descriptor;
 
@@ -89,10 +87,10 @@ final class MarkedRegions {
     }
 
     private void requireShortNote(String note) {
-        if (note.length() <= NOTE_LIMIT) {
+        if (note.length() <= RegionMarking.NOTE_LIMIT) {
             return;
         }
-        throw definition.refusal("accepts a note of at most %d characters on a marking".formatted(NOTE_LIMIT));
+        throw definition.refusal("accepts a note of at most %d characters on a marking".formatted(RegionMarking.NOTE_LIMIT));
     }
 
     private void requireUnmarked(MarkedPart part, Set<MarkedPart> marked) {

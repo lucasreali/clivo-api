@@ -5,7 +5,7 @@ import com.example.clivoapi.core.access.AuthenticatedUser;
 import com.example.clivoapi.core.access.SignedInSession;
 import java.util.UUID;
 
-record SessionView(UUID userId, String name, String role, ClinicView clinic) {
+record SessionView(UUID userId, String name, String role, SignedInClinicView clinic) {
 
     static SessionView of(SignedInSession session) {
         AuthenticatedUser user = session.user();
@@ -13,13 +13,13 @@ record SessionView(UUID userId, String name, String role, ClinicView clinic) {
                 user.userId(),
                 user.name(),
                 user.role().name(),
-                session.clinicIdentity().map(ClinicView::of).orElse(null));
+                session.clinicIdentity().map(SignedInClinicView::of).orElse(null));
     }
 
-    record ClinicView(UUID id, String name) {
+    record SignedInClinicView(UUID id, String name) {
 
-        static ClinicView of(TenantIdentity clinic) {
-            return new ClinicView(clinic.id(), clinic.name());
+        static SignedInClinicView of(TenantIdentity clinic) {
+            return new SignedInClinicView(clinic.id(), clinic.name());
         }
     }
 }

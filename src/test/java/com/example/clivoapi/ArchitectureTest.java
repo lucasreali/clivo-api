@@ -1,10 +1,13 @@
 package com.example.clivoapi;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ArchitectureTest {
@@ -50,6 +53,14 @@ class ArchitectureTest {
     }
 
     @Test
+    void noTwoViewsClaimTheSameSchemaName() {
+        assertThat(viewNames())
+                .as("springdoc names a schema after the simple class name and keeps one definition per "
+                        + "name, so two views sharing one silently document each other's endpoint")
+                .doesNotHaveDuplicates();
+    }
+
+    @Test
     void theSharedPortsDependOnNoOneElse() {
         noClasses()
                 .that()
@@ -59,5 +70,13 @@ class ArchitectureTest {
                 .resideInAnyPackage(CONFIGURATION, CORE, MODULES, PATTERNS)
                 .because("everyone depends on common, so common may depend on nobody")
                 .check(production);
+    }
+
+    private List<String> viewNames() {
+        return production.stream()
+                .map(JavaClass::getSimpleName)
+                .filter(name -> name.endsWith("View"))
+                .sorted()
+                .toList();
     }
 }
