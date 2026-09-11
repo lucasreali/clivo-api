@@ -41,7 +41,7 @@ class BatchScenarios extends ScenarioTest {
 
         assertThatExceptionOfType(BusinessException.class)
                 .isThrownBy(() -> batches.selectFor(anaesthetic, ONE_DOSE))
-                .withMessage("no batch of Anestésico is within its expiry date");
+                .withMessage("no batch of Anaesthetic is within its expiry date");
     }
 
     @Test
@@ -60,7 +60,7 @@ class BatchScenarios extends ScenarioTest {
         activate(BATCH);
         change(BLOCK_EXPIRED_BATCH, blockExpiredBatch);
         UUID anaesthetic = inventory
-                .register(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true))
+                .register(new ProductDetails("Anaesthetic", new MeasurementUnit("ml"), Quantity.none(), true))
                 .id();
         batches.receive(
                 anaesthetic,

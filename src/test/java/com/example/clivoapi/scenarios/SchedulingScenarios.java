@@ -48,7 +48,7 @@ class SchedulingScenarios extends ScenarioTest {
         blocks.register(new ScheduleBlockDetails(
                 clinic.practitionerId(),
                 TimeWindow.of(morning, morning.plusMinutes(SERVICE_MINUTES)),
-                new BlockReason("Manutenção do equipamento")));
+                new BlockReason("Equipment maintenance")));
 
         assertThatExceptionOfType(BusinessException.class)
                 .isThrownBy(() -> bookAt(clinic, morning))

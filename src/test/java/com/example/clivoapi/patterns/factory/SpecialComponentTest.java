@@ -36,11 +36,11 @@ class SpecialComponentTest extends ClinicFixture {
 
     private static final String LABEL = "Dental chart";
 
-    private static final String SEALANT = "faceta";
+    private static final String VENEER = "veneer";
 
     @AfterEach
     void narrowTheVocabularyBack() {
-        jdbcTemplate.update("DELETE FROM component_mark WHERE code = ?", SEALANT);
+        jdbcTemplate.update("DELETE FROM component_mark WHERE code = ?", VENEER);
     }
 
     @Test
@@ -65,12 +65,12 @@ class SpecialComponentTest extends ClinicFixture {
         assertThat(upperIncisor.position()).isEqualTo(1);
         assertThat(upperIncisor.groups()).containsExactlyInAnyOrderEntriesOf(Map.of("arch", "upper", "quadrant", "1"));
         assertThat(upperIncisor.parts())
-                .containsExactly("mesial", "distal", "vestibular", "palatina", "incisal");
+                .containsExactly("mesial", "distal", "vestibular", "palatal", "incisal");
 
         ComponentRegion lowerMolar = regionOf(teeth, "46");
         assertThat(lowerMolar.position()).isEqualTo(6);
         assertThat(lowerMolar.groups()).containsExactlyInAnyOrderEntriesOf(Map.of("arch", "lower", "quadrant", "4"));
-        assertThat(lowerMolar.parts()).containsExactly("mesial", "distal", "vestibular", "lingual", "oclusal");
+        assertThat(lowerMolar.parts()).containsExactly("mesial", "distal", "vestibular", "lingual", "occlusal");
     }
 
     @Test
@@ -94,7 +94,7 @@ class SpecialComponentTest extends ClinicFixture {
 
         assertThat(teeth.vocabulary())
                 .extracting(ComponentMark::code)
-                .contains("higido", "carie", "restaurado", "ausente", "selante");
+                .contains("healthy", "caries", "restored", "missing", "sealant");
         assertThat(teeth.vocabulary()).allSatisfy(mark -> assertThat(mark.rendering()).isNotBlank());
         assertThat(teeth.vocabulary()).allSatisfy(mark -> assertThat(mark.appliesTo()).isNotNull());
     }
@@ -103,7 +103,7 @@ class SpecialComponentTest extends ClinicFixture {
     void aToothOutsideTheChartIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-TOOTH", ODONTOGRAM, permanentChart());
 
-        assertThatThrownBy(() -> fill(id, marking("99", "oclusal", "carie")))
+        assertThatThrownBy(() -> fill(id, marking("99", "occlusal", "caries")))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("field chart (Dental chart) does not know the region 99");
     }
@@ -112,27 +112,27 @@ class SpecialComponentTest extends ClinicFixture {
     void aFaceThatDoesNotBelongToTheToothIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-FACE", ODONTOGRAM, permanentChart());
 
-        assertThatThrownBy(() -> fill(id, marking("11", "oclusal", "carie")))
+        assertThatThrownBy(() -> fill(id, marking("11", "occlusal", "caries")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) does not know the part oclusal of the region 11");
+                .hasMessage("field chart (Dental chart) does not know the part occlusal of the region 11");
     }
 
     @Test
     void aConditionOutsideTheVocabularyIsRefusedWhenTheDraftIsSaved() {
         UUID id = openWith("TEST-CHART-WORD", ODONTOGRAM, permanentChart());
 
-        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", "cariado")))
+        assertThatThrownBy(() -> fill(id, marking("26", "occlusal", "decayed")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) does not know the mark cariado");
+                .hasMessage("field chart (Dental chart) does not know the mark decayed");
     }
 
     @Test
     void aWholeToothConditionIsRefusedOnASingleFace() {
         UUID id = openWith("TEST-CHART-TARGET", ODONTOGRAM, permanentChart());
 
-        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", "ausente")))
+        assertThatThrownBy(() -> fill(id, marking("26", "occlusal", "missing")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) marks 26 with ausente, "
+                .hasMessage("field chart (Dental chart) marks 26 with missing, "
                         + "which applies to the region as a whole, with no part");
     }
 
@@ -140,9 +140,9 @@ class SpecialComponentTest extends ClinicFixture {
     void aFaceConditionIsRefusedOnTheWholeTooth() {
         UUID id = openWith("TEST-CHART-FACEONLY", ODONTOGRAM, permanentChart());
 
-        assertThatThrownBy(() -> fill(id, markingOn("26", List.of(), "carie")))
+        assertThatThrownBy(() -> fill(id, markingOn("26", List.of(), "caries")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) marks 26 with carie, "
+                .hasMessage("field chart (Dental chart) marks 26 with caries, "
                         + "which applies to at least one part of the region");
     }
 
@@ -150,7 +150,7 @@ class SpecialComponentTest extends ClinicFixture {
     void aConditionThatFitsEitherTargetIsAcceptedOnBoth() {
         UUID id = openWith("TEST-CHART-ANY", ODONTOGRAM, permanentChart());
 
-        fill(id, markingOn("26", List.of(), "fratura"), marking("27", "oclusal", "fratura"));
+        fill(id, markingOn("26", List.of(), "fracture"), marking("27", "occlusal", "fracture"));
 
         assertThat(complete(id).isCompleted()).isTrue();
     }
@@ -159,11 +159,11 @@ class SpecialComponentTest extends ClinicFixture {
     void oneMarkingCoversSeveralFacesOfTheSameTooth() {
         UUID id = openWith("TEST-CHART-MULTI", ODONTOGRAM, permanentChart());
 
-        fill(id, markingOn("36", List.of("oclusal", "lingual"), "carie"));
+        fill(id, markingOn("36", List.of("occlusal", "lingual"), "caries"));
 
         assertThat(chartOf(id).markings())
                 .extracting(MarkedRegionState::part)
-                .containsExactly("oclusal", "lingual");
+                .containsExactly("occlusal", "lingual");
     }
 
     @Test
@@ -171,27 +171,27 @@ class SpecialComponentTest extends ClinicFixture {
         UUID id = openWith("TEST-CHART-TWICE", ODONTOGRAM, permanentChart());
 
         assertThatThrownBy(() ->
-                        fill(id, marking("26", "oclusal", "carie"), marking("26", "oclusal", "restaurado")))
+                        fill(id, marking("26", "occlusal", "caries"), marking("26", "occlusal", "restored")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) marks the part oclusal of the region 26 twice");
+                .hasMessage("field chart (Dental chart) marks the part occlusal of the region 26 twice");
     }
 
     @Test
     void aNoteRidesAlongWithTheMarkingThatCarriesIt() {
         UUID id = openWith("TEST-CHART-NOTE", ODONTOGRAM, permanentChart());
 
-        fill(id, noted(marking("26", "oclusal", "restaurado"), "Cárie ativa removida e restaurada"));
+        fill(id, noted(marking("26", "occlusal", "restored"), "Active caries removed and restored"));
 
         assertThat(chartOf(id).markings())
                 .singleElement()
                 .extracting(MarkedRegionState::note)
-                .isEqualTo("Cárie ativa removida e restaurada");
+                .isEqualTo("Active caries removed and restored");
     }
 
     @Test
     void theSameToothCarriesAMarkingOnEachOfItsFaces() {
         UUID id = openWith("TEST-CHART-FACES", ODONTOGRAM, permanentChart());
-        fill(id, marking("26", "oclusal", "carie"), marking("26", "mesial", "restaurado"));
+        fill(id, marking("26", "occlusal", "caries"), marking("26", "mesial", "restored"));
 
         assertThat(complete(id).isCompleted()).isTrue();
     }
@@ -199,12 +199,12 @@ class SpecialComponentTest extends ClinicFixture {
     @Test
     void aConditionAddedToTheCatalogueIsAcceptedWithoutTouchingTheCode() {
         UUID id = openWith("TEST-CHART-CLINIC", ODONTOGRAM, permanentChart());
-        assertThatThrownBy(() -> fill(id, marking("26", "oclusal", SEALANT)))
+        assertThatThrownBy(() -> fill(id, marking("26", "occlusal", VENEER)))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("field chart (Dental chart) does not know the mark faceta");
+                .hasMessage("field chart (Dental chart) does not know the mark veneer");
 
         widenTheVocabulary();
-        fill(id, marking("26", "oclusal", SEALANT));
+        fill(id, marking("26", "occlusal", VENEER));
 
         assertThat(complete(id).isCompleted()).isTrue();
     }
@@ -215,7 +215,7 @@ class SpecialComponentTest extends ClinicFixture {
         activate(ODONTOGRAM);
         UUID firstVersion = publishTemplate(LABEL, permanentChart());
         UUID id = openEncounter(clinic, firstVersion);
-        fill(id, marking("26", "oclusal", "carie"));
+        fill(id, marking("26", "occlusal", "caries"));
         complete(id);
 
         templates.publish(templates.redefine(firstVersion, deciduousChart()).id());
@@ -223,7 +223,7 @@ class SpecialComponentTest extends ClinicFixture {
         EncounterSnapshot recorded = reopen(id);
         assertThat(recorded.sheet().templateVersion()).isEqualTo(1);
         assertThat(chartOf(id).descriptor().regions()).hasSize(32);
-        assertThat(chartOf(id).value()).isEqualTo(List.of(marking("26", "oclusal", "carie")));
+        assertThat(chartOf(id).value()).isEqualTo(List.of(marking("26", "occlusal", "caries")));
         assertThat(chartOf(id).markings()).hasSize(1);
     }
 
@@ -236,7 +236,7 @@ class SpecialComponentTest extends ClinicFixture {
         assertThat(regions.groupings()).isEmpty();
         assertThat(regions.codes()).containsExactly("ombro", "joelho");
         assertThat(regionOf(regions, "ombro").parts()).isEmpty();
-        assertThat(regions.vocabulary()).extracting(ComponentMark::code).contains("dor", "edema");
+        assertThat(regions.vocabulary()).extracting(ComponentMark::code).contains("pain", "swelling");
     }
 
     @Test
@@ -298,8 +298,8 @@ class SpecialComponentTest extends ClinicFixture {
     private void widenTheVocabulary() {
         jdbcTemplate.update(
                 "INSERT INTO component_mark (id, component, code, label, rendering, sort_order, applies_to) "
-                        + "VALUES (gen_random_uuid(), 'ODONTOGRAM', ?, 'Faceta', '#00695c', 12, 'PART')",
-                SEALANT);
+                        + "VALUES (gen_random_uuid(), 'ODONTOGRAM', ?, 'Veneer', '#00695c', 12, 'PART')",
+                VENEER);
     }
 
     private TemplateContent permanentChart() {

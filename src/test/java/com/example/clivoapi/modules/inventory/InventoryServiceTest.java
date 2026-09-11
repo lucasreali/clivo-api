@@ -39,7 +39,7 @@ class InventoryServiceTest extends InventoryFixture {
 
         assertThatThrownBy(() -> inventory.move(gauze, outboundOf("9", "uso interno")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("Gaze estéril has only 5.00 un in stock");
+                .hasMessage("Sterile gauze has only 5.00 un in stock");
     }
 
     @Test

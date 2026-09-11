@@ -93,7 +93,7 @@ public abstract class InventoryFixture extends DatabaseTest {
 
     protected UUID registerGauze(String minimum) {
         return inventory
-                .register(new ProductDetails("Gaze estéril", new MeasurementUnit("un"), Quantity.of(minimum), false))
+                .register(new ProductDetails("Sterile gauze", new MeasurementUnit("un"), Quantity.of(minimum), false))
                 .id();
     }
 

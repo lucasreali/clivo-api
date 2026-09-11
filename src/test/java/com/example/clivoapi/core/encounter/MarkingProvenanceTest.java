@@ -31,10 +31,10 @@ class MarkingProvenanceTest extends ClinicFixture {
     void whatThisSessionMarkedIsToldApartFromWhatCameBefore() {
         Clinic clinic = openDentalClinic("TEST-PROV-SOURCE");
         UUID template = dentalTemplate();
-        completedEncounter(clinic, template, marking("26", "oclusal", "carie"));
+        completedEncounter(clinic, template, marking("26", "occlusal", "caries"));
         UUID open = openEncounter(clinic, template);
 
-        encounters.fill(open, valuesOf(marking("36", "oclusal", "carie")));
+        encounters.fill(open, valuesOf(marking("36", "occlusal", "caries")));
 
         assertThat(markingsOf(open))
                 .extracting(MarkedRegionState::region, state -> state.origin().source())
@@ -47,8 +47,8 @@ class MarkingProvenanceTest extends ClinicFixture {
     void aConditionCarriesTheDateItFirstAppeared() {
         Clinic clinic = openDentalClinic("TEST-PROV-SINCE");
         UUID template = dentalTemplate();
-        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "restaurado"));
-        completedEncounter(clinic, template, marking("11", "vestibular", "restaurado"));
+        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "restored"));
+        completedEncounter(clinic, template, marking("11", "vestibular", "restored"));
         UUID open = openEncounter(clinic, template);
 
         MarkedRegionState carried = onlyMarkingOf(open);
@@ -61,13 +61,13 @@ class MarkingProvenanceTest extends ClinicFixture {
     void aChangedConditionRestartsTheDateItAppeared() {
         Clinic clinic = openDentalClinic("TEST-PROV-CHANGE");
         UUID template = dentalTemplate();
-        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "carie"));
-        UUID second = completedEncounter(clinic, template, marking("11", "vestibular", "restaurado"));
+        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "caries"));
+        UUID second = completedEncounter(clinic, template, marking("11", "vestibular", "restored"));
         UUID open = openEncounter(clinic, template);
 
         MarkedRegionState carried = onlyMarkingOf(open);
 
-        assertThat(carried.mark()).isEqualTo("restaurado");
+        assertThat(carried.mark()).isEqualTo("restored");
         assertThat(carried.origin().since()).isEqualTo(recordedAtOf(second));
         assertThat(recordedAtOf(first)).isBefore(carried.origin().since());
     }
@@ -76,13 +76,13 @@ class MarkingProvenanceTest extends ClinicFixture {
     void theOpenSessionOverwritesWhatAnEarlierEncounterMarkedOnTheSameFace() {
         Clinic clinic = openDentalClinic("TEST-PROV-WINS");
         UUID template = dentalTemplate();
-        completedEncounter(clinic, template, marking("11", "vestibular", "carie"));
+        completedEncounter(clinic, template, marking("11", "vestibular", "caries"));
         UUID open = openEncounter(clinic, template);
 
-        encounters.fill(open, valuesOf(marking("11", "vestibular", "restaurado")));
+        encounters.fill(open, valuesOf(marking("11", "vestibular", "restored")));
 
         MarkedRegionState resolved = onlyMarkingOf(open);
-        assertThat(resolved.mark()).isEqualTo("restaurado");
+        assertThat(resolved.mark()).isEqualTo("restored");
         assertThat(resolved.origin().source()).isEqualTo(MarkingSource.SESSION);
     }
 
@@ -90,11 +90,11 @@ class MarkingProvenanceTest extends ClinicFixture {
     void theComparisonReportsWhatChangedSinceAnEarlierInstant() {
         Clinic clinic = openDentalClinic("TEST-PROV-DIFF");
         UUID template = dentalTemplate();
-        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "carie"));
+        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "caries"));
         Instant afterTheFirst = recordedAtOf(first);
-        completedEncounter(clinic, template, marking("11", "vestibular", "restaurado"));
+        completedEncounter(clinic, template, marking("11", "vestibular", "restored"));
         UUID open = openEncounter(clinic, template);
-        encounters.fill(open, valuesOf(marking("11", "vestibular", "restaurado"), marking("21", "incisal", "carie")));
+        encounters.fill(open, valuesOf(marking("11", "vestibular", "restored"), marking("21", "incisal", "caries")));
 
         RecordComparison comparison = encounters.compare(open, afterTheFirst, Role.PRACTITIONER);
 
@@ -110,7 +110,7 @@ class MarkingProvenanceTest extends ClinicFixture {
     void aFaceUntouchedSinceTheBaselineIsNotReportedAsAChange() {
         Clinic clinic = openDentalClinic("TEST-PROV-SAME");
         UUID template = dentalTemplate();
-        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "carie"));
+        UUID first = completedEncounter(clinic, template, marking("11", "vestibular", "caries"));
         UUID open = openEncounter(clinic, template);
 
         RecordComparison comparison = encounters.compare(open, recordedAtOf(first), Role.PRACTITIONER);

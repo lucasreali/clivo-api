@@ -41,7 +41,7 @@ class BatchServiceTest extends InventoryFixture {
 
         assertThatThrownBy(() -> batches.receive(gauze, batchOf("L-1", LocalDate.now().plusMonths(2), "10")))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("Gaze estéril is not controlled by batch");
+                .hasMessage("Sterile gauze is not controlled by batch");
     }
 
     @Test
@@ -65,7 +65,7 @@ class BatchServiceTest extends InventoryFixture {
 
         assertThat(batches.awaitingDiscard()).hasSize(1);
 
-        BatchSnapshot discarded = batches.discard(expired.id(), new MovementReason("vencido na conferência"));
+        BatchSnapshot discarded = batches.discard(expired.id(), new MovementReason("expired at the stock count"));
 
         assertThat(discarded.status()).isEqualTo(BatchStatus.DISCARDED);
         assertThat(batches.awaitingDiscard()).isEmpty();
@@ -104,7 +104,7 @@ class BatchServiceTest extends InventoryFixture {
     }
 
     private UUID registerAnaesthetic() {
-        return registerProduct(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true));
+        return registerProduct(new ProductDetails("Anaesthetic", new MeasurementUnit("ml"), Quantity.none(), true));
     }
 
     private BatchDetails batchOf(String code, LocalDate expiresOn, String quantity) {

@@ -37,7 +37,7 @@ class DependentServiceTest extends DependentFixture {
 
         DependentSnapshot assisted = valueInTenant(clinic, () -> dependents.register(
                 registerCustomer("Marta Alves"),
-                new DependentDetails("Sr. Otávio", DependentType.ASSISTED, null, null)));
+                new DependentDetails("Mr. Octavio", DependentType.ASSISTED, null, null)));
 
         assertThat(assisted.ageInYears()).isEmpty();
     }
@@ -52,9 +52,9 @@ class DependentServiceTest extends DependentFixture {
                         "Bento Dias",
                         DependentType.MINOR,
                         LocalDate.now().minusYears(8),
-                        new DependentAttributes(Map.of("school", "Colégio Novo", "grade", "3")))));
+                        new DependentAttributes(Map.of("school", "Novo School", "grade", "3")))));
 
-        assertThat(minor.details().attributes().asMap()).containsEntry("school", "Colégio Novo");
+        assertThat(minor.details().attributes().asMap()).containsEntry("school", "Novo School");
         assertThat(minor.details().type().custodianTitle()).isEqualTo("guardian");
     }
 

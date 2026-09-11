@@ -89,10 +89,10 @@ class NotificationServiceTest extends SchedulingFixture {
         NotificationSnapshot reminder = remindAbout(inDays(1));
         notifications.dispatchDue();
 
-        NotificationSnapshot answered = notifications.registerResponse(reminder.id(), "CONFIRMO");
+        NotificationSnapshot answered = notifications.registerResponse(reminder.id(), "CONFIRM");
 
         assertThat(answered.status()).isEqualTo(NotificationStatus.REPLIED);
-        assertThat(answered.answer()).contains("CONFIRMO");
+        assertThat(answered.answer()).contains("CONFIRM");
     }
 
     @Test
@@ -100,7 +100,7 @@ class NotificationServiceTest extends SchedulingFixture {
         openClinicWithNotifications("TEST-NOTIF-EARLY", "72");
         NotificationSnapshot reminder = remindAbout(inDays(10));
 
-        assertThatThrownBy(() -> notifications.registerResponse(reminder.id(), "CONFIRMO"))
+        assertThatThrownBy(() -> notifications.registerResponse(reminder.id(), "CONFIRM"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage("a reminder in status PENDING received no answer to register");
     }
@@ -116,7 +116,7 @@ class NotificationServiceTest extends SchedulingFixture {
         openClinic(code);
         modules.activate(NOTIFICATION);
         parameters.change(REMINDER_LEAD_HOURS, ParameterValue.of(leadHours));
-        alwaysAvailable = practitioners.register(new PractitionerDetails("Dr. Plantão", null)).id();
+        alwaysAvailable = practitioners.register(new PractitionerDetails("Dr. OnCall", null)).id();
         practitioners.follow(alwaysAvailable, everyDay());
     }
 

@@ -54,7 +54,7 @@ class ReuseTest extends ClinicFixture {
 
     private static final String QUARANTINE = "quarantine";
 
-    private static final String QUARANTINED = "every batch of Anestésico is under quarantine";
+    private static final String QUARANTINED = "every batch of Anaesthetic is under quarantine";
 
     private static final int AFTER_THE_SCHEDULE_BLOCK = 25;
 
@@ -187,7 +187,7 @@ class ReuseTest extends ClinicFixture {
 
     private UUID aBatchControlledProduct() {
         return inventory
-                .register(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true))
+                .register(new ProductDetails("Anaesthetic", new MeasurementUnit("ml"), Quantity.none(), true))
                 .id();
     }
 

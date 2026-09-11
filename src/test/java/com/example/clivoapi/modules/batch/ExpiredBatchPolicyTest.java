@@ -38,7 +38,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
 
         assertThatThrownBy(() -> batches.selectFor(anaesthetic, ONE_DOSE))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("no batch of Anestésico is within its expiry date");
+                .hasMessage("no batch of Anaesthetic is within its expiry date");
     }
 
     @Test
@@ -85,7 +85,7 @@ class ExpiredBatchPolicyTest extends InventoryFixture {
 
     private UUID onlyAnExpiredBatch() {
         UUID anaesthetic =
-                registerProduct(new ProductDetails("Anestésico", new MeasurementUnit("ml"), Quantity.none(), true));
+                registerProduct(new ProductDetails("Anaesthetic", new MeasurementUnit("ml"), Quantity.none(), true));
         batches.receive(anaesthetic, batchOf("L-OLD", LocalDate.now().minusDays(2)));
         return anaesthetic;
     }

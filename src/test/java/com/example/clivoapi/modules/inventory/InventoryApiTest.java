@@ -24,7 +24,7 @@ class InventoryApiTest extends InventoryFixture {
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Anestésico\",\"unit\":\"ml\",\"minStock\":10,\"batchControlled\":true}"))
+                        .content("{\"name\":\"Anaesthetic\",\"unit\":\"ml\",\"minStock\":10,\"batchControlled\":true}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.onHand").value(0))
                 .andExpect(jsonPath("$.belowMinimum").value(true));

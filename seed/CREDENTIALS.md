@@ -40,13 +40,13 @@ the application uses.
 
 | E-mail | Password | Name | Role | Clinic | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `admin@mail.com` | `12345678` | Administrador da Plataforma | PLATFORM_ADMIN | — | The only account that reaches `/api/platform/**` |
-| `maria@mail.com` | `12345678` | Maria Souza | MANAGER | Clínica Vida | Reaches every module active in the clinic |
-| `joao@mail.com` | `12345678` | João Lima | RECEPTION | Clínica Vida | Granted: dependent, sessionpackage, insurance, notification |
-| `carla@mail.com` | `12345678` | Carla Nunes | PRACTITIONER | Clínica Vida | Also a practitioner; granted: dependent, inventory, batch, bodymap |
-| `rafael@mail.com` | `12345678` | Rafael Dias | PRACTITIONER | Clínica Vida | Also a practitioner; no module granted |
-| `pedro@mail.com` | `12345678` | Pedro Alves | ASSISTANT | Clínica Vida | Granted: inventory |
-| `ines@mail.com` | `12345678` | Inês Barros | RECEPTION | Clínica Vida | **INACTIVE** — sign-in is refused |
+| `admin@mail.com` | `12345678` | Platform Administrator | PLATFORM_ADMIN | — | The only account that reaches `/api/platform/**` |
+| `maria@mail.com` | `12345678` | Maria Souza | MANAGER | Vida Clinic | Reaches every module active in the clinic |
+| `joao@mail.com` | `12345678` | João Lima | RECEPTION | Vida Clinic | Granted: dependent, sessionpackage, insurance, notification |
+| `carla@mail.com` | `12345678` | Carla Nunes | PRACTITIONER | Vida Clinic | Also a practitioner; granted: dependent, inventory, batch, bodymap |
+| `rafael@mail.com` | `12345678` | Rafael Dias | PRACTITIONER | Vida Clinic | Also a practitioner; no module granted |
+| `pedro@mail.com` | `12345678` | Pedro Alves | ASSISTANT | Vida Clinic | Granted: inventory |
+| `ines@mail.com` | `12345678` | Inês Barros | RECEPTION | Vida Clinic | **INACTIVE** — sign-in is refused |
 | `lucas@mail.com` | `12345678` | Lucas Reali | MANAGER | Odonto Sorriso | |
 | `ana@mail.com` | `12345678` | Ana Prado | RECEPTION | Odonto Sorriso | Granted: notification |
 | `bruno@mail.com` | `12345678` | Bruno Castro | PRACTITIONER | Odonto Sorriso | Also a practitioner; granted: odontogram |
@@ -57,11 +57,11 @@ the application uses.
 
 | Id | Name | CNPJ | Status | Active modules |
 | --- | --- | --- | --- | --- |
-| `0a000000-0000-7000-8000-000000000001` | Clínica Vida | 11222333000181 | ACTIVE | dependent, sessionpackage, inventory, batch, insurance, notification, commission, bodymap |
+| `0a000000-0000-7000-8000-000000000001` | Vida Clinic | 11222333000181 | ACTIVE | dependent, sessionpackage, inventory, batch, insurance, notification, commission, bodymap |
 | `0a000000-0000-7000-8000-000000000002` | Odonto Sorriso | 22333444000181 | ACTIVE | odontogram, commission, notification |
 | `0a000000-0000-7000-8000-000000000003` | Pet Care | 33444555000181 | SUSPENDED | dependent |
 
-Clínica Vida also carries an `odontogram` row that is switched **off**, plus the
+Vida Clinic also carries an `odontogram` row that is switched **off**, plus the
 activation and deactivation entries behind it, so
 `GET /api/platform/tenants/{id}/modules/history` has something to show and
 `/api/encounters` refuses an odontogram field there.
@@ -74,7 +74,7 @@ Pet Care is suspended on purpose, to exercise
 Only the values that differ from the migration defaults are stored; everything
 else falls back to the default and still shows up in `GET /api/parameters`.
 
-**Clínica Vida** — `role_model=SEGREGATED`, `default_duration=45`,
+**Vida Clinic** — `role_model=SEGREGATED`, `default_duration=45`,
 `default_record_template=15000000-…-000000000001`, `reminder_lead_hours=48`,
 `notification_channel=["WHATSAPP","EMAIL"]`, `expiry_alert_days=45`,
 `block_expired_batch=true`, `late_fee_pct=2`, `late_interest_pct=1`,
@@ -113,15 +113,15 @@ where the first byte names the table and the last byte numbers the row.
 So `10000000-0000-7000-8000-000000000001` is the first customer,
 `0f000000-0000-7000-8000-000000000002` the second service, and so on.
 
-## Clínica Vida
+## Vida Clinic
 
 ### Practitioners
 
 | Id | Name | Specialty | User | Availability | Commission |
 | --- | --- | --- | --- | --- | --- |
-| `0d…01` | Carla Nunes | Fisioterapia | carla@mail.com | every day 08:00–18:00 | 30% |
-| `0d…02` | Rafael Dias | Nutrição | rafael@mail.com | every day 08:00–18:00 | 25% |
-| `0d…03` | Juliana Moraes | Dermatologia | — | Tuesday and Thursday 13:00–17:00 | none |
+| `0d…01` | Carla Nunes | Physiotherapy | carla@mail.com | every day 08:00–18:00 | 30% |
+| `0d…02` | Rafael Dias | Nutrition | rafael@mail.com | every day 08:00–18:00 | 25% |
+| `0d…03` | Juliana Moraes | Dermatology | — | Tuesday and Thursday 13:00–17:00 | none |
 
 Juliana has no login and a narrow schedule on purpose: she is the case where
 `GET /api/practitioners/{id}/attendance` answers "no" and where booking outside
@@ -136,10 +136,10 @@ curl -b cookies.txt \
 
 | Id | Name | Duration | Price | Status |
 | --- | --- | --- | --- | --- |
-| `0f…01` | Sessão de Fisioterapia | 60 min | 180.00 | ACTIVE |
-| `0f…02` | Consulta Nutricional | 45 min | 150.00 | ACTIVE |
-| `0f…03` | Avaliação Dermatológica | 30 min | 220.00 | ACTIVE |
-| `0f…04` | Massagem Terapêutica | 50 min | 130.00 | INACTIVE |
+| `0f…01` | Physiotherapy Session | 60 min | 180.00 | ACTIVE |
+| `0f…02` | Nutrition Consultation | 45 min | 150.00 | ACTIVE |
+| `0f…03` | Dermatology Assessment | 30 min | 220.00 | ACTIVE |
+| `0f…04` | Therapeutic Massage | 50 min | 130.00 | INACTIVE |
 
 ### Customers
 
@@ -160,19 +160,19 @@ marketing granted, marketing later revoked — so
 Dependents: Miguel Prado (MINOR, under Ana) and Alzira Carvalho (ASSISTED,
 under Bruno).
 
-Insurance: Ana is enrolled in Unimed Curitiba (70%), Bruno in Bradesco Saúde
-(50%). A third plan, "Plano Antigo", is INACTIVE and reimburses nothing.
+Insurance: Ana is enrolled in Unimed Curitiba (70%), Bruno in Bradesco Saude
+(50%). A third plan, "Legacy Plan", is INACTIVE and reimburses nothing.
 
 ### Record templates
 
 | Id | Name | Version | Status |
 | --- | --- | --- | --- |
-| `15…01` | Ficha de Fisioterapia | 1 | PUBLISHED |
-| `15…02` | Ficha Nutricional | 1 | PUBLISHED |
-| `15…03` | Ficha de Fisioterapia | 2 | DRAFT (cloned from `15…01`) |
-| `15…06` | Ficha Padrão | 1 | PUBLISHED |
+| `15…01` | Physiotherapy Record | 1 | PUBLISHED |
+| `15…02` | Nutrition Record | 1 | PUBLISHED |
+| `15…03` | Physiotherapy Record | 2 | DRAFT (cloned from `15…01`) |
+| `15…06` | Default Record | 1 | PUBLISHED |
 
-`Ficha de Fisioterapia` carries a `BODY_MAP` component field that only renders
+`Physiotherapy Record` carries a `BODY_MAP` component field that only renders
 while the `bodymap` module is active. It describes itself and stores its value
 the same way the `ODONTOGRAM` does, with the regions declared in the template
 standing in for the tooth set. Field types are the names of the field
@@ -198,12 +198,12 @@ days (no practitioner, so it blocks everyone).
 
 | Id | When | Status | Template |
 | --- | --- | --- | --- |
-| `1a…01` | yesterday, from appointment `18…04` | COMPLETED | Fisioterapia |
-| `1a…02` | two hours ago, walk-in | **DRAFT** | Nutricional |
-| `1a…03` | a month ago | COMPLETED | Fisioterapia |
-| `1a…04` | 10 days ago | COMPLETED | Nutricional |
-| `1a…05` | 20 days ago | COMPLETED | Fisioterapia |
-| `1a…06` | 15 days ago | COMPLETED | Fisioterapia |
+| `1a…01` | yesterday, from appointment `18…04` | COMPLETED | Physiotherapy |
+| `1a…02` | two hours ago, walk-in | **DRAFT** | Nutrition |
+| `1a…03` | a month ago | COMPLETED | Physiotherapy |
+| `1a…04` | 10 days ago | COMPLETED | Nutrition |
+| `1a…05` | 20 days ago | COMPLETED | Physiotherapy |
+| `1a…06` | 15 days ago | COMPLETED | Physiotherapy |
 
 The clinical sheet inside an encounter is role-dependent: signed in as Maria
 (MANAGER) `sheet` comes back `null`, while Carla (PRACTITIONER) sees the fields
@@ -244,10 +244,10 @@ the previous month holds one already CLOSED, so
 
 | Id | Product | Unit | Minimum | On hand | Batches |
 | --- | --- | --- | --- | --- | --- |
-| `20…01` | Luva de Procedimento | CX | 5 | 12 | no |
-| `20…02` | Gel Condutor | UN | 10 | **8 (below the minimum)** | yes |
-| `20…03` | Álcool 70% | L | 3 | 6 | yes |
-| `20…04` | Agulha Descartável | UN | 20 | 0 | INACTIVE |
+| `20…01` | Examination Glove | BOX | 5 | 12 | no |
+| `20…02` | Conductive Gel | UN | 10 | **8 (below the minimum)** | yes |
+| `20…03` | Alcohol 70% | L | 3 | 6 | yes |
+| `20…04` | Disposable Needle | UN | 20 | 0 | INACTIVE |
 
 Batches: `GEL-2401` expires in 120 days, `GEL-2312` **expired 10 days ago and is
 still available** (that is what `/api/batches/awaiting-discard` and the expired
@@ -261,24 +261,24 @@ the two batch-controlled products.
 
 | Id | Customer | Service | Total | Used | Status |
 | --- | --- | --- | --- | --- | --- |
-| `23…01` | Ana Prado | Fisioterapia | 10 | 1 | ACTIVE |
-| `23…02` | Bruno Carvalho | Nutricional | 5 | 0 | ACTIVE (expires in 15 days) |
-| `23…03` | Ana Prado | Dermatológica | 3 | 0 | EXPIRED |
-| `23…04` | Bruno Carvalho | Fisioterapia | 1 | 1 | EXHAUSTED |
-| `23…05` | Ana Prado | Nutricional | 4 | 0 | CANCELLED |
+| `23…01` | Ana Prado | Physiotherapy | 10 | 1 | ACTIVE |
+| `23…02` | Bruno Carvalho | Nutrition | 5 | 0 | ACTIVE (expires in 15 days) |
+| `23…03` | Ana Prado | Dermatology | 3 | 0 | EXPIRED |
+| `23…04` | Bruno Carvalho | Physiotherapy | 1 | 1 | EXHAUSTED |
+| `23…05` | Ana Prado | Nutrition | 4 | 0 | CANCELLED |
 
 ### Notifications
 
-One SENT, one REPLIED (`CONFIRMO`), one PENDING and one FAILED, so
+One SENT, one REPLIED (`CONFIRM`), one PENDING and one FAILED, so
 `/api/notifications/pending` and `/api/notifications/dispatch` both have work.
 
 ## Odonto Sorriso
 
 Bruno Castro (`0d…04`, 40% commission) attends every day 08:00–18:00. Services:
-Limpeza Dental (`0f…05`, 120.00) and Manutenção de Aparelho (`0f…06`, 90.00).
+Dental Cleaning (`0f…05`, 120.00) and Braces Adjustment (`0f…06`, 90.00).
 Customers: Eduarda Lopes (`10…05`) and Felipe Moura (`10…06`).
 
-`Ficha Odontológica` (`15…04`) carries the `ODONTOGRAM` component. The component
+`Dental Record` (`15…04`) carries the `ODONTOGRAM` component. The component
 describes itself in the assembled record: every permanent tooth in FDI notation
 with its arch, quadrant, position and faces, plus the vocabulary of conditions
 it accepts. Its value is a list of markings, each naming a tooth, optionally a
@@ -296,12 +296,12 @@ place to see the module guard answer 404/403 on `/api/products` and
 Suspended clinic with the `dependent` module active. Tiago Rocha (`0d…05`)
 attends every day; Gabriela Nogueira (`10…07`) answers for two animals, Thor
 (`11…03`, Golden Retriever) and Mel (`11…04`, cat). One appointment today at
-11:00 and one open encounter (`1a…09`) on `Ficha Veterinária`.
+11:00 and one open encounter (`1a…09`) on `Veterinary Record`.
 
 ## Audit trail
 
 Five entries, readable through `GET /api/audit-trail?entity=Customer&recordId=…`:
-the creation, an update and a deactivation of customers in Clínica Vida, one
+the creation, an update and a deactivation of customers in Vida Clinic, one
 `ACCESS` on encounter `1a…01`, and one creation in Odonto Sorriso.
 
 ## What is deliberately left empty
