@@ -51,6 +51,22 @@ public class BatchService {
         return currentPolicy().chooseFrom(candidatesOf(product, quantity));
     }
 
+    /**
+     * The dispense counterpart of {@link #selectFor}: the clinic's policy picks the
+     * lot and the lot is debited in the same transaction, so a refusal leaves both
+     * the lot and the product balance untouched. A product the clinic does not
+     * track by lot answers empty and is dispensed the plain way.
+     */
+    public Optional<BatchChoice> spendFor(UUID productId, Quantity quantity) {
+        Product product = inventory.reference(productId);
+        if (!product.isBatchControlled()) {
+            return Optional.empty();
+        }
+        BatchChoice choice = currentPolicy().chooseFrom(candidatesOf(product, quantity));
+        batchOf(choice.batchId()).take(quantity);
+        return Optional.of(choice);
+    }
+
     public BatchSnapshot receive(UUID productId, BatchDetails details) {
         Product product = batchControlled(productId);
         Batch batch = batches.save(new Batch(product, details));

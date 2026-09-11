@@ -72,8 +72,11 @@ public class StockMovement extends TenantScopedEntity {
         this.recordedAt = Instant.now();
     }
 
-    public static StockMovement dispensedIn(Product product, UUID encounterId, Quantity quantity, UUID recordedBy) {
-        return new StockMovement(product, encounterId, quantity, recordedBy);
+    public static StockMovement dispensedIn(
+            Product product, UUID encounterId, Quantity quantity, UUID recordedBy, UUID batchId) {
+        StockMovement movement = new StockMovement(product, encounterId, quantity, recordedBy);
+        movement.batchId = batchId;
+        return movement;
     }
 
     public static StockMovement discarded(Product product, UUID batchId, StockEntry entry, UUID recordedBy) {
